@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EdTechLists — ระบบคลังจัดเก็บและส่งมอบงานบริการดิจิทัล</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0F172A',
+                            accent: '#EA580C',
+                            gold: '#F59E0B',
+                            lightBg: '#F8FAFC'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Font (Prompt) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Navbar Header -->
+    <nav class="bg-brand-navy text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('landing')">
+                    <!-- Gold/Amber Capsule Icon Container -->
+                    <div class="bg-amber-400 text-slate-900 font-bold px-3 py-1.5 rounded-full flex items-center justify-center shadow">
+                        <i class="fa-solid fa-layer-group text-base mr-1.5"></i>
+                        <span class="text-xs">EdTech</span>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg leading-none block">EdTechLists</span>
+                        <span class="text-xs text-slate-400 font-light">Digital Service Repository</span>
+                    </div>
+                </div>
+
+                <!-- Capsule Navigation Bar (โครงสร้างปุ่มราบระดับเดียวกันแบบเด็ดขาด) -->
+                <div class="flex items-center space-x-2" id="navActionContainer">
+                    <div id="navMenu" class="bg-slate-800/80 p-1 rounded-full border border-slate-700 flex items-center space-x-1 shadow-inner">
+                        
+                        <!-- 1. ปุ่ม หน้าหลัก (แสดงผลเสมอ) -->
+                        <button id="navHomeBtn" onclick="switchNavTab('home')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow">
+                            <i class="fa-solid fa-house mr-1"></i> หน้าหลัก
+                        </button>
+
+                        <!-- 2. ปุ่ม เข้าสู่ระบบ (แสดงเฉพาะเมื่อยังไม่ได้ Login) -->
+                        <button id="loginBtn" onclick="openAuthModal('signin')" class="px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
+                            <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
+                        </button>
+
+                        <!-- 3. ปุ่มแสดงสิทธิ์ (ซ่อนไว้เสมอตั้งแต่ HTML ด้วยคลาส hidden) -->
+                        <button id="roleTabBtn" onclick="switchNavTab('role')" class="hidden px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white">
+                            <i id="roleTabIcon" class="fa-solid fa-user-shield mr-1"></i>
+                            <span id="roleTabText">เจ้าหน้าที่</span>
+                        </button>
+
+                        <!-- 4. ปุ่ม ออกจากระบบ (ซ่อนไว้เสมอตั้งแต่ HTML ด้วยคลาส hidden) -->
+                        <button id="logoutBtn" onclick="handleSignOut()" class="hidden px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
+                            <i class="fa-solid fa-power-off mr-1"></i> ออกจากระบบ
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
+        <!-- SECTION 1: PUBLIC LANDING PAGE -->
+        <section id="sectionLanding" class="space-y-5">
+            <!-- Header Banner / Dashboard Panel -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 space-y-4">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                        <div>
+                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการดำเนินงานบริการดิจิทัล</h1>
+                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการ ดาวน์โหลดผลงาน และสถิติต่างๆ เทคโนโลยีทางการศึกษา</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Overview Cards Row -->
+                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+                        <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
+                            <p id="statTotal" class="text-2xl font-bold text-white">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">คำขอทั้งหมด</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-amber-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-amber-500/50 transition">
+                            <p id="statPending" class="text-2xl font-bold text-amber-400">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">รอดำเนินการ</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-blue-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-blue-500/50 transition">
+                            <p id="statInProgress" class="text-2xl font-bold text-blue-400">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">กำลังดำเนินการ</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-emerald-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-emerald-500/50 transition">
+                            <p id="statCompleted" class="text-2xl font-bold text-emerald-400">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">เสร็จสิ้นแล้ว</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-rose-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-rose-500/50 transition">
+                            <p id="statCancelled" class="text-2xl font-bold text-rose-400">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">ยกเลิกดำเนินการ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Bar Row -->
+            <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-2.5 items-center justify-between">
+                <div class="relative flex-grow w-full md:w-auto">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" oninput="filterRequests()" placeholder="ค้นชื่อหนังสือ, ผู้แต่ง, รหัสงาน (เช่น ETL-2026-001)..." 
+                           class="w-full pl-9 pr-4 py-2 rounded-xl text-slate-900 bg-slate-50 border border-slate-200 shadow-none focus:outline-none focus:ring-2 focus:ring-brand-accent text-xs">
+                </div>
+                
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
+                    <select id="departmentFilter" onchange="filterRequests()" class="w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                        <option value="">ทุกหน่วยงาน/คณะ</option>
+                    </select>
+
+                    <select id="yearFilter" onchange="filterRequests()" class="w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                        <option value="">ทุกปี (พ.ศ.)</option>
+                    </select>
+
+                    <button onclick="toggleStatsChartModal()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 font-medium rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap shadow-sm border border-slate-800">
+                        <i class="fa-solid fa-chart-pie mr-1.5 text-amber-400"></i> กราฟสถิติ
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Action Toolbar -->
+            <div id="adminToolbar" class="hidden flex justify-between items-center bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
+                <div class="flex items-center space-x-2 text-amber-900">
+                    <i class="fa-solid fa-user-shield text-lg text-brand-accent"></i>
+                    <span class="font-semibold text-xs md:text-sm">โหมดเจ้าหน้าที่ (Admin Control Panel)</span>
+                </div>
+                <button onclick="openCreateModal()" class="bg-brand-accent hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-xs font-medium shadow transition">
+                    <i class="fa-solid fa-plus mr-1"></i> สร้างรายการคำขอใหม่
+                </button>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+            <!-- Pagination -->
+            <div class="flex justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 text-xs">
+                <span id="pageInfo" class="text-slate-500">แสดงรายการ 0 - 0 จากทั้งหมด 0</span>
+                <div class="flex space-x-1.5">
+                    <button id="prevBtn" onclick="changePage(-1)" disabled class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> ย้อนกลับ
+                    </button>
+                    <button id="nextBtn" onclick="changePage(1)" disabled class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-600 disabled:opacity-40 hover:bg-slate-50 transition">
+                        ถัดไป <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: INTERACTIVE DASHBOARD CHARTS -->
+        <section id="sectionDashboard" class="hidden space-y-6">
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                <h2 class="text-base font-bold text-slate-900 flex items-center">
+                    <i class="fa-solid fa-chart-pie text-brand-accent mr-2"></i> รายงานสถิติเชิงลึกการให้บริการ
+                </h2>
+                <button onclick="showSection('landing')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> กลับหน้าหลัก
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs">สถิติจำนวนคำขอแบ่งตามสถานะ</h3>
+                    <div class="h-64"><canvas id="statusChart"></canvas></div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs">สถิติจำนวนคำขอแบ่งตามหน่วยงาน</h3>
+                    <div class="h-64"><canvas id="deptChart"></canvas></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto text-xs">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>© 2026 EdTechLists — เทคโนโลยีทางการศึกษา สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+            <p class="mt-1 text-slate-500">ระบบคลังจัดเก็บและส่งมอบงานบริการดิจิทัล | Support: edtech@kmitl.ac.th</p>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: AUTHENTICATION -->
+    <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            
+            <div id="authHeader" class="text-center">
+                <h3 id="authTitle" class="text-xl font-bold text-slate-900">เข้าสู่ระบบ</h3>
+                <p id="authSubtitle" class="text-xs text-slate-500 mt-1">ใช้อีเมลสถาบัน @kmitl.ac.th เท่านั้น</p>
+            </div>
+
+            <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">อีเมลสถาบัน</label>
+                    <input type="email" id="authEmail" required placeholder="user@kmitl.ac.th" 
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+
+                <div id="passwordGroup">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่าน</label>
+                    <input type="password" id="authPassword" placeholder="••••••••" 
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                </div>
+
+                <div id="authAlert" class="hidden text-xs p-3 rounded-lg"></div>
+
+                <button type="submit" id="authSubmitBtn" class="w-full bg-brand-accent hover:bg-orange-700 text-white py-2.5 rounded-lg text-sm font-medium transition shadow">
+                    ตกลง
+                </button>
+            </form>
+
+            <div id="authFooter" class="text-center text-xs text-slate-500 space-y-2 pt-2 border-t border-slate-100">
+                <div id="toggleToRegister">ยังไม่มีบัญชีใช่ไหม? <a href="#" onclick="switchAuthMode('signup')" class="text-brand-accent hover:underline font-semibold">สมัครสมาชิก</a></div>
+                <div id="toggleToLogin" class="hidden">มีบัญชีอยู่แล้วใช่ไหม? <a href="#" onclick="switchAuthMode('signin')" class="text-brand-accent hover:underline font-semibold">เข้าสู่ระบบ</a></div>
+                <div id="toggleToReset"><a href="#" onclick="switchAuthMode('reset')" class="text-slate-400 hover:text-slate-600">ลืมรหัสผ่าน?</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: REQUEST DETAIL & FILE DOWNLOADS -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4 relative">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <div class="flex items-center space-x-2">
+                <span id="modalWorkCode" class="bg-slate-100 text-slate-700 font-mono text-xs px-2.5 py-1 rounded-md font-bold"></span>
+                <span id="modalStatusBadge"></span>
+            </div>
+
+            <h3 id="modalTitle" class="text-xl font-bold text-slate-900"></h3>
+            <p id="modalDepartment" class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> <span></span></p>
+
+            <div id="modalCoverContainer" class="rounded-xl overflow-hidden bg-slate-100 max-h-60 flex items-center justify-center">
+                <img id="modalCoverImg" src="" alt="Cover" class="w-full h-full object-cover hidden">
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl space-y-2 text-sm">
+                <div><strong class="text-slate-700">สถานที่:</strong> <span id="modalLocation" class="text-slate-600"></span></div>
+                <div><strong class="text-slate-700">รายละเอียด:</strong> <p id="modalDescription" class="text-slate-600 whitespace-pre-line mt-1"></p></div>
+            </div>
+
+            <div id="authorizedFilesSection" class="border-t border-slate-200 pt-4 space-y-3 hidden">
+                <h4 class="font-bold text-slate-800 text-sm flex items-center text-emerald-600">
+                    <i class="fa-solid fa-shield-check mr-2"></i> เอกสารและไฟล์งานของคุณ (ได้รับสิทธิ์เข้าถึง)
+                </h4>
+                <div id="modalDriveLinks" class="space-y-2"></div>
+                <div id="modalYoutubeLinks" class="space-y-2"></div>
+            </div>
+
+            <div id="unauthorizedNotice" class="border-t border-slate-200 pt-4 text-center text-xs text-slate-400 italic">
+                <i class="fa-solid fa-lock mr-1"></i> เฉพาะผู้ได้รับสิทธิ์ (อีเมลผู้รับบริการ) เท่านั้นที่จะสามารถมองเห็นและดาวน์โหลดไฟล์งานได้
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADMIN FORM -->
+    <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4 relative">
+            <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+            <h3 id="adminModalTitle" class="text-xl font-bold text-slate-900">จัดการข้อมูลคำขอรับบริการ</h3>
+
+            <form id="adminForm" onsubmit="handleAdminSave(event)" class="space-y-4">
+                <input type="hidden" id="formRequestId">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสงาน (Work Code)</label>
+                        <input type="text" id="formWorkCode" required placeholder="ETL-2026-001" 
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">แผนก/หน่วยงานที่ขอ</label>
+                        <select id="formDepartmentId" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">หัวข้อ/ชื่อบริการ</label>
+                    <input type="text" id="formTitle" required placeholder="ถ่ายทำสื่อการสอน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">สถานที่ปฏิบัติงาน</label>
+                        <input type="text" id="formLocation" placeholder="ห้อง สตูดิโอ 1 อาคารเรียนรวม..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ลิงก์รูปปก Google Drive</label>
+                        <input type="url" id="formCoverUrl" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">รายละเอียดคำขอ</label>
+                    <textarea id="formDescription" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"></textarea>
+                </div>
+
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <label class="block text-xs font-bold text-slate-800">สถานะการดำเนินงาน (Timestamps)</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="chkPending" class="rounded text-brand-accent"> <span>รอดำเนินการ</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="chkInProgress" class="rounded text-brand-accent"> <span>กำลังดำเนินการ</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="chkCompleted" class="rounded text-brand-accent"> <span>เสร็จสิ้น</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="chkCancelled" class="rounded text-brand-accent"> <span>ยกเลิก</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-semibold text-slate-700">รายชื่อผู้รับบริการ (อีเมล @kmitl.ac.th)</label>
+                        <button type="button" onclick="addRecipientRow()" class="text-xs text-brand-accent font-semibold">+ เพิ่มผู้รับบริการ</button>
+                    </div>
+                    <div id="recipientsList" class="space-y-2"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-semibold text-slate-700">ลิงก์ Google Drive แนบไฟล์งาน</label>
+                        <button type="button" onclick="addDriveRow()" class="text-xs text-brand-accent font-semibold">+ เพิ่มลิงก์ Drive</button>
+                    </div>
+                    <div id="driveLinksList" class="space-y-2"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-semibold text-slate-700">ลิงก์ YouTube รับชมผลงาน</label>
+                        <button type="button" onclick="addYoutubeRow()" class="text-xs text-brand-accent font-semibold">+ เพิ่มลิงก์ YouTube</button>
+                    </div>
+                    <div id="youtubeLinksList" class="space-y-2"></div>
+                </div>
+
+                <div class="flex justify-end space-x-2 pt-4 border-t border-slate-200">
+                    <button type="button" onclick="closeAdminModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-600">ยกเลิก</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-accent hover:bg-orange-700 text-white rounded-lg text-sm font-medium shadow">บันทึกข้อมูล</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- APPLICATION JAVASCRIPT -->
+    <script>
+        const SUPABASE_URL = "https://usoyugzgwrxipvptexzy.supabase.co/rest/v1/";
+        const SUPABASE_ANON_KEY = "sb_publishable_myZ5ASl47F8P4xigTF4Wrg_CpCz_BPh";
+        
+        const supabaseClient = supabase.createClient("https://usoyugzgwrxipvptexzy.supabase.co", SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let isAdmin = false;
+        let activeTab = 'home';
+        let allRequests = [];
+        let filteredRequests = [];
+        let departments = [];
+        let currentPage = 1;
+        const itemsPerPage = 9;
+        let currentAuthMode = 'signin';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuthSession();
+            await fetchDepartments();
+            await fetchRequests();
+            initCharts();
+        });
+
+        async function checkAuthSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                currentUser = session.user;
+                isAdmin = currentUser.app_metadata?.role === 'admin';
+            } else {
+                currentUser = null;
+                isAdmin = false;
+            }
+            updateUserUI();
+        }
+
+        // ฟังก์ชันควบคุมสลับปุ่มบนแคปซูนตามสิทธิ์ (3 สถานะเป๊ะ)
+        function updateUserUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const roleTabBtn = document.getElementById('roleTabBtn');
+            const roleTabIcon = document.getElementById('roleTabIcon');
+            const roleTabText = document.getElementById('roleTabText');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const adminToolbar = document.getElementById('adminToolbar');
+
+            if (currentUser) {
+                // === เมื่อ LOGIN แล้ว ===
+                if (loginBtn) loginBtn.classList.add('hidden');          // 1. ซ่อน เข้าสู่ระบบ
+                if (roleTabBtn) roleTabBtn.classList.remove('hidden');    // 2. แสดง ปุ่มสิทธิ์
+                if (logoutBtn) logoutBtn.classList.remove('hidden');      // 3. แสดง ออกจากระบบ
+
+                if (isAdmin) {
+                    // สถานะที่ 2: หน้าหลัก | เจ้าหน้าที่ | ออกจากระบบ
+                    if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
+                    if (adminToolbar) adminToolbar.classList.remove('hidden');
+                } else {
+                    // สถานะที่ 3: หน้าหลัก | ผู้ขอรับบริการ | ออกจากระบบ
+                    if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
+                    if (adminToolbar) adminToolbar.classList.add('hidden');
+                }
+            } else {
+                // === เมื่อยังไม่ได้ LOGIN ===
+                // สถานะที่ 1: หน้าหลัก | เข้าสู่ระบบ
+                if (loginBtn) loginBtn.classList.remove('hidden');       // แสดง เข้าสู่ระบบ
+                if (roleTabBtn) roleTabBtn.classList.add('hidden');       // ซ่อน ปุ่มสิทธิ์
+                if (logoutBtn) logoutBtn.classList.add('hidden');         // ซ่อน ออกจากระบบ
+                if (adminToolbar) adminToolbar.classList.add('hidden');
+
+                activeTab = 'home';
+            }
+
+            updateCapsuleStyle();
+        }
+
+        function switchNavTab(tab) {
+            if (tab === 'role' && !currentUser) {
+                openAuthModal('signin');
+                return;
+            }
+
+            activeTab = tab;
+            updateCapsuleStyle();
+
+            if (tab === 'home' || tab === 'role') {
+                showSection('landing');
+            }
+        }
+
+        function updateCapsuleStyle() {
+            const navHomeBtn = document.getElementById('navHomeBtn');
+            const roleTabBtn = document.getElementById('roleTabBtn');
+
+            const activeClass = "px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow";
+            const inactiveClass = "px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white";
+
+            if (!currentUser || activeTab === 'home') {
+                if (navHomeBtn) navHomeBtn.className = activeClass;
+                if (roleTabBtn) roleTabBtn.className = inactiveClass;
+            } else {
+                if (roleTabBtn) roleTabBtn.className = activeClass;
+                if (navHomeBtn) navHomeBtn.className = inactiveClass;
+            }
+        }
+
+        function toggleStatsChartModal() {
+            const secDashboard = document.getElementById('sectionDashboard');
+            if (secDashboard.classList.contains('hidden')) {
+                showSection('dashboard');
+            } else {
+                showSection('landing');
+            }
+        }
+
+        async function fetchDepartments() {
+            const { data, error } = await supabaseClient.from('departments').select('*').order('name');
+            if (!error && data) {
+                departments = data;
+                const filterSelect = document.getElementById('departmentFilter');
+                const formSelect = document.getElementById('formDepartmentId');
+                
+                filterSelect.innerHTML = '<option value="">ทุกหน่วยงาน/คณะ</option>';
+                formSelect.innerHTML = '<option value="">-- เลือกหน่วยงาน --</option>';
+
+                data.forEach(d => {
+                    filterSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                    formSelect.innerHTML += `<option value="${d.id}">${d.name}</option>`;
+                });
+            }
+        }
+
+        async function fetchRequests() {
+            const { data, error } = await supabaseClient
+                .from('service_requests')
+                .select(`
+                    *,
+                    departments(name),
+                    request_recipients(*),
+                    request_drive_links(*),
+                    request_youtube_links(*)
+                `)
+                .order('created_at', { ascending: false });
+
+            if (!error && data) {
+                allRequests = data;
+                populateYearFilter();
+                filterRequests();
+                updateDashboardStats();
+            }
+        }
+
+        function populateYearFilter() {
+            const yearSelect = document.getElementById('yearFilter');
+            const years = new Set();
+
+            allRequests.forEach(req => {
+                if (req.created_at) {
+                    const yearAD = new Date(req.created_at).getFullYear();
+                    years.add(yearAD);
+                }
+            });
+
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            
+            yearSelect.innerHTML = '<option value="">ทุกปี (พ.ศ.)</option>';
+            sortedYears.forEach(y => {
+                const yearBE = y + 543;
+                yearSelect.innerHTML += `<option value="${y}">ปี พ.ศ. ${yearBE}</option>`;
+            });
+        }
+
+        function filterRequests() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const deptId = document.getElementById('departmentFilter').value;
+            const selectedYear = document.getElementById('yearFilter').value;
+
+            filteredRequests = allRequests.filter(req => {
+                const matchSearch = req.title.toLowerCase().includes(search) || req.work_code.toLowerCase().includes(search);
+                const matchDept = !deptId || req.department_id == deptId;
+                
+                let matchYear = true;
+                if (selectedYear && req.created_at) {
+                    const reqYear = new Date(req.created_at).getFullYear().toString();
+                    matchYear = reqYear === selectedYear;
+                }
+
+                return matchSearch && matchDept && matchYear;
+            });
+
+            currentPage = 1;
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageItems = filteredRequests.slice(start, end);
+
+            if (pageItems.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-xs">ไม่พบรายการคำขอรับบริการ</div>';
+                document.getElementById('pageInfo').textContent = 'แสดงรายการ 0 - 0 จากทั้งหมด 0';
+                return;
+            }
+
+            pageItems.forEach(req => {
+                const status = getStatusBadge(req);
+                const card = `
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
+                        <div class="p-5 flex-grow space-y-3">
+                            <div class="flex justify-between items-start">
+                                <span class="font-mono text-xs px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200/60 rounded-md font-bold">${req.work_code}</span>
+                                ${status.badgeHtml}
+                            </div>
+                            <h3 class="font-bold text-slate-900 text-sm line-clamp-2">${req.title}</h3>
+                            <p class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> ${req.departments?.name || 'ไม่ระบุ'}</p>
+                        </div>
+                        <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
+                            <span class="text-slate-400">${new Date(req.created_at).toLocaleDateString('th-TH')}</span>
+                            <div class="space-x-1">
+                                ${isAdmin ? `<button onclick="openEditModal(${req.id})" class="text-amber-600 hover:text-amber-800 p-1"><i class="fa-solid fa-pen-to-square"></i></button>` : ''}
+                                <button onclick="openDetailModal(${req.id})" class="bg-brand-navy hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-medium transition">
+                                    รายละเอียด
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+
+            document.getElementById('pageInfo').textContent = `แสดงรายการ ${start + 1} - ${Math.min(end, filteredRequests.length)} จากทั้งหมด ${filteredRequests.length}`;
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = end >= filteredRequests.length;
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderGrid();
+        }
+
+        function getStatusBadge(req) {
+            if (req.cancelled_at) return { status: 'cancelled', badgeHtml: '<span class="bg-rose-100 text-rose-700 text-xs px-2.5 py-0.5 rounded-full font-medium">ยกเลิก</span>' };
+            if (req.completed_at) return { status: 'completed', badgeHtml: '<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-0.5 rounded-full font-medium">เสร็จสิ้น</span>' };
+            if (req.in_progress_at) return { status: 'in_progress', badgeHtml: '<span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">กำลังดำเนินการ</span>' };
+            return { status: 'pending', badgeHtml: '<span class="bg-amber-100 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-medium">รอดำเนินการ</span>' };
+        }
+
+        function openAuthModal(mode = 'signin') {
+            switchAuthMode(mode);
+            document.getElementById('authModal').classList.remove('hidden');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+        }
+
+        function switchAuthMode(mode) {
+            currentAuthMode = mode;
+            const title = document.getElementById('authTitle');
+            const pwdGroup = document.getElementById('passwordGroup');
+            const alert = document.getElementById('authAlert');
+            alert.classList.add('hidden');
+
+            document.getElementById('toggleToRegister').classList.add('hidden');
+            document.getElementById('toggleToLogin').classList.add('hidden');
+            document.getElementById('toggleToReset').classList.add('hidden');
+
+            if (mode === 'signin') {
+                title.textContent = 'เข้าสู่ระบบ';
+                pwdGroup.classList.remove('hidden');
+                document.getElementById('toggleToRegister').classList.remove('hidden');
+                document.getElementById('toggleToReset').classList.remove('hidden');
+            } else if (mode === 'signup') {
+                title.textContent = 'สมัครสมาชิกใหม่';
+                pwdGroup.classList.remove('hidden');
+                document.getElementById('toggleToLogin').classList.remove('hidden');
+            } else if (mode === 'reset') {
+                title.textContent = 'รีเซ็ตรหัสผ่าน';
+                pwdGroup.classList.add('hidden');
+                document.getElementById('toggleToLogin').classList.remove('hidden');
+            }
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const alert = document.getElementById('authAlert');
+
+            if (!email.endsWith('@kmitl.ac.th')) {
+                showAlert(alert, 'error', 'ต้องใช้อีเมลสถาบัน @kmitl.ac.th เท่านั้น');
+                return;
+            }
+
+            try {
+                if (currentAuthMode === 'signup') {
+                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    if (error) throw error;
+                    showAlert(alert, 'success', 'สมัครสมาชิกสำเร็จ! กรุณาล็อกอิน');
+                    setTimeout(() => switchAuthMode('signin'), 1500);
+                } else if (currentAuthMode === 'signin') {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                    currentUser = data.user;
+                    isAdmin = currentUser.app_metadata?.role === 'admin';
+                    updateUserUI();
+                    closeAuthModal();
+                    fetchRequests();
+                } else if (currentAuthMode === 'reset') {
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+                    if (error) throw error;
+                    showAlert(alert, 'success', 'ระบบส่งลิงก์รีเซ็ตไปที่อีเมลของคุณแล้ว');
+                }
+            } catch (err) {
+                showAlert(alert, 'error', err.message || 'เกิดข้อผิดพลาดในการดำเนินการ');
+            }
+        }
+
+        async function handleSignOut() {
+            await supabaseClient.auth.signOut();
+            currentUser = null;
+            isAdmin = false;
+            updateUserUI();
+            fetchRequests();
+        }
+
+        function showAlert(el, type, msg) {
+            el.className = `text-xs p-3 rounded-lg ${type === 'error' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function openDetailModal(id) {
+            const req = allRequests.find(r => r.id === id);
+            if (!req) return;
+
+            document.getElementById('modalWorkCode').textContent = req.work_code;
+            document.getElementById('modalStatusBadge').innerHTML = getStatusBadge(req).badgeHtml;
+            document.getElementById('modalTitle').textContent = req.title;
+            document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.name || '-';
+            document.getElementById('modalLocation').textContent = req.location || '-';
+            document.getElementById('modalDescription').textContent = req.description || '-';
+
+            const isRecipient = currentUser && req.request_recipients?.some(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+            const hasAccess = isAdmin || isRecipient;
+
+            const filesSec = document.getElementById('authorizedFilesSection');
+            const unauthNotice = document.getElementById('unauthorizedNotice');
+
+            if (hasAccess) {
+                filesSec.classList.remove('hidden');
+                unauthNotice.classList.add('hidden');
+
+                const driveContainer = document.getElementById('modalDriveLinks');
+                driveContainer.innerHTML = req.request_drive_links?.map(d => `
+                    <a href="${d.drive_url}" target="_blank" class="flex items-center space-x-2 p-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium">
+                        <i class="fa-brands fa-google-drive text-base"></i>
+                        <span class="truncate">ดาวน์โหลดงานจาก Google Drive</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
+                    </a>
+                `).join('') || '<p class="text-xs text-slate-400">ไม่มีไฟล์ Google Drive แนบไว้</p>';
+
+                const ytContainer = document.getElementById('modalYoutubeLinks');
+                ytContainer.innerHTML = req.request_youtube_links?.map(y => `
+                    <a href="${y.youtube_url}" target="_blank" class="flex items-center space-x-2 p-2.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition text-xs font-medium">
+                        <i class="fa-brands fa-youtube text-base"></i>
+                        <span class="truncate">รับชมผลงานบน YouTube</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
+                    </a>
+                `).join('') || '';
+            } else {
+                filesSec.classList.add('hidden');
+                unauthNotice.classList.remove('hidden');
+            }
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function openCreateModal() {
+            document.getElementById('adminForm').reset();
+            document.getElementById('formRequestId').value = '';
+            document.getElementById('recipientsList').innerHTML = '';
+            document.getElementById('driveLinksList').innerHTML = '';
+            document.getElementById('youtubeLinksList').innerHTML = '';
+            addRecipientRow();
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function openEditModal(id) {
+            const req = allRequests.find(r => r.id === id);
+            if (!req) return;
+
+            document.getElementById('formRequestId').value = req.id;
+            document.getElementById('formWorkCode').value = req.work_code;
+            document.getElementById('formDepartmentId').value = req.department_id;
+            document.getElementById('formTitle').value = req.title;
+            document.getElementById('formLocation').value = req.location || '';
+            document.getElementById('formCoverUrl').value = req.cover_image_drive_url || '';
+            document.getElementById('formDescription').value = req.description || '';
+
+            document.getElementById('chkPending').checked = !!req.pending_at;
+            document.getElementById('chkInProgress').checked = !!req.in_progress_at;
+            document.getElementById('chkCompleted').checked = !!req.completed_at;
+            document.getElementById('chkCancelled').checked = !!req.cancelled_at;
+
+            const recContainer = document.getElementById('recipientsList');
+            recContainer.innerHTML = '';
+            req.request_recipients?.forEach(r => addRecipientRow(r.name, r.email));
+
+            const driveContainer = document.getElementById('driveLinksList');
+            driveContainer.innerHTML = '';
+            req.request_drive_links?.forEach(d => addDriveRow(d.drive_url));
+
+            const ytContainer = document.getElementById('youtubeLinksList');
+            ytContainer.innerHTML = '';
+            req.request_youtube_links?.forEach(y => addYoutubeRow(y.youtube_url));
+
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        function addRecipientRow(name = '', email = '') {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 items-center';
+            div.innerHTML = `
+                <input type="text" placeholder="ชื่อ-นามสกุล" value="${name}" class="rec-name w-1/2 px-3 py-1.5 border rounded-lg text-xs">
+                <input type="email" placeholder="user@kmitl.ac.th" value="${email}" class="rec-email w-1/2 px-3 py-1.5 border rounded-lg text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
+            `;
+            document.getElementById('recipientsList').appendChild(div);
+        }
+
+        function addDriveRow(url = '') {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 items-center';
+            div.innerHTML = `
+                <input type="url" placeholder="https://drive.google.com/..." value="${url}" class="drive-url w-full px-3 py-1.5 border rounded-lg text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
+            `;
+            document.getElementById('driveLinksList').appendChild(div);
+        }
+
+        function addYoutubeRow(url = '') {
+            const div = document.createElement('div');
+            div.className = 'flex gap-2 items-center';
+            div.innerHTML = `
+                <input type="url" placeholder="https://youtube.com/..." value="${url}" class="yt-url w-full px-3 py-1.5 border rounded-lg text-xs">
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
+            `;
+            document.getElementById('youtubeLinksList').appendChild(div);
+        }
+
+        async function handleAdminSave(e) {
+            e.preventDefault();
+            const reqId = document.getElementById('formRequestId').value;
+            const now = new Date().toISOString();
+
+            const payload = {
+                work_code: document.getElementById('formWorkCode').value,
+                department_id: document.getElementById('formDepartmentId').value,
+                title: document.getElementById('formTitle').value,
+                location: document.getElementById('formLocation').value,
+                cover_image_drive_url: document.getElementById('formCoverUrl').value,
+                description: document.getElementById('formDescription').value,
+                pending_at: document.getElementById('chkPending').checked ? now : null,
+                in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
+                completed_at: document.getElementById('chkCompleted').checked ? now : null,
+                cancelled_at: document.getElementById('chkCancelled').checked ? now : null,
+            };
+
+            let targetId = reqId;
+
+            if (reqId) {
+                await supabaseClient.from('service_requests').update(payload).eq('id', reqId);
+            } else {
+                const { data } = await supabaseClient.from('service_requests').insert([payload]).select().single();
+                if (data) targetId = data.id;
+            }
+
+            if (targetId) {
+                await supabaseClient.from('request_recipients').delete().eq('request_id', targetId);
+                const recRows = document.querySelectorAll('#recipientsList > div');
+                for (const row of recRows) {
+                    const name = row.querySelector('.rec-name').value;
+                    const email = row.querySelector('.rec-email').value;
+                    if (email) await supabaseClient.from('request_recipients').insert([{ request_id: targetId, name, email }]);
+                }
+
+                await supabaseClient.from('request_drive_links').delete().eq('request_id', targetId);
+                const driveRows = document.querySelectorAll('#driveLinksList > div');
+                for (const row of driveRows) {
+                    const drive_url = row.querySelector('.drive-url').value;
+                    if (drive_url) await supabaseClient.from('request_drive_links').insert([{ request_id: targetId, drive_url }]);
+                }
+
+                await supabaseClient.from('request_youtube_links').delete().eq('request_id', targetId);
+                const ytRows = document.querySelectorAll('#youtubeLinksList > div');
+                for (const row of ytRows) {
+                    const youtube_url = row.querySelector('.yt-url').value;
+                    if (youtube_url) await supabaseClient.from('request_youtube_links').insert([{ request_id: targetId, youtube_url }]);
+                }
+            }
+
+            closeAdminModal();
+            fetchRequests();
+        }
+
+        function showSection(sec) {
+            document.getElementById('sectionLanding').classList.add('hidden');
+            document.getElementById('sectionDashboard').classList.add('hidden');
+
+            if (sec === 'landing') document.getElementById('sectionLanding').classList.remove('hidden');
+            if (sec === 'dashboard') {
+                document.getElementById('sectionDashboard').classList.remove('hidden');
+                updateDashboardStats();
+            }
+        }
+
+        let statusChartInstance = null;
+        let deptChartInstance = null;
+
+        function initCharts() {
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            statusChartInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: { labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'เสร็จสิ้น', 'ยกเลิก'], datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E'] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctxDept = document.getElementById('deptChart').getContext('2d');
+            deptChartInstance = new Chart(ctxDept, {
+                type: 'bar',
+                data: { labels: [], datasets: [{ label: 'จำนวนคำขอ', data: [], backgroundColor: '#EA580C' }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function updateDashboardStats() {
+            let pending = 0, inProg = 0, comp = 0, canc = 0;
+            const deptCounts = {};
+
+            allRequests.forEach(r => {
+                const s = getStatusBadge(r).status;
+                if (s === 'pending') pending++;
+                if (s === 'in_progress') inProg++;
+                if (s === 'completed') comp++;
+                if (s === 'cancelled') canc++;
+
+                const deptName = r.departments?.name || 'อื่นๆ';
+                deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+            });
+
+            document.getElementById('statTotal').textContent = allRequests.length;
+            document.getElementById('statPending').textContent = pending;
+            document.getElementById('statInProgress').textContent = inProg;
+            document.getElementById('statCompleted').textContent = comp;
+            document.getElementById('statCancelled').textContent = canc;
+
+            if (statusChartInstance) {
+                statusChartInstance.data.datasets[0].data = [pending, inProg, comp, canc];
+                statusChartInstance.update();
+            }
+
+            if (deptChartInstance) {
+                deptChartInstance.data.labels = Object.keys(deptCounts);
+                deptChartInstance.data.datasets[0].data = Object.values(deptCounts);
+                deptChartInstance.update();
+            }
+        }
+    </script>
+</body>
+</html>
