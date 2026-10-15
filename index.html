@@ -420,44 +420,45 @@
         }
 
         // ฟังก์ชันควบคุมสลับปุ่มบนแคปซูนตามสิทธิ์ (3 สถานะเป๊ะ)
-        function updateUserUI() {
-            const loginBtn = document.getElementById('loginBtn');
-            const roleTabBtn = document.getElementById('roleTabBtn');
-            const roleTabIcon = document.getElementById('roleTabIcon');
-            const roleTabText = document.getElementById('roleTabText');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const adminToolbar = document.getElementById('adminToolbar');
+        // ฟังก์ชันควบคุมสลับปุ่มบนแคปซูลตามสิทธิ์ (3 สถานะเป๊ะ)
+function updateUserUI() {
+    const loginBtn = document.getElementById('loginBtn');
+    const roleTabBtn = document.getElementById('roleTabBtn');
+    const roleTabIcon = document.getElementById('roleTabIcon');
+    const roleTabText = document.getElementById('roleTabText');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminToolbar = document.getElementById('adminToolbar');
 
-            if (currentUser) {
-                // === เมื่อ LOGIN แล้ว ===
-                if (loginBtn) loginBtn.classList.add('hidden');          // 1. ซ่อน เข้าสู่ระบบ
-                if (roleTabBtn) roleTabBtn.classList.remove('hidden');    // 2. แสดง ปุ่มสิทธิ์
-                if (logoutBtn) logoutBtn.classList.remove('hidden');      // 3. แสดง ออกจากระบบ
+    if (currentUser) {
+        // === เมื่อ LOGIN แล้ว ===
+        if (loginBtn) loginBtn.classList.add('hidden');          // 1. ซ่อน เข้าสู่ระบบ
+        if (roleTabBtn) roleTabBtn.classList.remove('hidden');    // 2. แสดง ปุ่มสิทธิ์
+        if (logoutBtn) logoutBtn.classList.remove('hidden');      // 3. แสดง ออกจากระบบ
 
-                if (isAdmin) {
-                    // สถานะที่ 2: หน้าหลัก | เจ้าหน้าที่ | ออกจากระบบ
-                    if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
-                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
-                    if (adminToolbar) adminToolbar.classList.remove('hidden');
-                } else {
-                    // สถานะที่ 3: หน้าหลัก | ผู้ขอรับบริการ | ออกจากระบบ
-                    if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
-                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
-                    if (adminToolbar) adminToolbar.classList.add('hidden');
-                }
-            } else {
-                // === เมื่อยังไม่ได้ LOGIN ===
-                // สถานะที่ 1: หน้าหลัก | เข้าสู่ระบบ
-                if (loginBtn) loginBtn.classList.remove('hidden');       // แสดง เข้าสู่ระบบ
-                if (roleTabBtn) roleTabBtn.classList.add('hidden');       // ซ่อน ปุ่มสิทธิ์
-                if (logoutBtn) logoutBtn.classList.add('hidden');         // ซ่อน ออกจากระบบ
-                if (adminToolbar) adminToolbar.classList.add('hidden');
-
-                activeTab = 'home';
-            }
-
-            updateCapsuleStyle();
+        if (isAdmin) {
+            // สถานะที่ 2: หน้าหลัก | เจ้าหน้าที่ | ออกจากระบบ
+            if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
+            if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
+            if (adminToolbar) adminToolbar.classList.remove('hidden');
+        } else {
+            // สถานะที่ 3: หน้าหลัก | ผู้ขอรับบริการ | ออกจากระบบ
+            if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
+            if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
+            if (adminToolbar) adminToolbar.classList.add('hidden');
         }
+    } else {
+        // === เมื่อยังไม่ได้ LOGIN ===
+        // สถานะที่ 1: หน้าหลัก | เข้าสู่ระบบ
+        if (loginBtn) loginBtn.classList.remove('hidden');       // แสดง เข้าสู่ระบบ
+        if (roleTabBtn) roleTabBtn.classList.add('hidden');       // ซ่อน ปุ่มสิทธิ์
+        if (logoutBtn) logoutBtn.classList.add('hidden');         // ซ่อน ออกจากระบบ
+        if (adminToolbar) adminToolbar.classList.add('hidden');
+
+        activeTab = 'home';
+    }
+
+    updateCapsuleStyle();
+}
 
         function switchNavTab(tab) {
             if (tab === 'role' && !currentUser) {
