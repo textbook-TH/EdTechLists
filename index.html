@@ -475,21 +475,29 @@ function updateUserUI() {
         }
 
         function updateCapsuleStyle() {
-            const navHomeBtn = document.getElementById('navHomeBtn');
-            const roleTabBtn = document.getElementById('roleTabBtn');
+    const navHomeBtn = document.getElementById('navHomeBtn');
+    const roleTabBtn = document.getElementById('roleTabBtn');
 
-            const activeClass = "px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow";
-            const inactiveClass = "px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white";
+    if (!navHomeBtn || !roleTabBtn) return;
 
-            if (!currentUser || activeTab === 'home') {
-                if (navHomeBtn) navHomeBtn.className = activeClass;
-                if (roleTabBtn) roleTabBtn.className = inactiveClass;
-            } else {
-                if (roleTabBtn) roleTabBtn.className = activeClass;
-                if (navHomeBtn) navHomeBtn.className = inactiveClass;
-            }
-        }
+    if (!currentUser || activeTab === 'home') {
+        // ปุ่ม หน้าหลัก เด่น (แถบสีเหลือง)
+        navHomeBtn.classList.remove('text-slate-300', 'hover:text-white');
+        navHomeBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
 
+        // ปุ่ม สิทธิ์ จางลง (ไม่แตะต้องคลาส hidden)
+        roleTabBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
+        roleTabBtn.classList.add('text-slate-300', 'hover:text-white');
+    } else {
+        // ปุ่ม สิทธิ์ เด่น (แถบสีเหลือง)
+        roleTabBtn.classList.remove('text-slate-300', 'hover:text-white');
+        roleTabBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
+
+        // ปุ่ม หน้าหลัก จางลง
+        navHomeBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
+        navHomeBtn.classList.add('text-slate-300', 'hover:text-white');
+    }
+}
         function toggleStatsChartModal() {
             const secDashboard = document.getElementById('sectionDashboard');
             if (secDashboard.classList.contains('hidden')) {
