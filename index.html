@@ -48,7 +48,7 @@
     <nav class="bg-brand-navy text-white shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
-                <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('landing')">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchNavTab('home')">
                     <!-- Gold/Amber Capsule Icon Container -->
                     <div class="bg-amber-400 text-slate-900 font-bold px-3 py-1.5 rounded-full flex items-center justify-center shadow">
                         <i class="fa-solid fa-layer-group text-base mr-1.5"></i>
@@ -60,7 +60,7 @@
                     </div>
                 </div>
 
-                <!-- Capsule Navigation Bar (โครงสร้างปุ่มราบระดับเดียวกันแบบเด็ดขาด) -->
+                <!-- Capsule Navigation Bar -->
                 <div class="flex items-center space-x-2" id="navActionContainer">
                     <div id="navMenu" class="bg-slate-800/80 p-1 rounded-full border border-slate-700 flex items-center space-x-1 shadow-inner">
                         
@@ -94,7 +94,7 @@
     <!-- Main Content Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         
-        <!-- SECTION 1: PUBLIC LANDING PAGE -->
+        <!-- SECTION 1: PUBLIC LANDING PAGE & ADMIN VIEW -->
         <section id="sectionLanding" class="space-y-5">
             <!-- Header Banner / Dashboard Panel -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
@@ -155,14 +155,14 @@
                 </div>
             </div>
 
-            <!-- Admin Action Toolbar -->
+            <!-- Admin Action Toolbar (แสดงเฉพาะเมื่ออยู่แท็บเจ้าหน้าที่ และมีสิทธิ์ Admin) -->
             <div id="adminToolbar" class="hidden flex justify-between items-center bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center space-x-2 text-amber-900">
                     <i class="fa-solid fa-user-shield text-lg text-brand-accent"></i>
-                    <span class="font-semibold text-xs md:text-sm">ระบบบริหารจัดการ</span>
+                    <span class="font-semibold text-xs md:text-sm">โหมดเจ้าหน้าที่ (Admin Control Panel)</span>
                 </div>
-                <button onclick="openCreateModal()" class="bg-brand-accent hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-xs font-medium shadow transition">
-                    <i class="fa-solid fa-plus mr-1"></i> สร้างใบแจ้งขอรับบริการ
+                <button onclick="openCreateModal()" class="bg-brand-accent hover:bg-orange-700 text-white px-4 py-2 rounded-xl text-xs font-medium shadow transition flex items-center">
+                    <i class="fa-solid fa-plus mr-1.5"></i> สร้างรายการคำขอใหม่
                 </button>
             </div>
 
@@ -307,8 +307,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">หน่วยงาน</label>
-                        <select id="formDepartmentId" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                        </select>
+                        <input type="text" id="formDepartmentId" required placeholder="ระบุชื่อหน่วยงาน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
                     </div>
                 </div>
 
@@ -438,7 +437,6 @@
             const roleTabIcon = document.getElementById('roleTabIcon');
             const roleTabText = document.getElementById('roleTabText');
             const logoutBtn = document.getElementById('logoutBtn');
-            const adminToolbar = document.getElementById('adminToolbar');
 
             if (currentUser) {
                 if (loginBtn) loginBtn.classList.add('hidden');
@@ -448,22 +446,20 @@
                 if (isAdmin) {
                     if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
-                    if (adminToolbar) adminToolbar.classList.remove('hidden');
                 } else {
                     if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
-                    if (adminToolbar) adminToolbar.classList.add('hidden');
                 }
             } else {
                 if (loginBtn) loginBtn.classList.remove('hidden');
                 if (roleTabBtn) roleTabBtn.classList.add('hidden');
                 if (logoutBtn) logoutBtn.classList.add('hidden');
-                if (adminToolbar) adminToolbar.classList.add('hidden');
 
                 activeTab = 'home';
             }
 
             updateCapsuleStyle();
+            renderGrid();
         }
 
         function switchNavTab(tab) {
@@ -483,6 +479,7 @@
         function updateCapsuleStyle() {
             const navHomeBtn = document.getElementById('navHomeBtn');
             const roleTabBtn = document.getElementById('roleTabBtn');
+            const adminToolbar = document.getElementById('adminToolbar');
 
             if (!navHomeBtn || !roleTabBtn) return;
 
@@ -492,12 +489,24 @@
 
                 roleTabBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
                 roleTabBtn.classList.add('text-slate-300', 'hover:text-white');
+
+                // ซ่อนแถบเครื่องมือแอดมินเมื่ออยู่หน้าหลัก
+                if (adminToolbar) adminToolbar.classList.add('hidden');
             } else {
                 roleTabBtn.classList.remove('text-slate-300', 'hover:text-white');
                 roleTabBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
 
                 navHomeBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
                 navHomeBtn.classList.add('text-slate-300', 'hover:text-white');
+
+                // แสดงแถบเครื่องมือแอดมินเฉพาะเมื่อล็อกอินเป็น Admin และอยู่แท็บเจ้าหน้าที่
+                if (adminToolbar) {
+                    if (isAdmin) {
+                        adminToolbar.classList.remove('hidden');
+                    } else {
+                        adminToolbar.classList.add('hidden');
+                    }
+                }
             }
         }
 
@@ -510,19 +519,15 @@
             }
         }
 
-        async function fetchDepartments() {
+async function fetchDepartments() {
     const { data, error } = await supabaseClient.from('departments').select('*').order('department_name');
     if (!error && data) {
         departments = data;
         const filterSelect = document.getElementById('departmentFilter');
-        const formSelect = document.getElementById('formDepartmentId');
-        
-        filterSelect.innerHTML = '<option value="">เลือกหน่วยงาน</option>';
-        formSelect.innerHTML = '<option value="">-- เลือกหน่วยงาน --</option>';
+        filterSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>';
 
         data.forEach(d => {
             filterSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
-            formSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
         });
     }
 }
@@ -560,7 +565,7 @@
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
             
-            yearSelect.innerHTML = '<option value="">เลือกปี</option>';
+            yearSelect.innerHTML = '<option value="">📅 เลือกปี</option>';
             sortedYears.forEach(y => {
                 const yearBE = y + 543;
                 yearSelect.innerHTML += `<option value="${y}">ปี พ.ศ. ${yearBE}</option>`;
@@ -606,6 +611,8 @@
 
             pageItems.forEach(req => {
                 const status = getStatusBadge(req);
+                const isEditAllowed = isAdmin && activeTab === 'role';
+
                 const card = `
                     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
                         <div class="p-5 flex-grow space-y-3">
@@ -614,12 +621,12 @@
                                 ${status.badgeHtml}
                             </div>
                             <h3 class="font-bold text-slate-900 text-sm line-clamp-2">${req.title || ''}</h3>
-                            <p class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> ${req.departments?.name || 'ไม่ระบุ'}</p>
+                            <p class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> ${req.departments?.department_name || 'ไม่ระบุ'}</p>
                         </div>
                         <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
                             <span class="text-slate-400">${req.created_at ? new Date(req.created_at).toLocaleDateString('th-TH') : ''}</span>
                             <div class="space-x-1">
-                                ${isAdmin ? `<button onclick="openEditModal(${req.id})" class="text-amber-600 hover:text-amber-800 p-1"><i class="fa-solid fa-pen-to-square"></i></button>` : ''}
+                                ${isEditAllowed ? `<button onclick="openEditModal(${req.id})" class="text-amber-600 hover:text-amber-800 p-1 mr-1" title="แก้ไขรายการ"><i class="fa-solid fa-pen-to-square"></i></button>` : ''}
                                 <button onclick="openDetailModal(${req.id})" class="bg-brand-navy hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-medium transition">
                                     รายละเอียด
                                 </button>
@@ -739,7 +746,7 @@
             document.getElementById('modalWorkCode').textContent = req.work_code || '';
             document.getElementById('modalStatusBadge').innerHTML = getStatusBadge(req).badgeHtml;
             document.getElementById('modalTitle').textContent = req.title || '';
-            document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.name || '-';
+            document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.department_name || '-';
             document.getElementById('modalLocation').textContent = req.location || '-';
             document.getElementById('modalDescription').textContent = req.description || '-';
 
@@ -806,7 +813,7 @@
 
             document.getElementById('formRequestId').value = req.id;
             document.getElementById('formWorkCode').value = req.work_code || '';
-            document.getElementById('formDepartmentId').value = req.department_id || '';
+            document.getElementById('formDepartmentId').value = req.departments?.department_name || '';
             document.getElementById('formTitle').value = req.title || '';
             document.getElementById('formLocation').value = req.location || '';
             document.getElementById('formCoverUrl').value = req.cover_image_drive_url || '';
@@ -876,22 +883,46 @@
         }
 
         async function handleAdminSave(e) {
-            e.preventDefault();
-            const reqId = document.getElementById('formRequestId').value;
-            const now = new Date().toISOString();
+    e.preventDefault();
+    const reqId = document.getElementById('formRequestId').value;
+    const deptInputName = document.getElementById('formDepartmentId').value.trim();
+    const now = new Date().toISOString();
 
-            const payload = {
-                work_code: document.getElementById('formWorkCode').value,
-                department_id: document.getElementById('formDepartmentId').value ? parseInt(document.getElementById('formDepartmentId').value) : null,
-                title: document.getElementById('formTitle').value,
-                location: document.getElementById('formLocation').value,
-                cover_image_drive_url: document.getElementById('formCoverUrl').value,
-                description: document.getElementById('formDescription').value,
-                pending_at: document.getElementById('chkPending').checked ? now : null,
-                in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
-                completed_at: document.getElementById('chkCompleted').checked ? now : null,
-                cancelled_at: document.getElementById('chkCancelled').checked ? now : null,
-            };
+    // ค้นหา หรือสร้างหน่วยงานใหม่อัตโนมัติเมื่อพิมพ์ชื่อใหม่เข้ามา
+    let resolvedDeptId = null;
+    if (deptInputName) {
+        const { data: existingDept } = await supabaseClient
+            .from('departments')
+            .select('id')
+            .eq('department_name', deptInputName)
+            .maybeSingle();
+
+        if (existingDept) {
+            resolvedDeptId = existingDept.id;
+        } else {
+            const { data: newDept, error: deptErr } = await supabaseClient
+                .from('departments')
+                .insert([{ department_name: deptInputName }])
+                .select()
+                .single();
+            if (!deptErr && newDept) {
+                resolvedDeptId = newDept.id;
+            }
+        }
+    }
+
+    const payload = {
+        work_code: document.getElementById('formWorkCode').value,
+        department_id: resolvedDeptId,
+        title: document.getElementById('formTitle').value,
+        location: document.getElementById('formLocation').value,
+        cover_image_drive_url: document.getElementById('formCoverUrl').value,
+        description: document.getElementById('formDescription').value,
+        pending_at: document.getElementById('chkPending').checked ? now : null,
+        in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
+        completed_at: document.getElementById('chkCompleted').checked ? now : null,
+        cancelled_at: document.getElementById('chkCancelled').checked ? now : null,
+    };
 
             let targetId = reqId;
 
@@ -943,8 +974,9 @@
                 if (ytInserts.length > 0) await supabaseClient.from('request_youtube_links').insert(ytInserts);
             }
 
-            closeAdminModal();
-            fetchRequests();
+closeAdminModal();
+await fetchDepartments();
+await fetchRequests();
         }
 
         function showSection(sec) {
@@ -988,7 +1020,7 @@
                 if (s === 'completed') comp++;
                 if (s === 'cancelled') canc++;
 
-                const deptName = r.departments?.name || 'อื่นๆ';
+                const deptName = r.departments?.department_name || 'อื่นๆ';
                 deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
             });
 
