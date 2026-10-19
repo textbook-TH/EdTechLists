@@ -101,8 +101,8 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div>
-                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการดำเนินงานบริการดิจิทัล</h1>
-                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการ ดาวน์โหลดผลงาน และสถิติต่างๆ เทคโนโลยีทางการศึกษา</p>
+                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการให้บริการผลิตสื่อดิจิตอล</h1>
+                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการและดาวน์โหลดสื่อดิจิตอลที่ผลิตเสร็จสิ้น</p>
                         </div>
                     </div>
                     
@@ -136,17 +136,17 @@
             <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-2.5 items-center justify-between">
                 <div class="relative flex-grow w-full md:w-auto">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchInput" oninput="filterRequests()" placeholder="ค้นชื่อหนังสือ, ผู้แต่ง, รหัสงาน (เช่น ETL-2026-001)..." 
+                    <input type="text" id="searchInput" oninput="filterRequests()" placeholder="ค้นสื่อดิจิตอล, ผู้ขอรับบริการ, หน่วยงาน..." 
                            class="w-full pl-9 pr-4 py-2 rounded-xl text-slate-900 bg-slate-50 border border-slate-200 shadow-none focus:outline-none focus:ring-2 focus:ring-brand-accent text-xs">
                 </div>
                 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
                     <select id="departmentFilter" onchange="filterRequests()" class="w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                        <option value="">ทุกหน่วยงาน/คณะ</option>
+                        <option value="">เลือกหน่วยงาน</option>
                     </select>
 
                     <select id="yearFilter" onchange="filterRequests()" class="w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
-                        <option value="">ทุกปี (พ.ศ.)</option>
+                        <option value="">เลือกปี</option>
                     </select>
 
                     <button onclick="toggleStatsChartModal()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 font-medium rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap shadow-sm border border-slate-800">
@@ -266,7 +266,7 @@
             <h3 id="modalTitle" class="text-xl font-bold text-slate-900"></h3>
             <p id="modalDepartment" class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> <span></span></p>
 
-            <div id="modalCoverContainer" class="rounded-xl overflow-hidden bg-slate-100 max-h-60 flex items-center justify-center">
+            <div id="modalCoverContainer" class="rounded-xl overflow-hidden bg-slate-100 max-h-60 flex items-center justify-center hidden">
                 <img id="modalCoverImg" src="" alt="Cover" class="w-full h-full object-cover hidden">
             </div>
 
@@ -385,10 +385,10 @@
 
     <!-- APPLICATION JAVASCRIPT -->
     <script>
-        const SUPABASE_URL = "https://usoyugzgwrxipvptexzy.supabase.co/rest/v1/";
+        const SUPABASE_URL = "https://usoyugzgwrxipvptexzy.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_myZ5ASl47F8P4xigTF4Wrg_CpCz_BPh";
         
-        const supabaseClient = supabase.createClient("https://usoyugzgwrxipvptexzy.supabase.co", SUPABASE_ANON_KEY);
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         let currentUser = null;
         let isAdmin = false;
@@ -405,13 +405,26 @@
             await fetchDepartments();
             await fetchRequests();
             initCharts();
+
+            // ฟังการเปลี่ยนแปลง Auth State
+            supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                if (session) {
+                    currentUser = session.user;
+                    isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
+                } else {
+                    currentUser = null;
+                    isAdmin = false;
+                }
+                updateUserUI();
+                await fetchRequests();
+            });
         });
 
         async function checkAuthSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
-                isAdmin = currentUser.app_metadata?.role === 'admin';
+                isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
             } else {
                 currentUser = null;
                 isAdmin = false;
@@ -419,46 +432,39 @@
             updateUserUI();
         }
 
-        // ฟังก์ชันควบคุมสลับปุ่มบนแคปซูนตามสิทธิ์ (3 สถานะเป๊ะ)
-        // ฟังก์ชันควบคุมสลับปุ่มบนแคปซูลตามสิทธิ์ (3 สถานะเป๊ะ)
-function updateUserUI() {
-    const loginBtn = document.getElementById('loginBtn');
-    const roleTabBtn = document.getElementById('roleTabBtn');
-    const roleTabIcon = document.getElementById('roleTabIcon');
-    const roleTabText = document.getElementById('roleTabText');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminToolbar = document.getElementById('adminToolbar');
+        function updateUserUI() {
+            const loginBtn = document.getElementById('loginBtn');
+            const roleTabBtn = document.getElementById('roleTabBtn');
+            const roleTabIcon = document.getElementById('roleTabIcon');
+            const roleTabText = document.getElementById('roleTabText');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const adminToolbar = document.getElementById('adminToolbar');
 
-    if (currentUser) {
-        // === เมื่อ LOGIN แล้ว ===
-        if (loginBtn) loginBtn.classList.add('hidden');          // 1. ซ่อน เข้าสู่ระบบ
-        if (roleTabBtn) roleTabBtn.classList.remove('hidden');    // 2. แสดง ปุ่มสิทธิ์
-        if (logoutBtn) logoutBtn.classList.remove('hidden');      // 3. แสดง ออกจากระบบ
+            if (currentUser) {
+                if (loginBtn) loginBtn.classList.add('hidden');
+                if (roleTabBtn) roleTabBtn.classList.remove('hidden');
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
 
-        if (isAdmin) {
-            // สถานะที่ 2: หน้าหลัก | เจ้าหน้าที่ | ออกจากระบบ
-            if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
-            if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
-            if (adminToolbar) adminToolbar.classList.remove('hidden');
-        } else {
-            // สถานะที่ 3: หน้าหลัก | ผู้ขอรับบริการ | ออกจากระบบ
-            if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
-            if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
-            if (adminToolbar) adminToolbar.classList.add('hidden');
+                if (isAdmin) {
+                    if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
+                    if (adminToolbar) adminToolbar.classList.remove('hidden');
+                } else {
+                    if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
+                    if (adminToolbar) adminToolbar.classList.add('hidden');
+                }
+            } else {
+                if (loginBtn) loginBtn.classList.remove('hidden');
+                if (roleTabBtn) roleTabBtn.classList.add('hidden');
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (adminToolbar) adminToolbar.classList.add('hidden');
+
+                activeTab = 'home';
+            }
+
+            updateCapsuleStyle();
         }
-    } else {
-        // === เมื่อยังไม่ได้ LOGIN ===
-        // สถานะที่ 1: หน้าหลัก | เข้าสู่ระบบ
-        if (loginBtn) loginBtn.classList.remove('hidden');       // แสดง เข้าสู่ระบบ
-        if (roleTabBtn) roleTabBtn.classList.add('hidden');       // ซ่อน ปุ่มสิทธิ์
-        if (logoutBtn) logoutBtn.classList.add('hidden');         // ซ่อน ออกจากระบบ
-        if (adminToolbar) adminToolbar.classList.add('hidden');
-
-        activeTab = 'home';
-    }
-
-    updateCapsuleStyle();
-}
 
         function switchNavTab(tab) {
             if (tab === 'role' && !currentUser) {
@@ -475,29 +481,26 @@ function updateUserUI() {
         }
 
         function updateCapsuleStyle() {
-    const navHomeBtn = document.getElementById('navHomeBtn');
-    const roleTabBtn = document.getElementById('roleTabBtn');
+            const navHomeBtn = document.getElementById('navHomeBtn');
+            const roleTabBtn = document.getElementById('roleTabBtn');
 
-    if (!navHomeBtn || !roleTabBtn) return;
+            if (!navHomeBtn || !roleTabBtn) return;
 
-    if (!currentUser || activeTab === 'home') {
-        // ปุ่ม หน้าหลัก เด่น (แถบสีเหลือง)
-        navHomeBtn.classList.remove('text-slate-300', 'hover:text-white');
-        navHomeBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
+            if (!currentUser || activeTab === 'home') {
+                navHomeBtn.classList.remove('text-slate-300', 'hover:text-white');
+                navHomeBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
 
-        // ปุ่ม สิทธิ์ จางลง (ไม่แตะต้องคลาส hidden)
-        roleTabBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
-        roleTabBtn.classList.add('text-slate-300', 'hover:text-white');
-    } else {
-        // ปุ่ม สิทธิ์ เด่น (แถบสีเหลือง)
-        roleTabBtn.classList.remove('text-slate-300', 'hover:text-white');
-        roleTabBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
+                roleTabBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
+                roleTabBtn.classList.add('text-slate-300', 'hover:text-white');
+            } else {
+                roleTabBtn.classList.remove('text-slate-300', 'hover:text-white');
+                roleTabBtn.classList.add('bg-amber-400', 'text-slate-950', 'shadow');
 
-        // ปุ่ม หน้าหลัก จางลง
-        navHomeBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
-        navHomeBtn.classList.add('text-slate-300', 'hover:text-white');
-    }
-}
+                navHomeBtn.classList.remove('bg-amber-400', 'text-slate-950', 'shadow');
+                navHomeBtn.classList.add('text-slate-300', 'hover:text-white');
+            }
+        }
+
         function toggleStatsChartModal() {
             const secDashboard = document.getElementById('sectionDashboard');
             if (secDashboard.classList.contains('hidden')) {
@@ -514,7 +517,7 @@ function updateUserUI() {
                 const filterSelect = document.getElementById('departmentFilter');
                 const formSelect = document.getElementById('formDepartmentId');
                 
-                filterSelect.innerHTML = '<option value="">ทุกหน่วยงาน/คณะ</option>';
+                filterSelect.innerHTML = '<option value="">เลือกหน่วยงาน</option>';
                 formSelect.innerHTML = '<option value="">-- เลือกหน่วยงาน --</option>';
 
                 data.forEach(d => {
@@ -557,7 +560,7 @@ function updateUserUI() {
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
             
-            yearSelect.innerHTML = '<option value="">ทุกปี (พ.ศ.)</option>';
+            yearSelect.innerHTML = '<option value="">เลือกปี</option>';
             sortedYears.forEach(y => {
                 const yearBE = y + 543;
                 yearSelect.innerHTML += `<option value="${y}">ปี พ.ศ. ${yearBE}</option>`;
@@ -570,7 +573,8 @@ function updateUserUI() {
             const selectedYear = document.getElementById('yearFilter').value;
 
             filteredRequests = allRequests.filter(req => {
-                const matchSearch = req.title.toLowerCase().includes(search) || req.work_code.toLowerCase().includes(search);
+                const matchSearch = (req.title && req.title.toLowerCase().includes(search)) || 
+                                    (req.work_code && req.work_code.toLowerCase().includes(search));
                 const matchDept = !deptId || req.department_id == deptId;
                 
                 let matchYear = true;
@@ -606,14 +610,14 @@ function updateUserUI() {
                     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
                         <div class="p-5 flex-grow space-y-3">
                             <div class="flex justify-between items-start">
-                                <span class="font-mono text-xs px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200/60 rounded-md font-bold">${req.work_code}</span>
+                                <span class="font-mono text-xs px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200/60 rounded-md font-bold">${req.work_code || ''}</span>
                                 ${status.badgeHtml}
                             </div>
-                            <h3 class="font-bold text-slate-900 text-sm line-clamp-2">${req.title}</h3>
+                            <h3 class="font-bold text-slate-900 text-sm line-clamp-2">${req.title || ''}</h3>
                             <p class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> ${req.departments?.name || 'ไม่ระบุ'}</p>
                         </div>
                         <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
-                            <span class="text-slate-400">${new Date(req.created_at).toLocaleDateString('th-TH')}</span>
+                            <span class="text-slate-400">${req.created_at ? new Date(req.created_at).toLocaleDateString('th-TH') : ''}</span>
                             <div class="space-x-1">
                                 ${isAdmin ? `<button onclick="openEditModal(${req.id})" class="text-amber-600 hover:text-amber-800 p-1"><i class="fa-solid fa-pen-to-square"></i></button>` : ''}
                                 <button onclick="openDetailModal(${req.id})" class="bg-brand-navy hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-medium transition">
@@ -685,7 +689,7 @@ function updateUserUI() {
             const password = document.getElementById('authPassword').value;
             const alert = document.getElementById('authAlert');
 
-            if (!email.endsWith('@kmitl.ac.th')) {
+            if (!email.toLowerCase().endsWith('@kmitl.ac.th')) {
                 showAlert(alert, 'error', 'ต้องใช้อีเมลสถาบัน @kmitl.ac.th เท่านั้น');
                 return;
             }
@@ -700,7 +704,7 @@ function updateUserUI() {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
                     currentUser = data.user;
-                    isAdmin = currentUser.app_metadata?.role === 'admin';
+                    isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
                     updateUserUI();
                     closeAuthModal();
                     fetchRequests();
@@ -732,14 +736,14 @@ function updateUserUI() {
             const req = allRequests.find(r => r.id === id);
             if (!req) return;
 
-            document.getElementById('modalWorkCode').textContent = req.work_code;
+            document.getElementById('modalWorkCode').textContent = req.work_code || '';
             document.getElementById('modalStatusBadge').innerHTML = getStatusBadge(req).badgeHtml;
-            document.getElementById('modalTitle').textContent = req.title;
+            document.getElementById('modalTitle').textContent = req.title || '';
             document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.name || '-';
             document.getElementById('modalLocation').textContent = req.location || '-';
             document.getElementById('modalDescription').textContent = req.description || '-';
 
-            const isRecipient = currentUser && req.request_recipients?.some(r => r.email.toLowerCase() === currentUser.email.toLowerCase());
+            const isRecipient = currentUser && req.request_recipients?.some(r => r.email && r.email.toLowerCase() === currentUser.email.toLowerCase());
             const hasAccess = isAdmin || isRecipient;
 
             const filesSec = document.getElementById('authorizedFilesSection');
@@ -750,22 +754,30 @@ function updateUserUI() {
                 unauthNotice.classList.add('hidden');
 
                 const driveContainer = document.getElementById('modalDriveLinks');
-                driveContainer.innerHTML = req.request_drive_links?.map(d => `
-                    <a href="${d.drive_url}" target="_blank" class="flex items-center space-x-2 p-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium">
-                        <i class="fa-brands fa-google-drive text-base"></i>
-                        <span class="truncate">ดาวน์โหลดงานจาก Google Drive</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
-                    </a>
-                `).join('') || '<p class="text-xs text-slate-400">ไม่มีไฟล์ Google Drive แนบไว้</p>';
+                if (req.request_drive_links && req.request_drive_links.length > 0) {
+                    driveContainer.innerHTML = req.request_drive_links.map(d => `
+                        <a href="${d.drive_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 p-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium">
+                            <i class="fa-brands fa-google-drive text-base"></i>
+                            <span class="truncate">ดาวน์โหลดงานจาก Google Drive</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
+                        </a>
+                    `).join('');
+                } else {
+                    driveContainer.innerHTML = '<p class="text-xs text-slate-400">ไม่มีไฟล์ Google Drive แนบไว้</p>';
+                }
 
                 const ytContainer = document.getElementById('modalYoutubeLinks');
-                ytContainer.innerHTML = req.request_youtube_links?.map(y => `
-                    <a href="${y.youtube_url}" target="_blank" class="flex items-center space-x-2 p-2.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition text-xs font-medium">
-                        <i class="fa-brands fa-youtube text-base"></i>
-                        <span class="truncate">รับชมผลงานบน YouTube</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
-                    </a>
-                `).join('') || '';
+                if (req.request_youtube_links && req.request_youtube_links.length > 0) {
+                    ytContainer.innerHTML = req.request_youtube_links.map(y => `
+                        <a href="${y.youtube_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 p-2.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition text-xs font-medium">
+                            <i class="fa-brands fa-youtube text-base"></i>
+                            <span class="truncate">รับชมผลงานบน YouTube</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
+                        </a>
+                    `).join('');
+                } else {
+                    ytContainer.innerHTML = '';
+                }
             } else {
                 filesSec.classList.add('hidden');
                 unauthNotice.classList.remove('hidden');
@@ -793,9 +805,9 @@ function updateUserUI() {
             if (!req) return;
 
             document.getElementById('formRequestId').value = req.id;
-            document.getElementById('formWorkCode').value = req.work_code;
-            document.getElementById('formDepartmentId').value = req.department_id;
-            document.getElementById('formTitle').value = req.title;
+            document.getElementById('formWorkCode').value = req.work_code || '';
+            document.getElementById('formDepartmentId').value = req.department_id || '';
+            document.getElementById('formTitle').value = req.title || '';
             document.getElementById('formLocation').value = req.location || '';
             document.getElementById('formCoverUrl').value = req.cover_image_drive_url || '';
             document.getElementById('formDescription').value = req.description || '';
@@ -807,15 +819,23 @@ function updateUserUI() {
 
             const recContainer = document.getElementById('recipientsList');
             recContainer.innerHTML = '';
-            req.request_recipients?.forEach(r => addRecipientRow(r.name, r.email));
+            if (req.request_recipients && req.request_recipients.length > 0) {
+                req.request_recipients.forEach(r => addRecipientRow(r.name || '', r.email || ''));
+            } else {
+                addRecipientRow();
+            }
 
             const driveContainer = document.getElementById('driveLinksList');
             driveContainer.innerHTML = '';
-            req.request_drive_links?.forEach(d => addDriveRow(d.drive_url));
+            if (req.request_drive_links && req.request_drive_links.length > 0) {
+                req.request_drive_links.forEach(d => addDriveRow(d.drive_url || ''));
+            }
 
             const ytContainer = document.getElementById('youtubeLinksList');
             ytContainer.innerHTML = '';
-            req.request_youtube_links?.forEach(y => addYoutubeRow(y.youtube_url));
+            if (req.request_youtube_links && req.request_youtube_links.length > 0) {
+                req.request_youtube_links.forEach(y => addYoutubeRow(y.youtube_url || ''));
+            }
 
             document.getElementById('adminModal').classList.remove('hidden');
         }
@@ -862,7 +882,7 @@ function updateUserUI() {
 
             const payload = {
                 work_code: document.getElementById('formWorkCode').value,
-                department_id: document.getElementById('formDepartmentId').value,
+                department_id: document.getElementById('formDepartmentId').value ? parseInt(document.getElementById('formDepartmentId').value) : null,
                 title: document.getElementById('formTitle').value,
                 location: document.getElementById('formLocation').value,
                 cover_image_drive_url: document.getElementById('formCoverUrl').value,
@@ -876,34 +896,51 @@ function updateUserUI() {
             let targetId = reqId;
 
             if (reqId) {
-                await supabaseClient.from('service_requests').update(payload).eq('id', reqId);
+                const { error } = await supabaseClient.from('service_requests').update(payload).eq('id', reqId);
+                if (error) {
+                    alert('เกิดข้อผิดพลาดในการอัปเดต: ' + error.message);
+                    return;
+                }
             } else {
-                const { data } = await supabaseClient.from('service_requests').insert([payload]).select().single();
+                const { data, error } = await supabaseClient.from('service_requests').insert([payload]).select().single();
+                if (error) {
+                    alert('เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
+                    return;
+                }
                 if (data) targetId = data.id;
             }
 
             if (targetId) {
+                // ลบและบันทึกผู้รับบริการใหม่
                 await supabaseClient.from('request_recipients').delete().eq('request_id', targetId);
                 const recRows = document.querySelectorAll('#recipientsList > div');
-                for (const row of recRows) {
+                const recInserts = [];
+                recRows.forEach(row => {
                     const name = row.querySelector('.rec-name').value;
                     const email = row.querySelector('.rec-email').value;
-                    if (email) await supabaseClient.from('request_recipients').insert([{ request_id: targetId, name, email }]);
-                }
+                    if (email) recInserts.push({ request_id: targetId, name, email });
+                });
+                if (recInserts.length > 0) await supabaseClient.from('request_recipients').insert(recInserts);
 
+                // ลบและบันทึกลิงก์ Google Drive ใหม่
                 await supabaseClient.from('request_drive_links').delete().eq('request_id', targetId);
                 const driveRows = document.querySelectorAll('#driveLinksList > div');
-                for (const row of driveRows) {
+                const driveInserts = [];
+                driveRows.forEach(row => {
                     const drive_url = row.querySelector('.drive-url').value;
-                    if (drive_url) await supabaseClient.from('request_drive_links').insert([{ request_id: targetId, drive_url }]);
-                }
+                    if (drive_url) driveInserts.push({ request_id: targetId, drive_url });
+                });
+                if (driveInserts.length > 0) await supabaseClient.from('request_drive_links').insert(driveInserts);
 
+                // ลบและบันทึกลิงก์ YouTube ใหม่
                 await supabaseClient.from('request_youtube_links').delete().eq('request_id', targetId);
                 const ytRows = document.querySelectorAll('#youtubeLinksList > div');
-                for (const row of ytRows) {
+                const ytInserts = [];
+                ytRows.forEach(row => {
                     const youtube_url = row.querySelector('.yt-url').value;
-                    if (youtube_url) await supabaseClient.from('request_youtube_links').insert([{ request_id: targetId, youtube_url }]);
-                }
+                    if (youtube_url) ytInserts.push({ request_id: targetId, youtube_url });
+                });
+                if (ytInserts.length > 0) await supabaseClient.from('request_youtube_links').insert(ytInserts);
             }
 
             closeAdminModal();
