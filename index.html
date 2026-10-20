@@ -252,7 +252,7 @@
             </div>
 
             <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-                <div>
+                <div id="emailGroup">
                     <label class="block text-xs font-semibold text-slate-700 mb-1">อีเมลสถาบัน</label>
                     <input type="email" id="authEmail" required placeholder="user@kmitl.ac.th" 
                            class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
@@ -281,7 +281,7 @@
                     </div>
                 </div>
 
-                <!-- ส่วนเพิ่มเติมสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล -->
+                <!-- ส่วนเพิ่มเติมสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล (มี 3 ช่อง: อีเมลในระบบ, รหัสผ่านใหม่, ยืนยันรหัสผ่านใหม่) -->
                 <div id="resetFieldsGroup" class="hidden space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
@@ -507,7 +507,7 @@
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (event === 'PASSWORD_RECOVERY') {
                     openAuthModal('update_password');
-                    showGlobalAlert('แจ้งเตือน', 'กรุณากำหนดรหัสผ่านใหม่เพื่อเข้าสู่ระบบ', 'info');
+                    showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลในระบบ และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
                 } else if (session) {
                     currentUser = session.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
@@ -908,6 +908,7 @@
         function switchAuthMode(mode) {
             currentAuthMode = mode;
             const title = document.getElementById('authTitle');
+            const emailGrp = document.getElementById('emailGroup');
             const pwdGroup = document.getElementById('passwordGroup');
             const signupConfirmGroup = document.getElementById('signupConfirmPasswordGroup');
             const resetGroup = document.getElementById('resetFieldsGroup');
@@ -917,6 +918,7 @@
             document.getElementById('authLinksRow').classList.remove('hidden');
             resetGroup.classList.add('hidden');
             signupConfirmGroup.classList.add('hidden');
+            emailGrp.classList.remove('hidden');
 
             if (mode === 'signin') {
                 title.textContent = 'เข้าสู่ระบบ';
@@ -931,7 +933,7 @@
                 pwdGroup.classList.add('hidden');
                 document.getElementById('authLinksRow').classList.add('hidden');
             } else if (mode === 'update_password') {
-                title.textContent = 'เปลี่ยนรหัสผ่าน';
+                title.textContent = 'ตั้งรหัสผ่านใหม่';
                 pwdGroup.classList.add('hidden');
                 resetGroup.classList.remove('hidden');
                 document.getElementById('authLinksRow').classList.add('hidden');
@@ -943,8 +945,8 @@
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
 
-            if (!email || (currentAuthMode !== 'reset' && !password)) {
-                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+            if (!email) {
+                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกอีเมลสถาบัน', 'error');
                 return;
             }
 
@@ -958,7 +960,7 @@
                     const confirmPassword = document.getElementById('signupConfirmPassword').value;
 
                     if (!password || !confirmPassword) {
-                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
                         return;
                     }
 
@@ -967,6 +969,7 @@
                         return;
                     }
 
+                    // ตรวจสอบว่ามีอีเมลในฐานข้อมูล request_recipients หรือไม่
                     const { data: matchedRecipients, error: checkErr } = await supabaseClient
                         .from('request_recipients')
                         .select('id')
@@ -977,6 +980,7 @@
                         return;
                     }
 
+                    // สมัครสมาชิก (ไม่ต้องยืนยันตัวตนผ่านอีเมล)
                     const { data, error } = await supabaseClient.auth.signUp({ 
                         email, 
                         password 
@@ -987,17 +991,21 @@
                     showGlobalAlert('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว ท่านสามารถเข้าสู่ระบบได้ทันที', 'success');
                     switchAuthMode('signin');
 
-
-  } else if (currentAuthMode === 'signin') {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) {
-                    if (error.message.includes('Invalid login credentials')) {
-                        throw new Error('ตรวจสอบอีเมลและรหัสผ่านอีกครั้ง');
+                } else if (currentAuthMode === 'signin') {
+                    if (!password) {
+                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกรหัสผ่าน', 'error');
+                        return;
                     }
-                    throw error;
-                }
 
-                currentUser = data.user;
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) {
+                        if (error.message.includes('Invalid login credentials')) {
+                            throw new Error('ตรวจสอบอีเมลและรหัสผ่านอีกครั้ง');
+                        }
+                        throw error;
+                    }
+
+                    currentUser = data.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
                     
                     updateUserUI();
@@ -1006,6 +1014,7 @@
                     showGlobalAlert('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
 
                 } else if (currentAuthMode === 'reset') {
+                    // ส่งอีเมลยืนยันการตั้งรหัสผ่านใหม่
                     const redirectTo = window.location.origin + window.location.pathname;
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                         redirectTo: redirectTo
@@ -1020,12 +1029,19 @@
                     const confirmPwd = document.getElementById('confirmPassword').value;
 
                     if (!newPwd || !confirmPwd) {
-                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกรหัสผ่านใหม่ให้ครบถ้วน', 'error');
                         return;
                     }
 
                     if (newPwd !== confirmPwd) {
                         showGlobalAlert('ข้อผิดพลาด', 'รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+                        return;
+                    }
+
+                    // ตรวจสอบว่าอีเมลที่กรอกตรงกับ Session/User ปัจจุบันที่ได้รับสิทธิ์เปลี่ยนรหัสผ่าน
+                    const { data: { user: recoveryUser } } = await supabaseClient.auth.getUser();
+                    if (!recoveryUser || recoveryUser.email.toLowerCase() !== email.toLowerCase()) {
+                        showGlobalAlert('ข้อผิดพลาด', 'อีเมลที่ระบุไม่ตรงกับอีเมลในระบบที่ยืนยันการเปลี่ยนรหัสผ่าน', 'error');
                         return;
                     }
 
