@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EdTechLists — ระบบคลังจัดเก็บและส่งมอบงานบริการดิจิทัล</title>
+    <title>EdTechLists — ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -44,19 +44,30 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
+    <!-- Global Thai Alert Modal (ป๊อปอัปแจ้งเตือนตรงกลางจอ) -->
+    <div id="globalAlertModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl text-center space-y-4 relative border border-slate-100">
+            <div id="globalAlertIcon" class="text-3xl sm:text-4xl"></div>
+            <h3 id="globalAlertTitle" class="text-base sm:text-lg font-bold text-slate-900"></h3>
+            <p id="globalAlertMessage" class="text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
+            <div class="flex justify-center pt-1">
+                <button onclick="closeGlobalAlert()" class="px-6 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-xs sm:text-sm transition shadow">
+                    ตกลง
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Navbar Header -->
     <nav class="bg-brand-navy text-white shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchNavTab('home')">
-                    <!-- Gold/Amber Capsule Icon Container -->
-                    <div class="bg-amber-400 text-slate-900 font-bold px-3 py-1.5 rounded-full flex items-center justify-center shadow">
-                        <i class="fa-solid fa-layer-group text-base mr-1.5"></i>
-                        <span class="text-xs">EdTech</span>
-                    </div>
+                    <!-- GitHub Logo Container -->
+                    <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/textbook-TH/EvalTrack/main/logo.png';">
                     <div>
                         <span class="font-bold text-lg leading-none block">EdTechLists</span>
-                        <span class="text-xs text-slate-400 font-light">Digital Service Repository</span>
+                        <span class="text-xs text-slate-400 font-light">ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา</span>
                     </div>
                 </div>
 
@@ -64,23 +75,23 @@
                 <div class="flex items-center space-x-2" id="navActionContainer">
                     <div id="navMenu" class="bg-slate-800/80 p-1 rounded-full border border-slate-700 flex items-center space-x-1 shadow-inner">
                         
-                        <!-- 1. ปุ่ม หน้าหลัก (แสดงผลเสมอ) -->
+                        <!-- 1. ปุ่ม หน้าหลัก -->
                         <button id="navHomeBtn" onclick="switchNavTab('home')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow">
                             <i class="fa-solid fa-house mr-1"></i> หน้าหลัก
                         </button>
 
-                        <!-- 2. ปุ่ม เข้าสู่ระบบ (แสดงเฉพาะเมื่อยังไม่ได้ Login) -->
+                        <!-- 2. ปุ่ม เข้าสู่ระบบ -->
                         <button id="loginBtn" onclick="openAuthModal('signin')" class="px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
                             <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
                         </button>
 
-                        <!-- 3. ปุ่มแสดงสิทธิ์ (ซ่อนไว้เสมอตั้งแต่ HTML ด้วยคลาส hidden) -->
+                        <!-- 3. ปุ่มแสดงสิทธิ์/ผู้ขอใช้บริการ -->
                         <button id="roleTabBtn" onclick="switchNavTab('role')" class="hidden px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white">
                             <i id="roleTabIcon" class="fa-solid fa-user-shield mr-1"></i>
-                            <span id="roleTabText">เจ้าหน้าที่</span>
+                            <span id="roleTabText">ผู้ขอใช้บริการ</span>
                         </button>
 
-                        <!-- 4. ปุ่ม ออกจากระบบ (ซ่อนไว้เสมอตั้งแต่ HTML ด้วยคลาส hidden) -->
+                        <!-- 4. ปุ่ม ออกจากระบบ -->
                         <button id="logoutBtn" onclick="handleSignOut()" class="hidden px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
                             <i class="fa-solid fa-power-off mr-1"></i> ออกจากระบบ
                         </button>
@@ -137,15 +148,15 @@
                 <div class="relative flex-grow w-full md:w-auto">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
                     <input type="text" id="searchInput" oninput="filterRequests()" placeholder="ค้นสื่อดิจิตอล, ผู้ขอรับบริการ, หน่วยงาน..." 
-                           class="w-full pl-9 pr-4 py-2 rounded-xl text-slate-900 bg-slate-50 border border-slate-200 shadow-none focus:outline-none focus:ring-2 focus:ring-brand-accent text-xs">
+                           class="w-full pl-9 pr-4 py-2 rounded-xl text-slate-900 bg-slate-50 border border-slate-200 shadow-none focus:outline-none focus:ring-2 focus:ring-slate-400 text-xs">
                 </div>
                 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
-                    <select id="departmentFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <select id="departmentFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <option value="">🏢 เลือกหน่วยงาน</option>
                     </select>
 
-                    <select id="yearFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <select id="yearFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <option value="">📅 เลือกปี</option>
                     </select>
 
@@ -166,11 +177,8 @@
                 </button>
             </div>
 
-            <!-- Public Cards Grid -->
-            <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-
-            <!-- Admin Table View -->
-            <div id="adminTableView" class="hidden bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
+            <!-- Unified Data Table Container (แสดงข้อมูลในตารางหน้าหลักตลอดเวลา) -->
+            <div id="adminTableView" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -179,7 +187,7 @@
                                 <th class="py-4 px-6">ชื่อเรื่อง</th>
                                 <th class="py-4 px-6 text-center">หน่วยงาน</th>
                                 <th class="py-4 px-6 text-center">วิดีโอ/ไฟล์</th>
-                                <th class="py-4 px-6 text-center rounded-r-xl">จัดการ</th>
+                                <th id="thActionHeader" class="hidden py-4 px-6 text-center rounded-r-xl">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody id="adminTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
@@ -229,13 +237,13 @@
     <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto text-xs">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <p>© 2026 EdTechLists — เทคโนโลยีทางการศึกษา สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
-            <p class="mt-1 text-slate-500">ระบบคลังจัดเก็บและส่งมอบงานบริการดิจิทัล | Support: edtech@kmitl.ac.th</p>
+            <p class="mt-1 text-slate-500">ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา | Support: edtech@kmitl.ac.th</p>
         </div>
     </footer>
 
     <!-- MODAL 1: AUTHENTICATION -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 relative">
+        <div class="bg-white rounded-2xl max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             
             <div id="authHeader" class="text-center">
@@ -247,72 +255,145 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">อีเมลสถาบัน</label>
                     <input type="email" id="authEmail" required placeholder="user@kmitl.ac.th" 
-                           class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                           class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
                 </div>
 
                 <div id="passwordGroup">
                     <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่าน</label>
-                    <input type="password" id="authPassword" placeholder="••••••••" 
-                           class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-accent">
+                    <div class="relative">
+                        <input type="password" id="authPassword" placeholder="••••••••" 
+                               class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
+                        <button type="button" onclick="togglePasswordVisibility('authPassword', 'authPasswordIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                            <i id="authPasswordIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- เพิ่มช่องยืนยันรหัสผ่านสำหรับการสมัครสมาชิก -->
+                <div id="signupConfirmPasswordGroup" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่าน</label>
+                    <div class="relative">
+                        <input type="password" id="signupConfirmPassword" placeholder="••••••••" 
+                               class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
+                        <button type="button" onclick="togglePasswordVisibility('signupConfirmPassword', 'signupConfirmPasswordIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                            <i id="signupConfirmPasswordIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ส่วนเพิ่มเติมสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล -->
+                <div id="resetFieldsGroup" class="hidden space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
+                        <div class="relative">
+                            <input type="password" id="newPassword" placeholder="••••••••" 
+                                   class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
+                            <button type="button" onclick="togglePasswordVisibility('newPassword', 'newPasswordIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                <i id="newPasswordIcon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่านใหม่</label>
+                        <div class="relative">
+                            <input type="password" id="confirmPassword" placeholder="••••••••" 
+                                   class="w-full px-3 py-2 pr-10 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400">
+                            <button type="button" onclick="togglePasswordVisibility('confirmPassword', 'confirmPasswordIcon')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+                                <i id="confirmPasswordIcon" class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="authAlert" class="hidden text-xs p-3 rounded-lg"></div>
 
-                <button type="submit" id="authSubmitBtn" class="w-full bg-brand-accent hover:bg-orange-700 text-white py-2.5 rounded-lg text-sm font-medium transition shadow">
-                    ตกลง
-                </button>
+                <!-- ปุ่มตกลง สีเหลืองทอง ปรับขนาดสมส่วน -->
+                <div class="flex justify-center pt-1">
+                    <button type="submit" id="authSubmitBtn" class="px-8 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-sm transition shadow">
+                        ตกลง
+                    </button>
+                </div>
             </form>
 
-            <div id="authFooter" class="text-center text-xs text-slate-500 space-y-2 pt-2 border-t border-slate-100">
-                <div id="toggleToRegister">ยังไม่มีบัญชีใช่ไหม? <a href="#" onclick="switchAuthMode('signup')" class="text-brand-accent hover:underline font-semibold">สมัครสมาชิก</a></div>
-                <div id="toggleToLogin" class="hidden">มีบัญชีอยู่แล้วใช่ไหม? <a href="#" onclick="switchAuthMode('signin')" class="text-brand-accent hover:underline font-semibold">เข้าสู่ระบบ</a></div>
-                <div id="toggleToReset"><a href="#" onclick="switchAuthMode('reset')" class="text-slate-400 hover:text-slate-600">ลืมรหัสผ่าน?</a></div>
+            <div id="authFooter" class="text-center text-xs pt-3 border-t border-slate-100">
+                <!-- สมัครสมาชิก | ลืมรหัสผ่าน สีเทาเมื่อปกติ สีเหลืองทองเมื่อโฮเวอร์/คลิก -->
+                <div id="authLinksRow" class="flex justify-center items-center space-x-3 text-slate-400">
+                    <a href="#" onclick="switchAuthMode('signup')" class="text-slate-400 hover:text-amber-500 transition-colors font-semibold">สมัครสมาชิก</a>
+                    <span class="text-slate-300 font-normal">|</span>
+                    <a href="#" onclick="switchAuthMode('reset')" class="text-slate-400 hover:text-amber-500 transition-colors font-semibold">ลืมรหัสผ่าน</a>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- MODAL 2: REQUEST DETAIL & FILE DOWNLOADS -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4 relative">
-            <button onclick="closeDetailModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+        <div class="bg-white rounded-3xl max-w-xl sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl space-y-4 sm:space-y-5 relative border border-slate-100">
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
 
-            <div class="flex items-center space-x-2">
-                <span id="modalWorkCode" class="bg-slate-100 text-slate-700 font-mono text-xs px-2.5 py-1 rounded-md font-bold"></span>
-                <span id="modalStatusBadge"></span>
+            <div class="flex items-center space-x-2.5">
+                <span id="modalWorkCode" class="bg-amber-500 text-black font-mono text-xs px-3 py-1.5 rounded-xl font-bold shadow-sm"></span>
             </div>
 
-            <h3 id="modalTitle" class="text-xl font-bold text-slate-900"></h3>
-            <p id="modalDepartment" class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> <span></span></p>
-
-            <div id="modalCoverContainer" class="rounded-xl overflow-hidden bg-slate-100 max-h-60 flex items-center justify-center hidden">
-                <img id="modalCoverImg" src="" alt="Cover" class="w-full h-full object-cover hidden">
+            <div>
+                <h3 id="modalTitle" class="text-base sm:text-xl font-bold text-slate-900 leading-snug"></h3>
+                <p id="modalDepartment" class="text-xs text-slate-500 mt-2 flex items-center">
+                    <i class="fa-solid fa-building text-slate-400 mr-1.5"></i> <span></span>
+                </p>
             </div>
 
-            <div class="bg-slate-50 p-4 rounded-xl space-y-2 text-sm">
-                <div><strong class="text-slate-700">สถานที่:</strong> <span id="modalLocation" class="text-slate-600"></span></div>
-                <div><strong class="text-slate-700">รายละเอียด:</strong> <p id="modalDescription" class="text-slate-600 whitespace-pre-line mt-1"></p></div>
+            <div class="bg-slate-50/70 border border-slate-200/70 rounded-3xl p-4 sm:p-5 space-y-3 sm:space-y-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-2 text-slate-800 font-bold text-xs sm:text-sm">
+                        <i class="fa-solid fa-route text-blue-600 text-base"></i>
+                        <span>ขั้นตอนการดำเนินงาน</span>
+                    </div>
+                </div>
+
+                <div id="modalStepperContainer" class="grid grid-cols-4 gap-2 pt-2 text-center"></div>
             </div>
 
-            <div id="authorizedFilesSection" class="border-t border-slate-200 pt-4 space-y-3 hidden">
-                <h4 class="font-bold text-slate-800 text-sm flex items-center text-emerald-600">
-                    <i class="fa-solid fa-shield-check mr-2"></i> เอกสารและไฟล์งานของคุณ (ได้รับสิทธิ์เข้าถึง)
+            <div class="bg-slate-50/80 border border-slate-200/60 p-4 sm:p-5 rounded-2xl space-y-3 text-xs sm:text-sm">
+                <div>
+                    <strong class="text-slate-800 font-semibold flex items-center">
+                        <i class="fa-solid fa-user-tag text-amber-500 mr-2 text-sm"></i> ผู้รับบริการ / อีเมล:
+                    </strong>
+                    <div id="modalRecipients" class="text-slate-600 font-medium mt-1.5 pl-6 space-y-1"></div>
+                </div>
+                
+                <div class="border-t border-slate-200/60 pt-3">
+                    <strong class="text-slate-800 font-semibold flex items-center">
+                        <i class="fa-solid fa-location-dot text-amber-500 mr-2 text-sm"></i> สถานที่:
+                    </strong>
+                    <span id="modalLocation" class="text-slate-600 ml-1 block mt-1 pl-6"></span>
+                </div>
+
+                <div class="border-t border-slate-200/60 pt-3">
+                    <strong class="text-slate-800 font-semibold flex items-center">
+                        <i class="fa-solid fa-align-left text-amber-500 mr-2 text-sm"></i> รายละเอียด:
+                    </strong>
+                    <p id="modalDescription" class="text-slate-600 leading-relaxed whitespace-pre-line mt-1 pl-6"></p>
+                </div>
+            </div>
+
+            <div id="authorizedFilesSection" class="border-t border-slate-200 pt-4 sm:pt-5 space-y-3 hidden">
+                <h4 class="font-bold text-slate-800 text-xs sm:text-sm flex items-center text-emerald-600">
+                    <i class="fa-solid fa-shield-check mr-2 text-base"></i> เอกสารและไฟล์งานของคุณ (ได้รับสิทธิ์เข้าถึง)
                 </h4>
                 <div id="modalDriveLinks" class="space-y-2"></div>
                 <div id="modalYoutubeLinks" class="space-y-2"></div>
-            </div>
-
-            <div id="unauthorizedNotice" class="border-t border-slate-200 pt-4 text-center text-xs text-slate-400 italic">
-                <i class="fa-solid fa-lock mr-1"></i> เฉพาะผู้ได้รับสิทธิ์ (อีเมลผู้รับบริการ) เท่านั้นที่จะสามารถมองเห็นและดาวน์โหลดไฟล์งานได้
             </div>
         </div>
     </div>
 
     <!-- MODAL 3: ADMIN FORM -->
     <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 shadow-2xl space-y-4 relative">
+        <div class="bg-white rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
 
-            <h3 id="adminModalTitle" class="text-xl font-bold text-slate-900">จัดการข้อมูลคำขอรับบริการ</h3>
+            <h3 id="adminModalTitle" class="text-lg sm:text-xl font-bold text-slate-900">จัดการข้อมูลคำขอรับบริการ</h3>
 
             <form id="adminForm" onsubmit="handleAdminSave(event)" class="space-y-4">
                 <input type="hidden" id="formRequestId">
@@ -321,39 +402,41 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">ใบแจ้งขอรับบริการ</label>
                         <input type="text" id="formWorkCode" required placeholder="#0001" 
-                               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono">
+                               class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">หน่วยงาน</label>
-                        <input type="text" id="formDepartmentId" required placeholder="ระบุชื่อหน่วยงาน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">เลือกวันเดือนปี</label>
+                        <input type="date" id="formRequestDate" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700">
                     </div>
                 </div>
-                 <div class="space-y-2">
+
+                <div class="space-y-2">
                     <div class="flex justify-between items-center">
                         <label class="block text-xs font-semibold text-slate-700">ชื่อผู้รับบริการ/อีเมล</label>
                         <button type="button" onclick="addRecipientRow()" class="text-xs text-brand-accent font-semibold">+ เพิ่มผู้รับบริการ</button>
                     </div>
                     <div id="recipientsList" class="space-y-2"></div>
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">เรื่อง</label>
-                    <input type="text" id="formTitle" required placeholder="ถ่ายทำสื่อการสอน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
-                </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">สถานที่</label>
-                        <input type="text" id="formLocation" placeholder="ห้อง สตูดิโอ 1 อาคารเรียนรวม..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">หน่วยงาน</label>
+                        <input type="text" id="formDepartmentId" required placeholder="ระบุชื่อหน่วยงาน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">ลิงก์รูปปก</label>
-                        <input type="url" id="formCoverUrl" placeholder="https://drive.google.com/..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">สถานที่</label>
+                        <input type="text" id="formLocation" placeholder="ห้อง สตูดิโอ 1 อาคารเรียนรวม..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">เรื่อง</label>
+                    <input type="text" id="formTitle" required placeholder="ถ่ายทำสื่อการสอน..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400">
                 </div>
 
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">รายละเอียดงาน</label>
-                    <textarea id="formDescription" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"></textarea>
+                    <textarea id="formDescription" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"></textarea>
                 </div>
 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
@@ -416,13 +499,16 @@
         let currentAuthMode = 'signin';
 
         document.addEventListener('DOMContentLoaded', async () => {
-            await checkAuthSession();
+            initCharts();
             await fetchDepartments();
             await fetchRequests();
-            initCharts();
+            await checkAuthSession();
 
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
-                if (session) {
+                if (event === 'PASSWORD_RECOVERY') {
+                    openAuthModal('update_password');
+                    showGlobalAlert('แจ้งเตือน', 'กรุณากำหนดรหัสผ่านใหม่เพื่อเข้าสู่ระบบ', 'info');
+                } else if (session) {
                     currentUser = session.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
                 } else {
@@ -433,6 +519,44 @@
                 await fetchRequests();
             });
         });
+
+        function showGlobalAlert(title, message, type = 'info') {
+            const modal = document.getElementById('globalAlertModal');
+            const titleEl = document.getElementById('globalAlertTitle');
+            const msgEl = document.getElementById('globalAlertMessage');
+            const iconEl = document.getElementById('globalAlertIcon');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+
+            if (type === 'error') {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-500"></i>';
+            } else if (type === 'success') {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-500"></i>';
+            } else {
+                iconEl.innerHTML = '<i class="fa-solid fa-circle-info text-amber-500"></i>';
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeGlobalAlert() {
+            document.getElementById('globalAlertModal').classList.add('hidden');
+        }
+
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
 
         async function checkAuthSession() {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -447,6 +571,7 @@
         }
 
         function updateUserUI() {
+            const navHomeBtn = document.getElementById('navHomeBtn');
             const loginBtn = document.getElementById('loginBtn');
             const roleTabBtn = document.getElementById('roleTabBtn');
             const roleTabIcon = document.getElementById('roleTabIcon');
@@ -461,14 +586,18 @@
                 if (isAdmin) {
                     if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
+                    if (navHomeBtn) navHomeBtn.classList.remove('hidden');
                 } else {
-                    if (roleTabText) roleTabText.textContent = 'ผู้ขอรับบริการ';
+                    if (roleTabText) roleTabText.textContent = 'ผู้ขอใช้บริการ';
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
+                    if (navHomeBtn) navHomeBtn.classList.add('hidden');
+                    activeTab = 'role';
                 }
             } else {
                 if (loginBtn) loginBtn.classList.remove('hidden');
                 if (roleTabBtn) roleTabBtn.classList.add('hidden');
                 if (logoutBtn) logoutBtn.classList.add('hidden');
+                if (navHomeBtn) navHomeBtn.classList.remove('hidden');
 
                 activeTab = 'home';
             }
@@ -483,10 +612,15 @@
                 return;
             }
 
-            activeTab = tab;
+            if (currentUser && !isAdmin && tab === 'home') {
+                activeTab = 'role';
+            } else {
+                activeTab = tab;
+            }
+
             updateCapsuleStyle();
 
-            if (tab === 'home' || tab === 'role') {
+            if (activeTab === 'home' || activeTab === 'role') {
                 showSection('landing');
             }
         }
@@ -566,6 +700,7 @@
             }
         }
 
+        // ฟังก์ชันสร้างตัวเลือกใน Dropdown ปี (ดึงปี ค.ศ. แล้วแสดงเป็น พ.ศ.)
         function populateYearFilter() {
             const yearSelect = document.getElementById('yearFilter');
             const years = new Set();
@@ -573,7 +708,7 @@
             allRequests.forEach(req => {
                 if (req.created_at) {
                     const yearAD = new Date(req.created_at).getFullYear();
-                    years.add(yearAD);
+                    if (!isNaN(yearAD)) years.add(yearAD);
                 }
             });
 
@@ -586,6 +721,7 @@
             });
         }
 
+        // ฟังก์ชันกรองรายการคำขอตามปี
         function filterRequests() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const deptId = document.getElementById('departmentFilter').value;
@@ -610,102 +746,77 @@
         }
 
         function renderGrid() {
-            const grid = document.getElementById('cardsGrid');
-            const tableView = document.getElementById('adminTableView');
             const tableBody = document.getElementById('adminTableBody');
+            const thActionHeader = document.getElementById('thActionHeader');
 
             const isRoleAdminView = isAdmin && activeTab === 'role';
 
             if (isRoleAdminView) {
-                grid.classList.add('hidden');
-                tableView.classList.remove('hidden');
-                tableBody.innerHTML = '';
+                if (thActionHeader) thActionHeader.classList.remove('hidden');
             } else {
-                grid.classList.remove('hidden');
-                tableView.classList.add('hidden');
-                grid.innerHTML = '';
+                if (thActionHeader) thActionHeader.classList.add('hidden');
             }
+
+            tableBody.innerHTML = '';
 
             const start = (currentPage - 1) * itemsPerPage;
             const end = start + itemsPerPage;
             const pageItems = filteredRequests.slice(start, end);
 
             if (pageItems.length === 0) {
-                if (isRoleAdminView) {
-                    tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">ไม่พบรายการคำขอรับบริการ</td></tr>';
-                } else {
-                    grid.innerHTML = '<div class="col-span-full text-center py-12 text-slate-400 text-xs">ไม่พบรายการคำขอรับบริการ</div>';
-                }
+                tableBody.innerHTML = `<tr><td colspan="${isRoleAdminView ? 5 : 4}" class="text-center py-10 text-slate-400">ไม่พบรายการคำขอรับบริการ</td></tr>`;
                 document.getElementById('pageInfo').textContent = 'แสดงรายการ 0 - 0 จากทั้งหมด 0';
                 return;
             }
 
             pageItems.forEach(req => {
-                const status = getStatusBadge(req);
+                const ytCount = req.request_youtube_links ? req.request_youtube_links.length : 0;
+                const driveCount = req.request_drive_links ? req.request_drive_links.length : 0;
 
-                if (isRoleAdminView) {
-                    // ตรวจสอบแยกจำนวนแนบไฟล์ระหว่าง YouTube และ Google Drive
-                    const ytCount = req.request_youtube_links ? req.request_youtube_links.length : 0;
-                    const driveCount = req.request_drive_links ? req.request_drive_links.length : 0;
+                let mediaBadge = `<span class="text-slate-400 text-xs">-</span>`;
 
-                    let mediaBadge = `<span class="text-slate-400 text-xs">-</span>`;
-
-                    if (ytCount > 0) {
-                        mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#FEFCE8] border border-[#FDE68A] text-[#D97706] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-film"></i> ${ytCount} คลิป</span>`;
-                    } else if (driveCount > 0) {
-                        mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-file-lines"></i> ${driveCount} ไฟล์</span>`;
-                    }
-
-                    const rowHtml = `
-                        <tr class="hover:bg-slate-50/80 transition-colors">
-                            <td class="py-5 px-6 font-bold text-[#C2410C] text-sm font-sans whitespace-nowrap">
-                                ${req.work_code || ''}
-                            </td>
-                            <td class="py-5 px-6 font-semibold text-slate-900 text-sm max-w-sm">
-                                ${req.title || ''}
-                            </td>
-                            <td class="py-5 px-6 text-center whitespace-nowrap">
-                                <span class="bg-[#EEF2F6] text-slate-700 font-semibold px-4 py-1.5 rounded-xl text-xs">
-                                    ${req.departments?.department_name || 'สื่อดิจิทัล'}
-                                </span>
-                            </td>
-                            <td class="py-5 px-6 text-center whitespace-nowrap">
-                                ${mediaBadge}
-                            </td>
-                            <td class="py-5 px-6 text-center whitespace-nowrap space-x-2">
-                                <button onclick="openEditModal(${req.id})" class="inline-flex items-center gap-1.5 bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-xl transition text-xs shadow-sm">
-                                    <i class="fa-solid fa-pen-to-square"></i> แก้ไข
-                                </button>
-                                <button onclick="handleDeleteRequest(${req.id})" class="inline-flex items-center gap-1.5 bg-[#FFE2E5] hover:bg-rose-100 text-[#D9214E] font-bold px-4 py-1.5 rounded-xl transition text-xs">
-                                    <i class="fa-solid fa-trash"></i> ลบ
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += rowHtml;
-                } else {
-                    const card = `
-                        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col">
-                            <div class="p-5 flex-grow space-y-3">
-                                <div class="flex justify-between items-start">
-                                    <span class="font-mono text-xs px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200/60 rounded-md font-bold">${req.work_code || ''}</span>
-                                    ${status.badgeHtml}
-                                </div>
-                                <h3 class="font-bold text-slate-900 text-sm line-clamp-2">${req.title || ''}</h3>
-                                <p class="text-xs text-slate-500"><i class="fa-solid fa-building mr-1"></i> ${req.departments?.department_name || 'ไม่ระบุ'}</p>
-                            </div>
-                            <div class="px-5 py-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
-                                <span class="text-slate-400">${req.created_at ? new Date(req.created_at).toLocaleDateString('th-TH') : ''}</span>
-                                <div class="space-x-1">
-                                    <button onclick="openDetailModal(${req.id})" class="bg-brand-navy hover:bg-slate-800 text-white px-3 py-1.5 rounded-lg font-medium transition">
-                                        รายละเอียด
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    grid.innerHTML += card;
+                if (ytCount > 0) {
+                    mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#FEFCE8] border border-[#FDE68A] text-[#D97706] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-film"></i> ${ytCount} คลิป</span>`;
+                } else if (driveCount > 0) {
+                    mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-file-lines"></i> ${driveCount} ไฟล์</span>`;
                 }
+
+                let actionCell = '';
+                if (isRoleAdminView) {
+                    actionCell = `
+                        <td class="py-5 px-6 text-center whitespace-nowrap space-x-2" onclick="event.stopPropagation()">
+                            <button onclick="openEditModal(${req.id})" class="inline-flex items-center gap-1.5 bg-[#F59E0B] hover:bg-amber-600 text-slate-950 font-bold px-4 py-1.5 rounded-xl transition text-xs shadow-sm">
+                                <i class="fa-solid fa-pen-to-square"></i> แก้ไข
+                            </button>
+                            <button onclick="handleDeleteRequest(${req.id})" class="inline-flex items-center gap-1.5 bg-[#FFE2E5] hover:bg-rose-100 text-[#D9214E] font-bold px-4 py-1.5 rounded-xl transition text-xs">
+                                <i class="fa-solid fa-trash"></i> ลบ
+                            </button>
+                        </td>
+                    `;
+                }
+
+                const clickHandler = isRoleAdminView ? '' : `onclick="openDetailModal(${req.id})"`;
+
+                const rowHtml = `
+                    <tr ${clickHandler} class="hover:bg-slate-50/80 transition-colors ${isRoleAdminView ? '' : 'cursor-pointer'}">
+                        <td class="py-5 px-6 font-bold text-[#C2410C] text-sm font-sans whitespace-nowrap">
+                            ${req.work_code || ''}
+                        </td>
+                        <td class="py-5 px-6 font-semibold text-slate-900 text-sm max-w-sm">
+                            ${req.title || ''}
+                        </td>
+                        <td class="py-5 px-6 text-center whitespace-nowrap">
+                            <span class="bg-[#EEF2F6] text-slate-700 font-semibold px-4 py-1.5 rounded-xl text-xs">
+                                ${req.departments?.department_name || 'สื่อดิจิทัล'}
+                            </span>
+                        </td>
+                        <td class="py-5 px-6 text-center whitespace-nowrap">
+                            ${mediaBadge}
+                        </td>
+                        ${actionCell}
+                    </tr>
+                `;
+                tableBody.innerHTML += rowHtml;
             });
 
             document.getElementById('pageInfo').textContent = `แสดงรายการ ${start + 1} - ${Math.min(end, filteredRequests.length)} จากทั้งหมด ${filteredRequests.length}`;
@@ -719,10 +830,70 @@
         }
 
         function getStatusBadge(req) {
-            if (req.cancelled_at) return { status: 'cancelled', badgeHtml: '<span class="bg-rose-100 text-rose-700 text-xs px-2.5 py-0.5 rounded-full font-medium">ยกเลิก</span>' };
-            if (req.completed_at) return { status: 'completed', badgeHtml: '<span class="bg-emerald-100 text-emerald-700 text-xs px-2.5 py-0.5 rounded-full font-medium">เสร็จสิ้น</span>' };
-            if (req.in_progress_at) return { status: 'in_progress', badgeHtml: '<span class="bg-blue-100 text-blue-700 text-xs px-2.5 py-0.5 rounded-full font-medium">กำลังดำเนินการ</span>' };
-            return { status: 'pending', badgeHtml: '<span class="bg-amber-100 text-amber-700 text-xs px-2.5 py-0.5 rounded-full font-medium">รอดำเนินการ</span>' };
+            if (req.cancelled_at) {
+                return { 
+                    status: 'cancelled', 
+                    badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-rose-100 border border-rose-200 text-rose-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-circle-xmark"></i> ยกเลิกดำเนินการ</span>' 
+                };
+            }
+            if (req.completed_at) {
+                return { 
+                    status: 'completed', 
+                    badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-circle-check"></i> ดำเนินการเสร็จสิ้น</span>' 
+                };
+            }
+            if (req.in_progress_at) {
+                return { 
+                    status: 'in_progress', 
+                    badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-blue-100 border border-blue-200 text-blue-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-spinner fa-spin"></i> กำลังดำเนินการ</span>' 
+                };
+            }
+            return { 
+                status: 'pending', 
+                badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-amber-100 border border-amber-200 text-amber-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-hourglass-start"></i> รอดำเนินการ</span>' 
+            };
+        }
+
+        function renderStepper(req) {
+            const stepperContainer = document.getElementById('modalStepperContainer');
+            const currentStatus = getStatusBadge(req).status;
+
+            const steps = [
+                { id: 'pending', label: 'รอดำเนินการ', icon: 'fa-solid fa-hourglass-start' },
+                { id: 'in_progress', label: 'กำลังดำเนินการ', icon: 'fa-solid fa-gears' },
+                { id: 'completed', label: 'ดำเนินการเสร็จสิ้น', icon: 'fa-solid fa-circle-check' },
+                { id: 'cancelled', label: 'ยกเลิก', icon: 'fa-solid fa-ban' }
+            ];
+
+            stepperContainer.innerHTML = steps.map((step) => {
+                let circleClass = "bg-slate-200 text-slate-400";
+                let textClass = "text-slate-400 font-normal";
+
+                if (step.id === currentStatus) {
+                    if (step.id === 'pending') {
+                        circleClass = "bg-purple-600 text-white shadow-md shadow-purple-200 ring-4 ring-purple-100";
+                        textClass = "text-purple-700 font-bold";
+                    } else if (step.id === 'in_progress') {
+                        circleClass = "bg-amber-400 text-slate-950 shadow-md shadow-amber-200 ring-4 ring-amber-100";
+                        textClass = "text-amber-600 font-bold";
+                    } else if (step.id === 'completed') {
+                        circleClass = "bg-emerald-500 text-white shadow-md shadow-emerald-200 ring-4 ring-emerald-100";
+                        textClass = "text-emerald-600 font-bold";
+                    } else if (step.id === 'cancelled') {
+                        circleClass = "bg-rose-500 text-white shadow-md shadow-rose-200 ring-4 ring-rose-100";
+                        textClass = "text-rose-600 font-bold";
+                    }
+                }
+
+                return `
+                    <div class="flex flex-col items-center space-y-2">
+                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg transition-all ${circleClass}">
+                            <i class="${step.icon}"></i>
+                        </div>
+                        <span class="text-[10px] sm:text-xs leading-tight ${textClass}">${step.label}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         function openAuthModal(mode = 'signin') {
@@ -738,26 +909,32 @@
             currentAuthMode = mode;
             const title = document.getElementById('authTitle');
             const pwdGroup = document.getElementById('passwordGroup');
+            const signupConfirmGroup = document.getElementById('signupConfirmPasswordGroup');
+            const resetGroup = document.getElementById('resetFieldsGroup');
             const alert = document.getElementById('authAlert');
             alert.classList.add('hidden');
 
-            document.getElementById('toggleToRegister').classList.add('hidden');
-            document.getElementById('toggleToLogin').classList.add('hidden');
-            document.getElementById('toggleToReset').classList.add('hidden');
+            document.getElementById('authLinksRow').classList.remove('hidden');
+            resetGroup.classList.add('hidden');
+            signupConfirmGroup.classList.add('hidden');
 
             if (mode === 'signin') {
                 title.textContent = 'เข้าสู่ระบบ';
                 pwdGroup.classList.remove('hidden');
-                document.getElementById('toggleToRegister').classList.remove('hidden');
-                document.getElementById('toggleToReset').classList.remove('hidden');
             } else if (mode === 'signup') {
-                title.textContent = 'สมัครสมาชิกใหม่';
+                title.textContent = 'สมัครสมาชิก';
                 pwdGroup.classList.remove('hidden');
-                document.getElementById('toggleToLogin').classList.remove('hidden');
+                signupConfirmGroup.classList.remove('hidden');
+                document.getElementById('authLinksRow').classList.add('hidden');
             } else if (mode === 'reset') {
-                title.textContent = 'รีเซ็ตรหัสผ่าน';
+                title.textContent = 'ลืมรหัสผ่าน';
                 pwdGroup.classList.add('hidden');
-                document.getElementById('toggleToLogin').classList.remove('hidden');
+                document.getElementById('authLinksRow').classList.add('hidden');
+            } else if (mode === 'update_password') {
+                title.textContent = 'เปลี่ยนรหัสผ่าน';
+                pwdGroup.classList.add('hidden');
+                resetGroup.classList.remove('hidden');
+                document.getElementById('authLinksRow').classList.add('hidden');
             }
         }
 
@@ -765,34 +942,95 @@
             e.preventDefault();
             const email = document.getElementById('authEmail').value.trim();
             const password = document.getElementById('authPassword').value;
-            const alert = document.getElementById('authAlert');
+
+            if (!email || (currentAuthMode !== 'reset' && !password)) {
+                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                return;
+            }
 
             if (!email.toLowerCase().endsWith('@kmitl.ac.th')) {
-                showAlert(alert, 'error', 'ต้องใช้อีเมลสถาบัน @kmitl.ac.th เท่านั้น');
+                showGlobalAlert('ข้อผิดพลาด', 'ต้องใช้อีเมลสถาบัน @kmitl.ac.th เท่านั้น', 'error');
                 return;
             }
 
             try {
                 if (currentAuthMode === 'signup') {
-                    const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                    const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+                    if (!password || !confirmPassword) {
+                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                        return;
+                    }
+
+                    if (password !== confirmPassword) {
+                        showGlobalAlert('ข้อผิดพลาด', 'รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+                        return;
+                    }
+
+                    const { data: matchedRecipients, error: checkErr } = await supabaseClient
+                        .from('request_recipients')
+                        .select('id')
+                        .eq('email', email);
+
+                    if (checkErr || !matchedRecipients || matchedRecipients.length === 0) {
+                        showGlobalAlert('ไม่สามารถสมัครสมาชิกได้', 'อีเมลนี้ยังไม่อยู่ในฐานข้อมูลผู้ขอรับบริการของระบบ', 'error');
+                        return;
+                    }
+
+                    const { data, error } = await supabaseClient.auth.signUp({ 
+                        email, 
+                        password 
+                    });
+                    
                     if (error) throw error;
-                    showAlert(alert, 'success', 'สมัครสมาชิกสำเร็จ! กรุณาล็อกอิน');
-                    setTimeout(() => switchAuthMode('signin'), 1500);
+                    
+                    showGlobalAlert('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว ท่านสามารถเข้าสู่ระบบได้ทันที', 'success');
+                    switchAuthMode('signin');
+
                 } else if (currentAuthMode === 'signin') {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                     if (error) throw error;
+                    
                     currentUser = data.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
+                    
                     updateUserUI();
                     closeAuthModal();
                     fetchRequests();
+                    showGlobalAlert('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
+
                 } else if (currentAuthMode === 'reset') {
-                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email);
+                    const redirectTo = window.location.origin + window.location.pathname;
+                    const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                        redirectTo: redirectTo
+                    });
                     if (error) throw error;
-                    showAlert(alert, 'success', 'ระบบส่งลิงก์รีเซ็ตไปที่อีเมลของคุณแล้ว');
+                    
+                    closeAuthModal();
+                    showGlobalAlert('ส่งอีเมลแล้ว', 'ระบบได้ส่งลิงก์สำหรับรีเซ็ตรหัสผ่านไปยังอีเมลของคุณเรียบร้อยแล้ว', 'success');
+
+                } else if (currentAuthMode === 'update_password') {
+                    const newPwd = document.getElementById('newPassword').value;
+                    const confirmPwd = document.getElementById('confirmPassword').value;
+
+                    if (!newPwd || !confirmPwd) {
+                        showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                        return;
+                    }
+
+                    if (newPwd !== confirmPwd) {
+                        showGlobalAlert('ข้อผิดพลาด', 'รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน', 'error');
+                        return;
+                    }
+
+                    const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
+                    if (error) throw error;
+
+                    closeAuthModal();
+                    showGlobalAlert('สำเร็จ', 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว เข้าสู่ระบบสมบูรณ์', 'success');
                 }
             } catch (err) {
-                showAlert(alert, 'error', err.message || 'เกิดข้อผิดพลาดในการดำเนินการ');
+                showGlobalAlert('เกิดข้อผิดพลาด', err.message || 'ไม่สามารถดำเนินการได้', 'error');
             }
         }
 
@@ -804,37 +1042,41 @@
             fetchRequests();
         }
 
-        function showAlert(el, type, msg) {
-            el.className = `text-xs p-3 rounded-lg ${type === 'error' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'}`;
-            el.textContent = msg;
-            el.classList.remove('hidden');
-        }
-
         function openDetailModal(id) {
+            if (isAdmin && activeTab === 'role') return;
+
             const req = allRequests.find(r => r.id === id);
             if (!req) return;
 
             document.getElementById('modalWorkCode').textContent = req.work_code || '';
-            document.getElementById('modalStatusBadge').innerHTML = getStatusBadge(req).badgeHtml;
             document.getElementById('modalTitle').textContent = req.title || '';
             document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.department_name || '-';
             document.getElementById('modalLocation').textContent = req.location || '-';
             document.getElementById('modalDescription').textContent = req.description || '-';
 
-            const isRecipient = currentUser && req.request_recipients?.some(r => r.email && r.email.toLowerCase() === currentUser.email.toLowerCase());
-            const hasAccess = isAdmin || isRecipient;
+            renderStepper(req);
 
+            const recipientsContainer = document.getElementById('modalRecipients');
+            if (req.request_recipients && req.request_recipients.length > 0) {
+                recipientsContainer.innerHTML = req.request_recipients.map(r => `
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold text-slate-800">${r.full_name || 'ไม่ระบุชื่อ'}</span>
+                    </div>
+                `).join('');
+            } else {
+                recipientsContainer.textContent = '-';
+            }
+
+            const isUserLoggedInView = currentUser !== null && !isAdmin;
             const filesSec = document.getElementById('authorizedFilesSection');
-            const unauthNotice = document.getElementById('unauthorizedNotice');
 
-            if (hasAccess) {
+            if (isUserLoggedInView) {
                 filesSec.classList.remove('hidden');
-                unauthNotice.classList.add('hidden');
 
                 const driveContainer = document.getElementById('modalDriveLinks');
                 if (req.request_drive_links && req.request_drive_links.length > 0) {
                     driveContainer.innerHTML = req.request_drive_links.map(d => `
-                        <a href="${d.drive_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 p-2.5 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition text-xs font-medium">
+                        <a href="${d.drive_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition text-xs font-semibold border border-blue-200/60 shadow-sm">
                             <i class="fa-brands fa-google-drive text-base"></i>
                             <span class="truncate">ดาวน์โหลดงานจาก Google Drive</span>
                             <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
@@ -847,7 +1089,7 @@
                 const ytContainer = document.getElementById('modalYoutubeLinks');
                 if (req.request_youtube_links && req.request_youtube_links.length > 0) {
                     ytContainer.innerHTML = req.request_youtube_links.map(y => `
-                        <a href="${y.youtube_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 p-2.5 bg-rose-50 text-rose-700 rounded-lg hover:bg-rose-100 transition text-xs font-medium">
+                        <a href="${y.youtube_url}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-rose-50 text-rose-700 rounded-xl hover:bg-rose-100 transition text-xs font-semibold border border-rose-200/60 shadow-sm">
                             <i class="fa-brands fa-youtube text-base"></i>
                             <span class="truncate">รับชมผลงานบน YouTube</span>
                             <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
@@ -858,7 +1100,6 @@
                 }
             } else {
                 filesSec.classList.add('hidden');
-                unauthNotice.classList.remove('hidden');
             }
 
             document.getElementById('detailModal').classList.remove('hidden');
@@ -874,6 +1115,14 @@
             document.getElementById('recipientsList').innerHTML = '';
             document.getElementById('driveLinksList').innerHTML = '';
             document.getElementById('youtubeLinksList').innerHTML = '';
+            
+            // กำหนดวันที่ปัจจุบันในรูปแบบ Local Date (YYYY-MM-DD)
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('formRequestDate').value = `${yyyy}-${mm}-${dd}`;
+
             addRecipientRow();
             document.getElementById('adminModal').classList.remove('hidden');
         }
@@ -887,8 +1136,18 @@
             document.getElementById('formDepartmentId').value = req.departments?.department_name || '';
             document.getElementById('formTitle').value = req.title || '';
             document.getElementById('formLocation').value = req.location || '';
-            document.getElementById('formCoverUrl').value = req.cover_image_drive_url || '';
             document.getElementById('formDescription').value = req.description || '';
+
+            // แปลง created_at เป็น Local Date เพื่อให้ตรงกับวันที่บันทึกจริง
+            if (req.created_at) {
+                const d = new Date(req.created_at);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                document.getElementById('formRequestDate').value = `${year}-${month}-${day}`;
+            } else {
+                document.getElementById('formRequestDate').value = '';
+            }
 
             document.getElementById('chkPending').checked = !!req.pending_at;
             document.getElementById('chkInProgress').checked = !!req.in_progress_at;
@@ -926,8 +1185,8 @@
             const div = document.createElement('div');
             div.className = 'flex gap-2 items-center';
             div.innerHTML = `
-                <input type="text" placeholder="ชื่อ-นามสกุล" value="${name}" class="rec-name w-1/2 px-3 py-1.5 border rounded-lg text-xs">
-                <input type="email" placeholder="user@kmitl.ac.th" value="${email}" class="rec-email w-1/2 px-3 py-1.5 border rounded-lg text-xs">
+                <input type="text" placeholder="ชื่อ-นามสกุล" value="${name}" class="rec-name w-1/2 px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
+                <input type="email" placeholder="user@kmitl.ac.th" value="${email}" class="rec-email w-1/2 px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                 <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
             `;
             document.getElementById('recipientsList').appendChild(div);
@@ -937,7 +1196,7 @@
             const div = document.createElement('div');
             div.className = 'flex gap-2 items-center';
             div.innerHTML = `
-                <input type="url" placeholder="https://drive.google.com/..." value="${url}" class="drive-url w-full px-3 py-1.5 border rounded-lg text-xs">
+                <input type="url" placeholder="https://drive.google.com/..." value="${url}" class="drive-url w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                 <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
             `;
             document.getElementById('driveLinksList').appendChild(div);
@@ -947,7 +1206,7 @@
             const div = document.createElement('div');
             div.className = 'flex gap-2 items-center';
             div.innerHTML = `
-                <input type="url" placeholder="https://youtube.com/..." value="${url}" class="yt-url w-full px-3 py-1.5 border rounded-lg text-xs">
+                <input type="url" placeholder="https://youtube.com/..." value="${url}" class="yt-url w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                 <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-1"><i class="fa-solid fa-trash"></i></button>
             `;
             document.getElementById('youtubeLinksList').appendChild(div);
@@ -965,15 +1224,25 @@
                 if (error) throw error;
 
                 await fetchRequests();
+                showGlobalAlert('สำเร็จ', 'ลบรายการคำขอเรียบร้อยแล้ว', 'success');
             } catch (err) {
-                alert('เกิดข้อผิดพลาดในการลบรายการ: ' + err.message);
+                showGlobalAlert('เกิดข้อผิดพลาด', 'เกิดข้อผิดพลาดในการลบรายการ: ' + err.message, 'error');
             }
         }
 
         async function handleAdminSave(e) {
             e.preventDefault();
             const reqId = document.getElementById('formRequestId').value;
+            const workCode = document.getElementById('formWorkCode').value.trim();
+            const title = document.getElementById('formTitle').value.trim();
             const deptInputName = document.getElementById('formDepartmentId').value.trim();
+            const requestDate = document.getElementById('formRequestDate').value;
+
+            if (!workCode || !title || !deptInputName || !requestDate) {
+                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                return;
+            }
+
             const now = new Date().toISOString();
 
             let resolvedDeptId = null;
@@ -998,13 +1267,16 @@
                 }
             }
 
+            // กำหนดเวลา 12:00:00 Local Time เพื่อป้องกันปัญหา timezone เหลื่อมล้ำวัน
+            const formattedDate = new Date(`${requestDate}T12:00:00`).toISOString();
+
             const payload = {
-                work_code: document.getElementById('formWorkCode').value,
+                work_code: workCode,
                 department_id: resolvedDeptId,
-                title: document.getElementById('formTitle').value,
+                title: title,
                 location: document.getElementById('formLocation').value,
-                cover_image_drive_url: document.getElementById('formCoverUrl').value,
                 description: document.getElementById('formDescription').value,
+                created_at: formattedDate,
                 pending_at: document.getElementById('chkPending').checked ? now : null,
                 in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
                 completed_at: document.getElementById('chkCompleted').checked ? now : null,
@@ -1016,13 +1288,13 @@
             if (reqId) {
                 const { error } = await supabaseClient.from('service_requests').update(payload).eq('id', reqId);
                 if (error) {
-                    alert('เกิดข้อผิดพลาดในการอัปเดต: ' + error.message);
+                    showGlobalAlert('เกิดข้อผิดพลาด', 'เกิดข้อผิดพลาดในการอัปเดต: ' + error.message, 'error');
                     return;
                 }
             } else {
                 const { data, error } = await supabaseClient.from('service_requests').insert([payload]).select().single();
                 if (error) {
-                    alert('เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
+                    showGlobalAlert('เกิดข้อผิดพลาด', 'เกิดข้อผิดพลาดในการบันทึก: ' + error.message, 'error');
                     return;
                 }
                 if (data) targetId = data.id;
@@ -1061,6 +1333,7 @@
             closeAdminModal();
             await fetchDepartments();
             await fetchRequests();
+            showGlobalAlert('สำเร็จ', 'บันทึกข้อมูลเรียบร้อยแล้ว', 'success');
         }
 
         function showSection(sec) {
