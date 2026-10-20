@@ -944,11 +944,11 @@ async function fetchDepartments() {
                 await supabaseClient.from('request_recipients').delete().eq('request_id', targetId);
                 const recRows = document.querySelectorAll('#recipientsList > div');
                 const recInserts = [];
-                recRows.forEach(row => {
-                    const name = row.querySelector('.rec-name').value;
-                    const email = row.querySelector('.rec-email').value;
-                    if (email) recInserts.push({ request_id: targetId, name, email });
-                });
+            recRows.forEach(row => {
+    const name = row.querySelector('.rec-name').value;
+    const email = row.querySelector('.rec-email').value;
+    if (email) recInserts.push({ request_id: targetId, full_name: name, email }); // <--- เปลี่ยนเป็น 'full_name' ให้ตรงกับ Schema
+});
                 if (recInserts.length > 0) await supabaseClient.from('request_recipients').insert(recInserts);
 
                 // ลบและบันทึกลิงก์ Google Drive ใหม่
