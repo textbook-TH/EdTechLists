@@ -501,7 +501,6 @@
         document.addEventListener('DOMContentLoaded', async () => {
             initCharts();
             await fetchDepartments();
-            await fetchRequests();
             await checkAuthSession();
 
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
@@ -516,7 +515,7 @@
                     isAdmin = false;
                 }
                 updateUserUI();
-                await fetchRequests();
+                fetchRequests();
             });
         });
 
