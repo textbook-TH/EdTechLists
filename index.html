@@ -825,7 +825,7 @@ async function fetchDepartments() {
             const recContainer = document.getElementById('recipientsList');
             recContainer.innerHTML = '';
             if (req.request_recipients && req.request_recipients.length > 0) {
-                req.request_recipients.forEach(r => addRecipientRow(r.name || '', r.email || ''));
+                req.request_recipients.forEach(r => addRecipientRow(r.full_name || '', r.email || ''));
             } else {
                 addRecipientRow();
             }
