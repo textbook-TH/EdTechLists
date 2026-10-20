@@ -987,11 +987,17 @@
                     showGlobalAlert('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว ท่านสามารถเข้าสู่ระบบได้ทันที', 'success');
                     switchAuthMode('signin');
 
-                } else if (currentAuthMode === 'signin') {
-                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                    if (error) throw error;
-                    
-                    currentUser = data.user;
+
+  } else if (currentAuthMode === 'signin') {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        throw new Error('ตรวจสอบอีเมลและรหัสผ่านอีกครั้ง');
+                    }
+                    throw error;
+                }
+
+                currentUser = data.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
                     
                     updateUserUI();
