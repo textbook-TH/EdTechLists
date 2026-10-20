@@ -155,7 +155,7 @@
                 </div>
             </div>
 
-            <!-- Admin Action Toolbar (แสดงเฉพาะเมื่ออยู่แท็บเจ้าหน้าที่ และมีสิทธิ์ Admin) -->
+            <!-- Admin Action Toolbar -->
             <div id="adminToolbar" class="hidden flex justify-between items-center bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center space-x-2 text-amber-900">
                     <i class="fa-solid fa-user-shield text-lg text-brand-accent"></i>
@@ -178,7 +178,7 @@
                                 <th class="py-4 px-6 rounded-l-xl">รหัสบทเรียน</th>
                                 <th class="py-4 px-6">ชื่อบทเรียน</th>
                                 <th class="py-4 px-6 text-center">หมวดหมู่</th>
-                                <th class="py-4 px-6 text-center">วิดีโอ</th>
+                                <th class="py-4 px-6 text-center">วิดีโอ/ไฟล์</th>
                                 <th class="py-4 px-6 text-center rounded-r-xl">จัดการ</th>
                             </tr>
                         </thead>
@@ -421,7 +421,6 @@
             await fetchRequests();
             initCharts();
 
-            // ฟังการเปลี่ยนแปลง Auth State
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (session) {
                     currentUser = session.user;
@@ -645,11 +644,17 @@
                 const status = getStatusBadge(req);
 
                 if (isRoleAdminView) {
+                    // ตรวจสอบแยกจำนวนแนบไฟล์ระหว่าง YouTube และ Google Drive
                     const ytCount = req.request_youtube_links ? req.request_youtube_links.length : 0;
                     const driveCount = req.request_drive_links ? req.request_drive_links.length : 0;
-                    const totalMedia = ytCount + driveCount;
 
-                    let mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#FEFCE8] border border-[#FDE68A] text-[#D97706] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-film"></i> ${totalMedia || 0} คลิป</span>`;
+                    let mediaBadge = `<span class="text-slate-400 text-xs">-</span>`;
+
+                    if (ytCount > 0) {
+                        mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#FEFCE8] border border-[#FDE68A] text-[#D97706] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-film"></i> ${ytCount} คลิป</span>`;
+                    } else if (driveCount > 0) {
+                        mediaBadge = `<span class="inline-flex items-center gap-1.5 bg-[#EFF6FF] border border-[#BFDBFE] text-[#1D4ED8] font-bold px-3 py-1 rounded-xl text-xs"><i class="fa-solid fa-file-lines"></i> ${driveCount} ไฟล์</span>`;
+                    }
 
                     const rowHtml = `
                         <tr class="hover:bg-slate-50/80 transition-colors">
