@@ -1063,9 +1063,7 @@
             fetchRequests();
         }
 
-        function openDetailModal(id) {
-            if (isAdmin && activeTab === 'role') return;
-
+        function openDetailModal(id) {    ๓
             const req = allRequests.find(r => r.id === id);
             if (!req) return;
 
@@ -1088,7 +1086,7 @@
                 recipientsContainer.textContent = '-';
             }
 
-            const isUserLoggedInView = currentUser !== null && !isAdmin;
+            const isUserLoggedInView = currentUser !== null;
             const filesSec = document.getElementById('authorizedFilesSection');
 
             if (isUserLoggedInView) {
