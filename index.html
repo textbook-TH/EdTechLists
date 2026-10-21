@@ -509,7 +509,6 @@
             if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
                 isPasswordRecoveryMode = true;
                 openAuthModal('update_password');
-                showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลสถาบัน และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
             }
 
             await checkAuthSession();
@@ -518,7 +517,6 @@
                 if (event === 'PASSWORD_RECOVERY') {
                     isPasswordRecoveryMode = true;
                     openAuthModal('update_password');
-                    showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลสถาบัน และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
                 } else if (session) {
                     currentUser = session.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
