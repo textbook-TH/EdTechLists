@@ -281,7 +281,7 @@
                     </div>
                 </div>
 
-                <!-- ส่วนเพิ่มเติมสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล (มี 3 ช่อง: อีเมลในระบบ, รหัสผ่านใหม่, ยืนยันรหัสผ่านใหม่) -->
+                <!-- ส่วนสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล (มี: อีเมลในระบบ, รหัสผ่านใหม่, ยืนยันรหัสผ่านใหม่) -->
                 <div id="resetFieldsGroup" class="hidden space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
@@ -1030,6 +1030,17 @@
                     showGlobalAlert('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
 
                 } else if (currentAuthMode === 'reset') {
+                    // ตรวจสอบว่าอีเมลตรงกับในฐานข้อมูล request_recipients ก่อนทำการส่งอีเมล
+                    const { data: matchedRecipients, error: checkErr } = await supabaseClient
+                        .from('request_recipients')
+                        .select('id')
+                        .eq('email', email);
+
+                    if (checkErr || !matchedRecipients || matchedRecipients.length === 0) {
+                        showGlobalAlert('ไม่สามารถรีเซ็ตรหัสผ่านได้', 'อีเมลนี้ยังไม่อยู่ในฐานข้อมูลผู้ขอรับบริการของระบบ', 'error');
+                        return;
+                    }
+
                     const redirectTo = window.location.origin + window.location.pathname;
                     const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                         redirectTo: redirectTo
@@ -1053,9 +1064,20 @@
                         return;
                     }
 
+                    // ตรวจสอบว่าอีเมลตรงกับในระบบฐานข้อมูล request_recipients
+                    const { data: matchedRecipients, error: checkErr } = await supabaseClient
+                        .from('request_recipients')
+                        .select('id')
+                        .eq('email', email);
+
+                    if (checkErr || !matchedRecipients || matchedRecipients.length === 0) {
+                        showGlobalAlert('ข้อผิดพลาด', 'อีเมลนี้ไม่ตรงกับข้อมูลในระบบฐานข้อมูลผู้ขอรับบริการ', 'error');
+                        return;
+                    }
+
                     const { data: { user: recoveryUser } } = await supabaseClient.auth.getUser();
                     if (!recoveryUser || recoveryUser.email.toLowerCase() !== email.toLowerCase()) {
-                        showGlobalAlert('ข้อผิดพลาด', 'อีเมลที่ระบุไม่ตรงกับอีเมลในระบบที่ยืนยันการเปลี่ยนรหัสผ่าน', 'error');
+                        showGlobalAlert('ข้อผิดพลาด', 'อีเมลที่ระบุไม่ตรงกับอีเมลที่ได้รับการยืนยันรีเซ็ตรหัสผ่าน', 'error');
                         return;
                     }
 
