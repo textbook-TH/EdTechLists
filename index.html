@@ -727,7 +727,7 @@
             yearSelect.innerHTML = '<option value="">📅 เลือกปี</option>';
             sortedYears.forEach(y => {
                 const yearBE = y + 543;
-                yearSelect.innerHTML += `<option value="${y}">ปี พ.ศ. ${yearBE}</option>`;
+                yearSelect.innerHTML += `<option value="${y}">${yearBE}</option>`;
             });
         }
 
