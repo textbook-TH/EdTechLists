@@ -281,7 +281,7 @@
                     </div>
                 </div>
 
-                <!-- ส่วนสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล (มี: อีเมลในระบบ, รหัสผ่านใหม่, ยืนยันรหัสผ่านใหม่) -->
+                <!-- ส่วนสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล -->
                 <div id="resetFieldsGroup" class="hidden space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
@@ -316,7 +316,7 @@
             </form>
 
             <div id="authFooter" class="text-center text-xs pt-3 border-t border-slate-100">
-                <!-- สมัครสมาชิก | ลืมรหัสผ่าน สีเทาเมื่อปกติ สีเหลืองทองเมื่อโฮเวอร์/คลิก -->
+                <!-- สมัครสมาชิก | ลืมรหัสผ่าน -->
                 <div id="authLinksRow" class="flex justify-center items-center space-x-3 text-slate-400">
                     <a href="#" onclick="switchAuthMode('signup')" class="text-slate-400 hover:text-amber-500 transition-colors font-semibold">สมัครสมาชิก</a>
                     <span class="text-slate-300 font-normal">|</span>
@@ -497,15 +497,26 @@
         let currentPage = 1;
         const itemsPerPage = 9;
         let currentAuthMode = 'signin';
+        let isPasswordRecoveryMode = false;
 
         document.addEventListener('DOMContentLoaded', async () => {
             initCharts();
             await fetchDepartments();
             await fetchRequests();
+
+            // ตรวจสอบ URL Hash หากคลิกลิงก์เปลี่ยนรหัสผ่านเข้ามา
+            const hash = window.location.hash;
+            if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
+                isPasswordRecoveryMode = true;
+                openAuthModal('update_password');
+                showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลในระบบ และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
+            }
+
             await checkAuthSession();
 
             supabaseClient.auth.onAuthStateChange(async (event, session) => {
                 if (event === 'PASSWORD_RECOVERY') {
+                    isPasswordRecoveryMode = true;
                     openAuthModal('update_password');
                     showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลในระบบ และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
                 } else if (session) {
@@ -590,7 +601,11 @@
                     if (roleTabText) roleTabText.textContent = 'ผู้ขอใช้บริการ';
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
                     if (navHomeBtn) navHomeBtn.classList.add('hidden');
-                    activeTab = 'role';
+                    
+                    // หากไม่ได้อยู่ในโหมด Recovery ให้สลับ tab เป็น role
+                    if (!isPasswordRecoveryMode) {
+                        activeTab = 'role';
+                    }
                 }
             } else {
                 if (loginBtn) loginBtn.classList.remove('hidden');
@@ -598,7 +613,9 @@
                 if (logoutBtn) logoutBtn.classList.add('hidden');
                 if (navHomeBtn) navHomeBtn.classList.remove('hidden');
 
-                activeTab = 'home';
+                if (!isPasswordRecoveryMode) {
+                    activeTab = 'home';
+                }
             }
 
             updateCapsuleStyle();
@@ -710,7 +727,6 @@
             }
         }
 
-        // ฟังก์ชันสร้างตัวเลือกใน Dropdown ปี (ดึงปี ค.ศ. แล้วแสดงเป็น พ.ศ.)
         function populateYearFilter() {
             const yearSelect = document.getElementById('yearFilter');
             const years = new Set();
@@ -731,7 +747,6 @@
             });
         }
 
-        // ฟังก์ชันกรองรายการคำขอตามปี
         function filterRequests() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const deptId = document.getElementById('departmentFilter').value;
@@ -913,6 +928,7 @@
 
         function closeAuthModal() {
             document.getElementById('authModal').classList.add('hidden');
+            isPasswordRecoveryMode = false;
         }
 
         function switchAuthMode(mode) {
@@ -1030,7 +1046,6 @@
                     showGlobalAlert('สำเร็จ', 'เข้าสู่ระบบเรียบร้อยแล้ว', 'success');
 
                 } else if (currentAuthMode === 'reset') {
-                    // ตรวจสอบว่าอีเมลตรงกับในฐานข้อมูล request_recipients ก่อนทำการส่งอีเมล
                     const { data: matchedRecipients, error: checkErr } = await supabaseClient
                         .from('request_recipients')
                         .select('id')
@@ -1064,7 +1079,6 @@
                         return;
                     }
 
-                    // ตรวจสอบว่าอีเมลตรงกับในระบบฐานข้อมูล request_recipients
                     const { data: matchedRecipients, error: checkErr } = await supabaseClient
                         .from('request_recipients')
                         .select('id')
@@ -1085,6 +1099,8 @@
                     if (error) throw error;
 
                     closeAuthModal();
+                    // ล้าง URL hash หลังเปลี่ยนรหัสผ่านสำเร็จ
+                    window.history.replaceState(null, null, window.location.pathname);
                     showGlobalAlert('สำเร็จ', 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว เข้าสู่ระบบสมบูรณ์', 'success');
                 }
             } catch (err) {
@@ -1177,7 +1193,6 @@
             document.getElementById('driveLinksList').innerHTML = '';
             document.getElementById('youtubeLinksList').innerHTML = '';
             
-            // กำหนดวันที่ปัจจุบันในรูปแบบ Local Date (YYYY-MM-DD)
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1199,7 +1214,6 @@
             document.getElementById('formLocation').value = req.location || '';
             document.getElementById('formDescription').value = req.description || '';
 
-            // แปลง created_at เป็น Local Date เพื่อให้ตรงกับวันที่บันทึกจริง
             if (req.created_at) {
                 const d = new Date(req.created_at);
                 const year = d.getFullYear();
@@ -1328,7 +1342,6 @@
                 }
             }
 
-            // กำหนดเวลา 12:00:00 Local Time เพื่อป้องกันปัญหา timezone เหลื่อมล้ำวัน
             const formattedDate = new Date(`${requestDate}T12:00:00`).toISOString();
 
             const payload = {
