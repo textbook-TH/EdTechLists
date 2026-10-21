@@ -67,25 +67,28 @@
                     <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/textbook-TH/EvalTrack/main/logo.png';">
                     <div>
                         <span class="font-bold text-lg leading-none block">EdTechLists</span>
-                        <span class="text-xs text-slate-400 font-light">ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา</span>
+                        <span class="text-[10px] sm:text-xs text-slate-400 font-light block">ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา</span>
                     </div>
                 </div>
 
                 <!-- Capsule Navigation Bar -->
                 <div class="flex items-center space-x-2" id="navActionContainer">
                     <div id="navMenu" class="bg-slate-800/80 p-1 rounded-full border border-slate-700 flex items-center space-x-1 shadow-inner">
-                        <button id="navHomeBtn" onclick="switchNavTab('home')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow">
-                            <i class="fa-solid fa-house mr-1"></i> หน้าหลัก
+                        <button id="navHomeBtn" onclick="switchNavTab('home')" class="px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow flex items-center" title="หน้าหลัก">
+                            <i class="fa-solid fa-house sm:mr-1"></i>
+                            <span class="hidden sm:inline">หน้าหลัก</span>
                         </button>
-                        <button id="loginBtn" onclick="openAuthModal('signin')" class="px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
-                            <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
+                        <button id="loginBtn" onclick="openAuthModal('signin')" class="px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200 flex items-center" title="เข้าสู่ระบบ">
+                            <i class="fa-solid fa-right-to-bracket sm:mr-1"></i>
+                            <span class="hidden sm:inline">เข้าสู่ระบบ</span>
                         </button>
-                        <button id="roleTabBtn" onclick="switchNavTab('role')" class="hidden px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white">
-                            <i id="roleTabIcon" class="fa-solid fa-user-shield mr-1"></i>
-                            <span id="roleTabText">ผู้ขอใช้บริการ</span>
+                        <button id="roleTabBtn" onclick="switchNavTab('role')" class="hidden px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white flex items-center">
+                            <i id="roleTabIcon" class="fa-solid fa-user-shield sm:mr-1"></i>
+                            <span id="roleTabText" class="hidden sm:inline">ผู้ขอใช้บริการ</span>
                         </button>
-                        <button id="logoutBtn" onclick="handleSignOut()" class="hidden px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
-                            <i class="fa-solid fa-power-off mr-1"></i> ออกจากระบบ
+                        <button id="logoutBtn" onclick="handleSignOut()" class="hidden px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200 flex items-center" title="ออกจากระบบ">
+                            <i class="fa-solid fa-power-off sm:mr-1"></i>
+                            <span class="hidden sm:inline">ออกจากระบบ</span>
                         </button>
                     </div>
                 </div>
@@ -107,7 +110,8 @@
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+                    <!-- สถิติ 5 ช่อง ซ่อนบนมือถือ -->
+                    <div class="hidden sm:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
                         <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
                             <p id="statTotal" class="text-2xl font-bold text-white">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">คำขอทั้งหมด</span>
@@ -164,16 +168,20 @@
                 </button>
             </div>
 
+            <!-- ตารางแสดงรายการคำขอ -->
             <div id="adminTableView" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-[#F0F4F8] text-[#334155] text-xs font-bold border-b border-slate-100">
-                                <th class="py-4 px-6 rounded-l-xl">รหัสใบแจ้ง</th>
-                                <th class="py-4 px-6">ชื่อเรื่อง</th>
-                                <th class="py-4 px-6 text-center">หน่วยงาน</th>
-                                <th class="py-4 px-6 text-center">วิดีโอ/ไฟล์</th>
-                                <th id="thActionHeader" class="hidden py-4 px-6 text-center rounded-r-xl">จัดการ</th>
+                                <th class="py-4 px-4 sm:px-6 rounded-l-xl w-24 sm:w-28">
+                                    <span class="sm:hidden">รหัส</span>
+                                    <span class="hidden sm:inline">รหัสใบแจ้ง</span>
+                                </th>
+                                <th class="py-4 px-4 sm:px-6">ชื่อเรื่อง</th>
+                                <th class="hidden sm:table-cell py-4 px-6 text-center w-36">หน่วยงาน</th>
+                                <th class="hidden sm:table-cell py-4 px-6 text-center w-36">วิดีโอ/ไฟล์</th>
+                                <th id="thActionHeader" class="hidden py-4 px-6 text-center rounded-r-xl w-40">จัดการ</th>
                             </tr>
                         </thead>
                         <tbody id="adminTableBody" class="divide-y divide-slate-100 text-xs"></tbody>
@@ -201,29 +209,37 @@
                     <i class="fa-solid fa-chart-pie text-brand-accent mr-2"></i> รายงานสถิติเชิงลึกการให้บริการ
                 </h2>
 
-                <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
-                    <select id="chartYearFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                        <option value="">📅 เลือกปีทั้งหมด</option>
-                    </select>
+                <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto justify-start xl:justify-end">
+                    <div class="relative flex-1 sm:flex-none">
+                        <select id="chartYearFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">📅 เลือกปี</option>
+                        </select>
+                    </div>
 
-                    <select id="chartDeptFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                        <option value="">🏢 เลือกหน่วยงานทั้งหมด</option>
-                    </select>
+                    <div class="relative flex-1 sm:flex-none">
+                        <select id="chartDeptFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">🏢 เลือกหน่วยงาน</option>
+                        </select>
+                    </div>
 
-                    <select id="chartStatusFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                        <option value="">📌 เลือกสถานะงานทั้งหมด</option>
-                        <option value="pending">รอดำเนินการ</option>
-                        <option value="in_progress">กำลังดำเนินการ</option>
-                        <option value="completed">เสร็จสิ้นแล้ว</option>
-                        <option value="cancelled">ยกเลิก</option>
-                    </select>
+                    <div class="relative flex-1 sm:flex-none">
+                        <select id="chartStatusFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">📌 เลือกสถานะ</option>
+                            <option value="pending">รอดำเนินการ</option>
+                            <option value="in_progress">กำลังดำเนินการ</option>
+                            <option value="completed">เสร็จสิ้นแล้ว</option>
+                            <option value="cancelled">ยกเลิก</option>
+                        </select>
+                    </div>
 
-                    <button onclick="resetChartFilters()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
-                        <i class="fa-solid fa-rotate-left mr-1.5 text-slate-500"></i> ล้างค่าตัวกรอง
+                    <button onclick="resetChartFilters()" title="ล้างค่าตัวกรอง" class="hidden sm:inline-flex px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition items-center justify-center whitespace-nowrap">
+                        <i class="fa-solid fa-rotate-left sm:mr-1.5 text-slate-500"></i>
+                        <span>ล้างค่าตัวกรอง</span>
                     </button>
 
-                    <button onclick="showSection('landing')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
-                        <i class="fa-solid fa-arrow-left mr-1.5"></i> กลับหน้าหลัก
+                    <button onclick="showSection('landing')" title="กลับหน้าหลัก" class="px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
+                        <i class="fa-solid fa-arrow-left sm:mr-1.5"></i>
+                        <span class="hidden sm:inline">กลับหน้าหลัก</span>
                     </button>
                 </div>
             </div>
@@ -287,8 +303,9 @@
 
     <!-- Footer -->
     <footer class="bg-slate-900 text-slate-400 py-6 border-t border-slate-800 mt-auto text-xs">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p>© 2026 งานเทคโนโลยีการศึกษา คณะวิศวกรรมศาสตร์ สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
+        <div class="max-w-7xl mx-auto px-4 text-center leading-relaxed">
+            <p class="block sm:inline">© 2026 งานเทคโนโลยีการศึกษา คณะวิศวกรรมศาสตร์</p>
+            <p class="block sm:inline">สถาบันเทคโนโลยีพระจอมเกล้าเจ้าคุณทหารลาดกระบัง</p>
         </div>
     </footer>
 
@@ -302,7 +319,7 @@
             <!-- Modal Header Title -->
             <h3 id="chartModalTitle" class="text-base sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
 
-            <!-- Dynamic Modal Filter Controls (ปรับเปลี่ยนตามกราฟ) -->
+            <!-- Dynamic Modal Filter Controls -->
             <div id="modalFilterBar" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2.5 text-xs font-medium">
                 <span class="text-slate-500 font-bold flex items-center gap-1.5 shrink-0">
                     <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรองกราฟนี้:
@@ -310,25 +327,24 @@
 
                 <!-- 1. ตัวกรองปี -->
                 <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">📅 เลือกปีทั้งหมด</option>
+                    <option value="">📅 เลือกปี</option>
                 </select>
 
                 <!-- 2. ตัวกรองหน่วยงาน -->
                 <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">🏢 เลือกหน่วยงานทั้งหมด</option>
+                    <option value="">🏢 เลือกหน่วยงาน</option>
                 </select>
 
                 <!-- 3. ตัวกรองสถานะ -->
                 <select id="popupStatusFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">📌 เลือกสถานะงานทั้งหมด</option>
+                    <option value="">📌 เลือกสถานะ</option>
                     <option value="pending">รอดำเนินการ</option>
                     <option value="in_progress">กำลังดำเนินการ</option>
                     <option value="completed">เสร็จสิ้นแล้ว</option>
                     <option value="cancelled">ยกเลิก</option>
                 </select>
 
-                <!-- ปุ่มล้างตัวกรองในป๊อปอัป -->
-                <button onclick="resetModalFilters()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto">
+                <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center">
                     <i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตตัวกรอง
                 </button>
             </div>
@@ -578,7 +594,6 @@
 
     <!-- APPLICATION JAVASCRIPT -->
     <script>
-        // Helper function สำหรับป้องกัน Cross-Site Scripting (XSS)
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -601,7 +616,8 @@
         let filteredRequests = [];
         let departments = [];
         let currentPage = 1;
-        const itemsPerPage = 9;
+        // ปรับเป็น 15 รายการต่อหน้า
+        const itemsPerPage = 15;
         let currentAuthMode = 'signin';
         let isPasswordRecoveryMode = false;
 
@@ -698,11 +714,11 @@
 
                 if (isAdmin) {
                     if (roleTabText) roleTabText.textContent = 'เจ้าหน้าที่';
-                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield mr-1';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-shield sm:mr-1';
                     if (navHomeBtn) navHomeBtn.classList.remove('hidden');
                 } else {
                     if (roleTabText) roleTabText.textContent = 'ผู้ขอใช้บริการ';
-                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
+                    if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate sm:mr-1';
                     if (navHomeBtn) navHomeBtn.classList.add('hidden');
                     
                     if (!isPasswordRecoveryMode) {
@@ -812,6 +828,7 @@
                     </tr>`;
             }
 
+            // ดึงข้อมูลและกำหนดให้จัดเรียงตาม work_code จากมากไปน้อย (descending)
             const { data, error } = await supabaseClient
                 .from('service_requests')
                 .select(`
@@ -821,10 +838,16 @@
                     request_drive_links(*),
                     request_youtube_links(*)
                 `)
-                .order('created_at', { ascending: false });
+                .order('work_code', { ascending: false });
 
             if (!error && data) {
-                allRequests = data;
+                // เพิ่มการจัดเรียงระดับตัวอักษรและตัวเลขเพิ่มเติม เพื่อการันตีความถูกต้องของรหัสใบแจ้งจากมากไปน้อย
+                allRequests = data.sort((a, b) => {
+                    const codeA = a.work_code || '';
+                    const codeB = b.work_code || '';
+                    return codeB.localeCompare(codeA, undefined, { numeric: true, sensitivity: 'base' });
+                });
+
                 populateYearFilter();
                 populateChartYearFilter();
                 filterRequests();
@@ -929,18 +952,18 @@
 
                 const rowHtml = `
                     <tr ${clickHandler} class="hover:bg-slate-50/80 transition-colors ${isRoleAdminView ? '' : 'cursor-pointer'}">
-                        <td class="py-5 px-6 font-bold text-[#C2410C] text-sm font-sans whitespace-nowrap">
+                        <td class="py-4 px-4 sm:px-6 font-bold text-[#C2410C] text-xs sm:text-sm font-sans whitespace-nowrap">
                             ${escapeHTML(req.work_code || '')}
                         </td>
-                        <td class="py-5 px-6 font-semibold text-slate-900 text-sm max-w-sm">
+                        <td class="py-4 px-4 sm:px-6 font-semibold text-slate-900 text-xs sm:text-sm">
                             ${escapeHTML(req.title || '')}
                         </td>
-                        <td class="py-5 px-6 text-center whitespace-nowrap">
+                        <td class="hidden sm:table-cell py-5 px-6 text-center whitespace-nowrap">
                             <span class="bg-[#EEF2F6] text-slate-700 font-semibold px-4 py-1.5 rounded-xl text-xs">
                                 ${escapeHTML(req.departments?.department_name || 'สื่อดิจิทัล')}
                             </span>
                         </td>
-                        <td class="py-5 px-6 text-center whitespace-nowrap">
+                        <td class="hidden sm:table-cell py-5 px-6 text-center whitespace-nowrap">
                             ${mediaBadge}
                         </td>
                         ${actionCell}
@@ -1548,13 +1571,13 @@
             });
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
-            let yearOptions = '<option value="">📅 เลือกปีทั้งหมด</option>';
+            let yearOptions = '<option value="">📅 เลือกปี</option>';
             sortedYears.forEach(y => {
                 yearOptions += `<option value="${escapeHTML(y)}">${escapeHTML(y + 543)}</option>`;
             });
 
             yearSelect.innerHTML = yearOptions;
-            if (popupYearSelect) popupYearSelect.innerHTML = yearOptions;
+            if (popupYearSelect) popupYearSelect.innerHTML = '<option value="">📅 เลือกปี</option>' + sortedYears.map(y => `<option value="${escapeHTML(y)}">${escapeHTML(y + 543)}</option>`).join('');
         }
 
         function populateChartDeptFilter() {
@@ -1562,13 +1585,13 @@
             const popupDeptSelect = document.getElementById('popupDeptFilter');
             if (!deptSelect || !departments) return;
 
-            let deptOptions = '<option value="">🏢 เลือกหน่วยงานทั้งหมด</option>';
+            let deptOptions = '<option value="">🏢 เลือกหน่วยงาน</option>';
             departments.forEach(d => {
                 deptOptions += `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`;
             });
 
             deptSelect.innerHTML = deptOptions;
-            if (popupDeptSelect) popupDeptSelect.innerHTML = deptOptions;
+            if (popupDeptSelect) popupDeptSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>' + departments.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`).join('');
         }
 
         function resetChartFilters() {
@@ -1588,7 +1611,22 @@
             renderModalChartData();
         }
 
+        function getSquareLegendOptions() {
+            return {
+                labels: {
+                    usePointStyle: true,
+                    pointStyle: 'rect',
+                    boxWidth: 12,
+                    boxHeight: 12,
+                    padding: 12,
+                    font: { size: 11 }
+                }
+            };
+        }
+
         function initCharts() {
+            const legendOpts = getSquareLegendOptions();
+
             const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
             lineDemandInstance = new Chart(ctxLine, {
                 type: 'line',
@@ -1604,7 +1642,11 @@
                         pointBackgroundColor: '#EA580C'
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: legendOpts }
+                }
             });
 
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
@@ -1617,7 +1659,11 @@
                         backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: { legend: legendOpts }
+                }
             });
 
             const ctxStacked = document.getElementById('stackedDeptChart').getContext('2d');
@@ -1635,7 +1681,8 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { x: { stacked: true }, y: { stacked: true } }
+                    scales: { x: { stacked: true }, y: { stacked: true } },
+                    plugins: { legend: legendOpts }
                 }
             });
 
@@ -1649,7 +1696,8 @@
                 options: {
                     indexAxis: 'y',
                     responsive: true,
-                    maintainAspectRatio: false
+                    maintainAspectRatio: false,
+                    plugins: { legend: legendOpts }
                 }
             });
 
@@ -1669,7 +1717,8 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { r: { beginAtZero: true } }
+                    scales: { r: { beginAtZero: true } },
+                    plugins: { legend: legendOpts }
                 }
             });
         }
@@ -1794,26 +1843,25 @@
             deptEl.value = '';
             statusEl.value = '';
 
-            // แสดง/ซ่อนตัวกรองในป๊อปอัปให้เหมาะสมกับแต่ละประเภทกราฟ
             if (type === 'line') {
                 title.innerHTML = '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.remove('hidden');
-                statusEl.classList.add('hidden'); // ซ่อนสถานะเพราะแสดงทั้งเดือน
+                statusEl.classList.add('hidden');
             } else if (type === 'status') {
                 title.innerHTML = '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.remove('hidden');
-                statusEl.classList.add('hidden'); // ซ่อนสถานะเพราะกราฟแจกแจงสถานะอยู่แล้ว
+                statusEl.classList.add('hidden');
             } else if (type === 'stacked') {
                 title.innerHTML = '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)';
                 yearEl.classList.remove('hidden');
-                deptEl.classList.add('hidden'); // ซ่อนหน่วยงานเพราะแกน X แสดงครบทุกหน่วยงาน
+                deptEl.classList.add('hidden');
                 statusEl.classList.remove('hidden');
             } else if (type === 'topDept') {
                 title.innerHTML = '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)';
                 yearEl.classList.remove('hidden');
-                deptEl.classList.add('hidden'); // ซ่อนหน่วยงานเพราะจัดอันดับท็อป 5
+                deptEl.classList.add('hidden');
                 statusEl.classList.remove('hidden');
             } else if (type === 'radar') {
                 title.innerHTML = '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)';
@@ -1887,6 +1935,8 @@
                 }
             });
 
+            const legendOpts = getSquareLegendOptions();
+
             if (currentModalChartType === 'line') {
                 modalChartInstance = new Chart(ctxModal, {
                     type: 'line',
@@ -1902,7 +1952,11 @@
                             pointBackgroundColor: '#EA580C'
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: legendOpts }
+                    }
                 });
             } else if (currentModalChartType === 'status') {
                 modalChartInstance = new Chart(ctxModal, {
@@ -1914,7 +1968,11 @@
                             backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false }
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false,
+                        plugins: { legend: legendOpts }
+                    }
                 });
             } else if (currentModalChartType === 'stacked') {
                 const deptLabels = Object.keys(deptStats);
@@ -1932,7 +1990,8 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { x: { stacked: true }, y: { stacked: true } }
+                        scales: { x: { stacked: true }, y: { stacked: true } },
+                        plugins: { legend: legendOpts }
                     }
                 });
             } else if (currentModalChartType === 'topDept') {
@@ -1949,7 +2008,8 @@
                     options: {
                         indexAxis: 'y',
                         responsive: true,
-                        maintainAspectRatio: false
+                        maintainAspectRatio: false,
+                        plugins: { legend: legendOpts }
                     }
                 });
             } else if (currentModalChartType === 'radar') {
@@ -1969,7 +2029,8 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { r: { beginAtZero: true } }
+                        scales: { r: { beginAtZero: true } },
+                        plugins: { legend: legendOpts }
                     }
                 });
             }
