@@ -63,7 +63,6 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16 items-center">
                 <div class="flex items-center space-x-3 cursor-pointer" onclick="switchNavTab('home')">
-                    <!-- GitHub Logo Container -->
                     <img src="logo.png" alt="Logo" class="h-10 w-auto object-contain" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/textbook-TH/EvalTrack/main/logo.png';">
                     <div>
                         <span class="font-bold text-lg leading-none block">EdTechLists</span>
@@ -74,28 +73,19 @@
                 <!-- Capsule Navigation Bar -->
                 <div class="flex items-center space-x-2" id="navActionContainer">
                     <div id="navMenu" class="bg-slate-800/80 p-1 rounded-full border border-slate-700 flex items-center space-x-1 shadow-inner">
-                        
-                        <!-- 1. ปุ่ม หน้าหลัก -->
                         <button id="navHomeBtn" onclick="switchNavTab('home')" class="px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-amber-400 text-slate-950 shadow">
                             <i class="fa-solid fa-house mr-1"></i> หน้าหลัก
                         </button>
-
-                        <!-- 2. ปุ่ม เข้าสู่ระบบ -->
                         <button id="loginBtn" onclick="openAuthModal('signin')" class="px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
                             <i class="fa-solid fa-right-to-bracket mr-1"></i> เข้าสู่ระบบ
                         </button>
-
-                        <!-- 3. ปุ่มแสดงสิทธิ์/ผู้ขอใช้บริการ -->
                         <button id="roleTabBtn" onclick="switchNavTab('role')" class="hidden px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 text-slate-300 hover:text-white">
                             <i id="roleTabIcon" class="fa-solid fa-user-shield mr-1"></i>
                             <span id="roleTabText">ผู้ขอใช้บริการ</span>
                         </button>
-
-                        <!-- 4. ปุ่ม ออกจากระบบ -->
                         <button id="logoutBtn" onclick="handleSignOut()" class="hidden px-4 py-1.5 rounded-full text-xs font-bold text-slate-300 hover:bg-amber-400 hover:text-slate-950 transition-all duration-200">
                             <i class="fa-solid fa-power-off mr-1"></i> ออกจากระบบ
                         </button>
-
                     </div>
                 </div>
             </div>
@@ -107,7 +97,6 @@
         
         <!-- SECTION 1: PUBLIC LANDING PAGE & ADMIN VIEW -->
         <section id="sectionLanding" class="space-y-5">
-            <!-- Header Banner / Dashboard Panel -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
                 <div class="relative z-10 space-y-4">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
@@ -117,7 +106,6 @@
                         </div>
                     </div>
                     
-                    <!-- Stats Overview Cards Row -->
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
                         <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
                             <p id="statTotal" class="text-2xl font-bold text-white">0</p>
@@ -143,7 +131,6 @@
                 </div>
             </div>
 
-            <!-- Search Bar Row -->
             <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row gap-2.5 items-center justify-between">
                 <div class="relative flex-grow w-full md:w-auto">
                     <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-sm"></i>
@@ -166,7 +153,6 @@
                 </div>
             </div>
 
-            <!-- Admin Action Toolbar -->
             <div id="adminToolbar" class="hidden flex justify-between items-center bg-amber-50 border border-amber-200 p-4 rounded-xl shadow-sm">
                 <div class="flex items-center space-x-2 text-amber-900">
                     <i class="fa-solid fa-user-shield text-lg text-brand-accent"></i>
@@ -177,7 +163,6 @@
                 </button>
             </div>
 
-            <!-- Unified Data Table Container -->
             <div id="adminTableView" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -195,7 +180,6 @@
                 </div>
             </div>
 
-            <!-- Pagination -->
             <div class="flex justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 text-xs">
                 <span id="pageInfo" class="text-slate-500">แสดงรายการ 0 - 0 จากทั้งหมด 0</span>
                 <div class="flex space-x-1.5">
@@ -211,26 +195,20 @@
 
         <!-- SECTION 2: INTERACTIVE DASHBOARD CHARTS -->
         <section id="sectionDashboard" class="hidden space-y-6">
-            <!-- รวมหัวข้อรายงาน, ตัวกรองข้อมูล และปุ่มกลับหน้าหลักไว้ในแถบเดียวกัน -->
             <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col xl:flex-row gap-3.5 items-center justify-between">
-                <!-- ฝั่งซ้าย: หัวข้อหลัก -->
                 <h2 class="text-base font-bold text-slate-900 flex items-center shrink-0 w-full xl:w-auto">
                     <i class="fa-solid fa-chart-pie text-brand-accent mr-2"></i> รายงานสถิติเชิงลึกการให้บริการ
                 </h2>
 
-                <!-- ฝั่งขวา: กลุ่มตัวกรอง + ปุ่มล้างตัวกรอง + ปุ่มกลับหน้าหลัก -->
                 <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
-                    <!-- 1. เลือกปี -->
                     <select id="chartYearFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
                         <option value="">📅 เลือกปีทั้งหมด</option>
                     </select>
 
-                    <!-- 2. เลือกหน่วยงาน -->
                     <select id="chartDeptFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
                         <option value="">🏢 เลือกหน่วยงานทั้งหมด</option>
                     </select>
 
-                    <!-- 3. เลือกสถานะงาน -->
                     <select id="chartStatusFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
                         <option value="">📌 เลือกสถานะงานทั้งหมด</option>
                         <option value="pending">รอดำเนินการ</option>
@@ -239,57 +217,68 @@
                         <option value="cancelled">ยกเลิก</option>
                     </select>
 
-                    <!-- 4. ปุ่มล้างค่าตัวกรอง -->
                     <button onclick="resetChartFilters()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
                         <i class="fa-solid fa-rotate-left mr-1.5 text-slate-500"></i> ล้างค่าตัวกรอง
                     </button>
 
-                    <!-- 5. ปุ่มกลับหน้าหลัก (วางเรียงต่อท้ายปุ่มล้างค่าตัวกรอง) -->
                     <button onclick="showSection('landing')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
                         <i class="fa-solid fa-arrow-left mr-1.5"></i> กลับหน้าหลัก
                     </button>
                 </div>
             </div>
 
-            <!-- แถวที่ 1: Line Chart (Full Width) -->
-            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+            <!-- Grid Charts Cards -->
+            <div onclick="openChartModal('line')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                </span>
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
                     <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)
                 </h3>
-                <div class="h-64 sm:h-72"><canvas id="lineChartDemand"></canvas></div>
+                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="lineChartDemand"></canvas></div>
             </div>
 
-            <!-- แถวที่ 2: Doughnut Chart (Half) + Stacked Bar Chart (Half) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                <div onclick="openChartModal('status')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                    </span>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
                     </h3>
-                    <div class="h-64 sm:h-72"><canvas id="statusChart"></canvas></div>
+                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="statusChart"></canvas></div>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                <div onclick="openChartModal('stacked')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                    </span>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)
                     </h3>
-                    <div class="h-64 sm:h-72"><canvas id="stackedDeptChart"></canvas></div>
+                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- แถวที่ 3: Horizontal Bar Chart (Half) + Radar Chart (Half) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                <div onclick="openChartModal('topDept')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                    </span>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 4. 5 อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)
                     </h3>
-                    <div class="h-64 sm:h-72"><canvas id="topDeptBarChart"></canvas></div>
+                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="topDeptBarChart"></canvas></div>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                <div onclick="openChartModal('radar')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                    </span>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)
                     </h3>
-                    <div class="h-64 sm:h-72"><canvas id="radarCapabilityChart"></canvas></div>
+                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -302,6 +291,54 @@
             <p class="mt-1 text-slate-500">ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา | Support: edtech@kmitl.ac.th</p>
         </div>
     </footer>
+
+    <!-- MODAL 4: EXPANDED CHART MODAL (ป๊อปอัปขยายกราฟสถิติ + ตัวกรองเฉพาะกราฟ) -->
+    <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl max-w-4xl sm:max-w-5xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl space-y-4 relative border border-slate-100">
+            <button onclick="closeChartModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+
+            <!-- Modal Header Title -->
+            <h3 id="chartModalTitle" class="text-base sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
+
+            <!-- Dynamic Modal Filter Controls (ปรับเปลี่ยนตามกราฟ) -->
+            <div id="modalFilterBar" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2.5 text-xs font-medium">
+                <span class="text-slate-500 font-bold flex items-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรองกราฟนี้:
+                </span>
+
+                <!-- 1. ตัวกรองปี -->
+                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <option value="">📅 เลือกปีทั้งหมด</option>
+                </select>
+
+                <!-- 2. ตัวกรองหน่วยงาน -->
+                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <option value="">🏢 เลือกหน่วยงานทั้งหมด</option>
+                </select>
+
+                <!-- 3. ตัวกรองสถานะ -->
+                <select id="popupStatusFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <option value="">📌 เลือกสถานะงานทั้งหมด</option>
+                    <option value="pending">รอดำเนินการ</option>
+                    <option value="in_progress">กำลังดำเนินการ</option>
+                    <option value="completed">เสร็จสิ้นแล้ว</option>
+                    <option value="cancelled">ยกเลิก</option>
+                </select>
+
+                <!-- ปุ่มล้างตัวกรองในป๊อปอัป -->
+                <button onclick="resetModalFilters()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตตัวกรอง
+                </button>
+            </div>
+
+            <!-- Canvas Container -->
+            <div class="h-[420px] sm:h-[500px] bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                <canvas id="modalCanvas"></canvas>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL 1: AUTHENTICATION -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
@@ -331,7 +368,6 @@
                     </div>
                 </div>
 
-                <!-- เพิ่มช่องยืนยันรหัสผ่านสำหรับการสมัครสมาชิก -->
                 <div id="signupConfirmPasswordGroup" class="hidden">
                     <label class="block text-xs font-semibold text-slate-700 mb-1">ยืนยันรหัสผ่าน</label>
                     <div class="relative">
@@ -343,7 +379,6 @@
                     </div>
                 </div>
 
-                <!-- ส่วนสำหรับการตั้งรหัสผ่านใหม่เมื่อรีเซ็ตรหัสผ่านผ่านอีเมล -->
                 <div id="resetFieldsGroup" class="hidden space-y-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">รหัสผ่านใหม่</label>
@@ -369,7 +404,6 @@
 
                 <div id="authAlert" class="hidden text-xs p-3 rounded-lg"></div>
 
-                <!-- ปุ่มตกลง -->
                 <div class="flex justify-center pt-1">
                     <button type="submit" id="authSubmitBtn" class="px-8 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-sm transition shadow">
                         ตกลง
@@ -378,7 +412,6 @@
             </form>
 
             <div id="authFooter" class="text-center text-xs pt-3 border-t border-slate-100">
-                <!-- สมัครสมาชิก | ลืมรหัสผ่าน -->
                 <div id="authLinksRow" class="flex justify-center items-center space-x-3 text-slate-400">
                     <a href="#" onclick="switchAuthMode('signup')" class="text-slate-400 hover:text-amber-500 transition-colors font-semibold">สมัครสมาชิก</a>
                     <span class="text-slate-300 font-normal">|</span>
@@ -566,7 +599,6 @@
             await fetchDepartments();
             await fetchRequests();
 
-            // ตรวจสอบ URL Hash หากคลิกลิงก์เปลี่ยนรหัสผ่านเข้ามา
             const hash = window.location.hash;
             if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
                 isPasswordRecoveryMode = true;
@@ -753,7 +785,6 @@
                     filterSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
                 });
 
-                // เติมหน่วยงานลงตัวกรองหน้า Dashboard
                 populateChartDeptFilter();
             }
         }
@@ -1142,7 +1173,6 @@
                         return;
                     }
 
-                    // 1. ตรวจสอบว่าอีเมลตรงกับในฐานข้อมูล request_recipients
                     const { data: matchedRecipients, error: checkErr } = await supabaseClient
                         .from('request_recipients')
                         .select('id')
@@ -1153,14 +1183,12 @@
                         return;
                     }
 
-                    // 2. ตรวจสอบว่าอีเมลตรงกับ User Session ที่ได้รับอนุญาตเปลี่ยนรหัสผ่าน
                     const { data: { user: recoveryUser } } = await supabaseClient.auth.getUser();
                     if (!recoveryUser || recoveryUser.email.toLowerCase() !== email.toLowerCase()) {
                         showGlobalAlert('ข้อผิดพลาด', 'อีเมลที่ระบุไม่ตรงกับอีเมลที่ได้รับการยืนยันรีเซ็ตรหัสผ่าน', 'error');
                         return;
                     }
 
-                    // 3. อัปเดตรหัสผ่านใหม่
                     const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
                     if (error) throw error;
 
@@ -1492,9 +1520,12 @@
         let stackedDeptInstance = null;
         let topDeptBarInstance = null;
         let radarCapInstance = null;
+        let modalChartInstance = null;
+        let currentModalChartType = null;
 
         function populateChartYearFilter() {
             const yearSelect = document.getElementById('chartYearFilter');
+            const popupYearSelect = document.getElementById('popupYearFilter');
             if (!yearSelect) return;
             const years = new Set();
 
@@ -1506,19 +1537,27 @@
             });
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
-            yearSelect.innerHTML = '<option value="">📅 เลือกปีทั้งหมด</option>';
+            let yearOptions = '<option value="">📅 เลือกปีทั้งหมด</option>';
             sortedYears.forEach(y => {
-                yearSelect.innerHTML += `<option value="${y}">${y + 543}</option>`;
+                yearOptions += `<option value="${y}">${y + 543}</option>`;
             });
+
+            yearSelect.innerHTML = yearOptions;
+            if (popupYearSelect) popupYearSelect.innerHTML = yearOptions;
         }
 
         function populateChartDeptFilter() {
             const deptSelect = document.getElementById('chartDeptFilter');
+            const popupDeptSelect = document.getElementById('popupDeptFilter');
             if (!deptSelect || !departments) return;
-            deptSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงานทั้งหมด</option>';
+
+            let deptOptions = '<option value="">🏢 เลือกหน่วยงานทั้งหมด</option>';
             departments.forEach(d => {
-                deptSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
+                deptOptions += `<option value="${d.id}">${d.department_name}</option>`;
             });
+
+            deptSelect.innerHTML = deptOptions;
+            if (popupDeptSelect) popupDeptSelect.innerHTML = deptOptions;
         }
 
         function resetChartFilters() {
@@ -1531,8 +1570,14 @@
             updateDashboardStats();
         }
 
+        function resetModalFilters() {
+            document.getElementById('popupYearFilter').value = '';
+            document.getElementById('popupDeptFilter').value = '';
+            document.getElementById('popupStatusFilter').value = '';
+            renderModalChartData();
+        }
+
         function initCharts() {
-            // 1. Line Chart: แนวโน้มคำขอรับบริการรายเดือน
             const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
             lineDemandInstance = new Chart(ctxLine, {
                 type: 'line',
@@ -1551,7 +1596,6 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 2. Doughnut Chart: สัดส่วนสถานะงานในมือปัจจุบัน (%)
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
@@ -1565,7 +1609,6 @@
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            // 3. Stacked Bar Chart: ปริมาณและสถานะงานจำแนกรายหน่วยงาน
             const ctxStacked = document.getElementById('stackedDeptChart').getContext('2d');
             stackedDeptInstance = new Chart(ctxStacked, {
                 type: 'bar',
@@ -1585,7 +1628,6 @@
                 }
             });
 
-            // 4. Horizontal Bar Chart: 5 อันดับหน่วยงานที่มีคำขอสูงสุด
             const ctxTop = document.getElementById('topDeptBarChart').getContext('2d');
             topDeptBarInstance = new Chart(ctxTop, {
                 type: 'bar',
@@ -1600,7 +1642,6 @@
                 }
             });
 
-            // 5. Radar Chart: มิติศักยภาพและการกระจายการให้บริการ
             const ctxRadar = document.getElementById('radarCapabilityChart').getContext('2d');
             radarCapInstance = new Chart(ctxRadar, {
                 type: 'radar',
@@ -1627,7 +1668,6 @@
             const selectedDept = document.getElementById('chartDeptFilter')?.value;
             const selectedStatus = document.getElementById('chartStatusFilter')?.value;
 
-            // กรองข้อมูลตามเงื่อนไขใน Dashboard Filter Bar
             const requestsToProcess = allRequests.filter(r => {
                 let matchYear = true;
                 if (selectedYear && r.created_at) {
@@ -1659,13 +1699,11 @@
                 if (s === 'completed') comp++;
                 if (s === 'cancelled') canc++;
 
-                // นับรายเดือนจาก created_at
                 if (r.created_at) {
                     const m = new Date(r.created_at).getMonth();
                     if (m >= 0 && m < 12) monthCounts[m]++;
                 }
 
-                // นับแยกตามหน่วยงาน
                 const dName = r.departments?.department_name || 'อื่นๆ';
                 if (!deptStats[dName]) {
                     deptStats[dName] = { pending: 0, in_progress: 0, completed: 0, cancelled: 0, total: 0 };
@@ -1673,32 +1711,27 @@
                 deptStats[dName][s]++;
                 deptStats[dName].total++;
 
-                // นับจำนวนผู้รับบริการ
                 if (r.request_recipients && Array.isArray(r.request_recipients)) {
                     totalRecipients += r.request_recipients.length;
                 }
             });
 
-            // อัปเดตการ์ด KPI สรุปตัวเลขตามการกรอง
             document.getElementById('statTotal').textContent = requestsToProcess.length;
             document.getElementById('statPending').textContent = pending;
             document.getElementById('statInProgress').textContent = inProg;
             document.getElementById('statCompleted').textContent = comp;
             document.getElementById('statCancelled').textContent = canc;
 
-            // 1. Update Line Chart Demand
             if (lineDemandInstance) {
                 lineDemandInstance.data.datasets[0].data = monthCounts;
                 lineDemandInstance.update();
             }
 
-            // 2. Update Doughnut Chart
             if (statusChartInstance) {
                 statusChartInstance.data.datasets[0].data = [pending, inProg, comp, canc];
                 statusChartInstance.update();
             }
 
-            // 3. Update Stacked Bar Chart
             const deptLabels = Object.keys(deptStats);
             if (stackedDeptInstance) {
                 stackedDeptInstance.data.labels = deptLabels;
@@ -1709,7 +1742,6 @@
                 stackedDeptInstance.update();
             }
 
-            // 4. Update Horizontal Top 5 Bar Chart
             const sortedDepts = Object.entries(deptStats)
                 .sort((a, b) => b[1].total - a[1].total)
                 .slice(0, 5);
@@ -1720,7 +1752,6 @@
                 topDeptBarInstance.update();
             }
 
-            // 5. Update Radar Chart (6 แกนมิติศักยภาพ)
             if (radarCapInstance) {
                 const totalReqs = requestsToProcess.length;
                 const activeDeptsCount = deptLabels.length;
@@ -1736,6 +1767,210 @@
                 ];
                 radarCapInstance.update();
             }
+        }
+
+        // --- EXPANDED CHART MODAL & DYNAMIC FILTERING LOGIC ---
+        function openChartModal(type) {
+            currentModalChartType = type;
+            const modal = document.getElementById('chartModal');
+            const title = document.getElementById('chartModalTitle');
+
+            const yearEl = document.getElementById('popupYearFilter');
+            const deptEl = document.getElementById('popupDeptFilter');
+            const statusEl = document.getElementById('popupStatusFilter');
+
+            yearEl.value = '';
+            deptEl.value = '';
+            statusEl.value = '';
+
+            // แสดง/ซ่อนตัวกรองในป๊อปอัปให้เหมาะสมกับแต่ละประเภทกราฟ
+            if (type === 'line') {
+                title.innerHTML = '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)';
+                yearEl.classList.remove('hidden');
+                deptEl.classList.remove('hidden');
+                statusEl.classList.add('hidden'); // ซ่อนสถานะเพราะแสดงทั้งเดือน
+            } else if (type === 'status') {
+                title.innerHTML = '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)';
+                yearEl.classList.remove('hidden');
+                deptEl.classList.remove('hidden');
+                statusEl.classList.add('hidden'); // ซ่อนสถานะเพราะกราฟแจกแจงสถานะอยู่แล้ว[cite: 5]
+            } else if (type === 'stacked') {
+                title.innerHTML = '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)';
+                yearEl.classList.remove('hidden');
+                deptEl.classList.add('hidden'); // ซ่อนหน่วยงานเพราะแกน X แสดงครบทุกหน่วยงาน
+                statusEl.classList.remove('hidden');
+            } else if (type === 'topDept') {
+                title.innerHTML = '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 4. 5 อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)';
+                yearEl.classList.remove('hidden');
+                deptEl.classList.add('hidden'); // ซ่อนหน่วยงานเพราะจัดอันดับท็อป 5
+                statusEl.classList.remove('hidden');
+            } else if (type === 'radar') {
+                title.innerHTML = '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)';
+                yearEl.classList.remove('hidden');
+                deptEl.classList.remove('hidden');
+                statusEl.classList.add('hidden');
+            }
+
+            modal.classList.remove('hidden');
+            renderModalChartData();
+        }
+
+        function renderModalChartData() {
+            if (!currentModalChartType) return;
+
+            const ctxModal = document.getElementById('modalCanvas').getContext('2d');
+            const selectedYear = document.getElementById('popupYearFilter').value;
+            const selectedDept = document.getElementById('popupDeptFilter').value;
+            const selectedStatus = document.getElementById('popupStatusFilter').value;
+
+            const filteredData = allRequests.filter(r => {
+                let matchYear = true;
+                if (selectedYear && r.created_at) {
+                    matchYear = new Date(r.created_at).getFullYear().toString() === selectedYear;
+                }
+
+                let matchDept = true;
+                if (selectedDept) {
+                    matchDept = r.department_id == selectedDept;
+                }
+
+                let matchStatus = true;
+                if (selectedStatus) {
+                    matchStatus = getStatusBadge(r).status === selectedStatus;
+                }
+
+                return matchYear && matchDept && matchStatus;
+            });
+
+            if (modalChartInstance) {
+                modalChartInstance.destroy();
+                modalChartInstance = null;
+            }
+
+            let pending = 0, inProg = 0, comp = 0, canc = 0;
+            const monthCounts = Array(12).fill(0);
+            const deptStats = {};
+            let totalRecipients = 0;
+
+            filteredData.forEach(r => {
+                const s = getStatusBadge(r).status;
+                if (s === 'pending') pending++;
+                if (s === 'in_progress') inProg++;
+                if (s === 'completed') comp++;
+                if (s === 'cancelled') canc++;
+
+                if (r.created_at) {
+                    const m = new Date(r.created_at).getMonth();
+                    if (m >= 0 && m < 12) monthCounts[m]++;
+                }
+
+                const dName = r.departments?.department_name || 'อื่นๆ';
+                if (!deptStats[dName]) {
+                    deptStats[dName] = { pending: 0, in_progress: 0, completed: 0, cancelled: 0, total: 0 };
+                }
+                deptStats[dName][s]++;
+                deptStats[dName].total++;
+
+                if (r.request_recipients && Array.isArray(r.request_recipients)) {
+                    totalRecipients += r.request_recipients.length;
+                }
+            });
+
+            if (currentModalChartType === 'line') {
+                modalChartInstance = new Chart(ctxModal, {
+                    type: 'line',
+                    data: {
+                        labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                        datasets: [{
+                            label: 'จำนวนคำขอใหม่ (Demand)',
+                            data: monthCounts,
+                            borderColor: '#EA580C',
+                            backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#EA580C'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            } else if (currentModalChartType === 'status') {
+                modalChartInstance = new Chart(ctxModal, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                        datasets: [{
+                            data: [pending, inProg, comp, canc],
+                            backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            } else if (currentModalChartType === 'stacked') {
+                const deptLabels = Object.keys(deptStats);
+                modalChartInstance = new Chart(ctxModal, {
+                    type: 'bar',
+                    data: {
+                        labels: deptLabels,
+                        datasets: [
+                            { label: 'รอดำเนินการ', data: deptLabels.map(d => deptStats[d].pending), backgroundColor: '#F59E0B' },
+                            { label: 'กำลังดำเนินการ', data: deptLabels.map(d => deptStats[d].in_progress), backgroundColor: '#3B82F6' },
+                            { label: 'เสร็จสิ้นแล้ว', data: deptLabels.map(d => deptStats[d].completed), backgroundColor: '#10B981' },
+                            { label: 'ยกเลิก', data: deptLabels.map(d => deptStats[d].cancelled), backgroundColor: '#F43F5E' }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { x: { stacked: true }, y: { stacked: true } }
+                    }
+                });
+            } else if (currentModalChartType === 'topDept') {
+                const sortedDepts = Object.entries(deptStats)
+                    .sort((a, b) => b[1].total - a[1].total)
+                    .slice(0, 5);
+
+                modalChartInstance = new Chart(ctxModal, {
+                    type: 'bar',
+                    data: {
+                        labels: sortedDepts.map(d => d[0]),
+                        datasets: [{ label: 'จำนวนคำขอ', data: sortedDepts.map(d => d[1].total), backgroundColor: '#38BDF8' }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            } else if (currentModalChartType === 'radar') {
+                const deptLabels = Object.keys(deptStats);
+                modalChartInstance = new Chart(ctxModal, {
+                    type: 'radar',
+                    data: {
+                        labels: ['ปริมาณคำขอรวม', 'งานเสร็จสิ้น', 'งานกำลังทำ/ส่งตรวจ', 'ผู้รับบริการ', 'การครอบคลุมหน่วยงาน', 'งานตอบรับตามแผน'],
+                        datasets: [{
+                            label: 'ภาพรวมศักยภาพการผลิต',
+                            data: [filteredData.length, comp, inProg, totalRecipients, deptLabels.length, pending + inProg],
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                            pointBackgroundColor: '#8B5CF6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { r: { beginAtZero: true } }
+                    }
+                });
+            }
+        }
+
+        function closeChartModal() {
+            document.getElementById('chartModal').classList.add('hidden');
+            if (modalChartInstance) {
+                modalChartInstance.destroy();
+                modalChartInstance = null;
+            }
+            currentModalChartType = null;
         }
     </script>
 </body>
