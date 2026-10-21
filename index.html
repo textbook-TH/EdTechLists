@@ -211,23 +211,85 @@
 
         <!-- SECTION 2: INTERACTIVE DASHBOARD CHARTS -->
         <section id="sectionDashboard" class="hidden space-y-6">
-            <div class="flex justify-between items-center bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
-                <h2 class="text-base font-bold text-slate-900 flex items-center">
+            <!-- รวมหัวข้อรายงาน, ตัวกรองข้อมูล และปุ่มกลับหน้าหลักไว้ในแถบเดียวกัน -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col xl:flex-row gap-3.5 items-center justify-between">
+                <!-- ฝั่งซ้าย: หัวข้อหลัก -->
+                <h2 class="text-base font-bold text-slate-900 flex items-center shrink-0 w-full xl:w-auto">
                     <i class="fa-solid fa-chart-pie text-brand-accent mr-2"></i> รายงานสถิติเชิงลึกการให้บริการ
                 </h2>
-                <button onclick="showSection('landing')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-xl text-xs font-medium transition">
-                    <i class="fa-solid fa-arrow-left mr-1"></i> กลับหน้าหลัก
-                </button>
+
+                <!-- ฝั่งขวา: กลุ่มตัวกรอง + ปุ่มล้างตัวกรอง + ปุ่มกลับหน้าหลัก -->
+                <div class="flex flex-wrap items-center gap-2.5 w-full xl:w-auto justify-start xl:justify-end">
+                    <!-- 1. เลือกปี -->
+                    <select id="chartYearFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                        <option value="">📅 เลือกปีทั้งหมด</option>
+                    </select>
+
+                    <!-- 2. เลือกหน่วยงาน -->
+                    <select id="chartDeptFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                        <option value="">🏢 เลือกหน่วยงานทั้งหมด</option>
+                    </select>
+
+                    <!-- 3. เลือกสถานะงาน -->
+                    <select id="chartStatusFilter" onchange="updateDashboardStats()" class="appearance-none px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                        <option value="">📌 เลือกสถานะงานทั้งหมด</option>
+                        <option value="pending">รอดำเนินการ</option>
+                        <option value="in_progress">กำลังดำเนินการ</option>
+                        <option value="completed">เสร็จสิ้นแล้ว</option>
+                        <option value="cancelled">ยกเลิก</option>
+                    </select>
+
+                    <!-- 4. ปุ่มล้างค่าตัวกรอง -->
+                    <button onclick="resetChartFilters()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
+                        <i class="fa-solid fa-rotate-left mr-1.5 text-slate-500"></i> ล้างค่าตัวกรอง
+                    </button>
+
+                    <!-- 5. ปุ่มกลับหน้าหลัก (วางเรียงต่อท้ายปุ่มล้างค่าตัวกรอง) -->
+                    <button onclick="showSection('landing')" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
+                        <i class="fa-solid fa-arrow-left mr-1.5"></i> กลับหน้าหลัก
+                    </button>
+                </div>
             </div>
 
+            <!-- แถวที่ 1: Line Chart (Full Width) -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)
+                </h3>
+                <div class="h-64 sm:h-72"><canvas id="lineChartDemand"></canvas></div>
+            </div>
+
+            <!-- แถวที่ 2: Doughnut Chart (Half) + Stacked Bar Chart (Half) -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs">สถิติจำนวนคำขอแบ่งตามสถานะ</h3>
-                    <div class="h-64"><canvas id="statusChart"></canvas></div>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                        <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
+                    </h3>
+                    <div class="h-64 sm:h-72"><canvas id="statusChart"></canvas></div>
                 </div>
+
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs">สถิติจำนวนคำขอแบ่งตามหน่วยงาน</h3>
-                    <div class="h-64"><canvas id="deptChart"></canvas></div>
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)
+                    </h3>
+                    <div class="h-64 sm:h-72"><canvas id="stackedDeptChart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- แถวที่ 3: Horizontal Bar Chart (Half) + Radar Chart (Half) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                        <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 4. 5 อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)
+                    </h3>
+                    <div class="h-64 sm:h-72"><canvas id="topDeptBarChart"></canvas></div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)
+                    </h3>
+                    <div class="h-64 sm:h-72"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -690,6 +752,9 @@
                 data.forEach(d => {
                     filterSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
                 });
+
+                // เติมหน่วยงานลงตัวกรองหน้า Dashboard
+                populateChartDeptFilter();
             }
         }
 
@@ -719,6 +784,7 @@
             if (!error && data) {
                 allRequests = data;
                 populateYearFilter();
+                populateChartYearFilter();
                 filterRequests();
                 updateDashboardStats();
             }
@@ -1420,55 +1486,255 @@
             }
         }
 
+        // --- DASHBOARD CHARTS INSTANCES & FILTER LOGIC ---
+        let lineDemandInstance = null;
         let statusChartInstance = null;
-        let deptChartInstance = null;
+        let stackedDeptInstance = null;
+        let topDeptBarInstance = null;
+        let radarCapInstance = null;
+
+        function populateChartYearFilter() {
+            const yearSelect = document.getElementById('chartYearFilter');
+            if (!yearSelect) return;
+            const years = new Set();
+
+            allRequests.forEach(req => {
+                if (req.created_at) {
+                    const y = new Date(req.created_at).getFullYear();
+                    if (!isNaN(y)) years.add(y);
+                }
+            });
+
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            yearSelect.innerHTML = '<option value="">📅 เลือกปีทั้งหมด</option>';
+            sortedYears.forEach(y => {
+                yearSelect.innerHTML += `<option value="${y}">${y + 543}</option>`;
+            });
+        }
+
+        function populateChartDeptFilter() {
+            const deptSelect = document.getElementById('chartDeptFilter');
+            if (!deptSelect || !departments) return;
+            deptSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงานทั้งหมด</option>';
+            departments.forEach(d => {
+                deptSelect.innerHTML += `<option value="${d.id}">${d.department_name}</option>`;
+            });
+        }
+
+        function resetChartFilters() {
+            const y = document.getElementById('chartYearFilter');
+            const d = document.getElementById('chartDeptFilter');
+            const s = document.getElementById('chartStatusFilter');
+            if (y) y.value = '';
+            if (d) d.value = '';
+            if (s) s.value = '';
+            updateDashboardStats();
+        }
 
         function initCharts() {
-            const ctxStatus = document.getElementById('statusChart').getContext('2d');
-            statusChartInstance = new Chart(ctxStatus, {
-                type: 'doughnut',
-                data: { labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'], datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E'] }] },
+            // 1. Line Chart: แนวโน้มคำขอรับบริการรายเดือน
+            const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
+            lineDemandInstance = new Chart(ctxLine, {
+                type: 'line',
+                data: {
+                    labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                    datasets: [{
+                        label: 'จำนวนคำขอใหม่ (Demand)',
+                        data: Array(12).fill(0),
+                        borderColor: '#EA580C',
+                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#EA580C'
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            const ctxDept = document.getElementById('deptChart').getContext('2d');
-            deptChartInstance = new Chart(ctxDept, {
-                type: 'bar',
-                data: { labels: [], datasets: [{ label: 'จำนวนคำขอ', data: [], backgroundColor: '#EA580C' }] },
+            // 2. Doughnut Chart: สัดส่วนสถานะงานในมือปัจจุบัน (%)
+            const ctxStatus = document.getElementById('statusChart').getContext('2d');
+            statusChartInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
+                    }]
+                },
                 options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            // 3. Stacked Bar Chart: ปริมาณและสถานะงานจำแนกรายหน่วยงาน
+            const ctxStacked = document.getElementById('stackedDeptChart').getContext('2d');
+            stackedDeptInstance = new Chart(ctxStacked, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        { label: 'รอดำเนินการ', data: [], backgroundColor: '#F59E0B' },
+                        { label: 'กำลังดำเนินการ', data: [], backgroundColor: '#3B82F6' },
+                        { label: 'เสร็จสิ้นแล้ว', data: [], backgroundColor: '#10B981' },
+                        { label: 'ยกเลิก', data: [], backgroundColor: '#F43F5E' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { x: { stacked: true }, y: { stacked: true } }
+                }
+            });
+
+            // 4. Horizontal Bar Chart: 5 อันดับหน่วยงานที่มีคำขอสูงสุด
+            const ctxTop = document.getElementById('topDeptBarChart').getContext('2d');
+            topDeptBarInstance = new Chart(ctxTop, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{ label: 'จำนวนคำขอ', data: [], backgroundColor: '#38BDF8' }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // 5. Radar Chart: มิติศักยภาพและการกระจายการให้บริการ
+            const ctxRadar = document.getElementById('radarCapabilityChart').getContext('2d');
+            radarCapInstance = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['ปริมาณคำขอรวม', 'งานเสร็จสิ้น', 'งานกำลังทำ/ส่งตรวจ', 'ผู้รับบริการ', 'การครอบคลุมหน่วยงาน', 'งานตอบรับตามแผน'],
+                    datasets: [{
+                        label: 'ภาพรวมศักยภาพการผลิต',
+                        data: [0, 0, 0, 0, 0, 0],
+                        borderColor: '#8B5CF6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                        pointBackgroundColor: '#8B5CF6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { r: { beginAtZero: true } }
+                }
             });
         }
 
         function updateDashboardStats() {
-            let pending = 0, inProg = 0, comp = 0, canc = 0;
-            const deptCounts = {};
+            const selectedYear = document.getElementById('chartYearFilter')?.value;
+            const selectedDept = document.getElementById('chartDeptFilter')?.value;
+            const selectedStatus = document.getElementById('chartStatusFilter')?.value;
 
-            allRequests.forEach(r => {
+            // กรองข้อมูลตามเงื่อนไขใน Dashboard Filter Bar
+            const requestsToProcess = allRequests.filter(r => {
+                let matchYear = true;
+                if (selectedYear && r.created_at) {
+                    matchYear = new Date(r.created_at).getFullYear().toString() === selectedYear;
+                }
+
+                let matchDept = true;
+                if (selectedDept) {
+                    matchDept = r.department_id == selectedDept;
+                }
+
+                let matchStatus = true;
+                if (selectedStatus) {
+                    matchStatus = getStatusBadge(r).status === selectedStatus;
+                }
+
+                return matchYear && matchDept && matchStatus;
+            });
+
+            let pending = 0, inProg = 0, comp = 0, canc = 0;
+            const monthCounts = Array(12).fill(0);
+            const deptStats = {};
+            let totalRecipients = 0;
+
+            requestsToProcess.forEach(r => {
                 const s = getStatusBadge(r).status;
                 if (s === 'pending') pending++;
                 if (s === 'in_progress') inProg++;
                 if (s === 'completed') comp++;
                 if (s === 'cancelled') canc++;
 
-                const deptName = r.departments?.department_name || 'อื่นๆ';
-                deptCounts[deptName] = (deptCounts[deptName] || 0) + 1;
+                // นับรายเดือนจาก created_at
+                if (r.created_at) {
+                    const m = new Date(r.created_at).getMonth();
+                    if (m >= 0 && m < 12) monthCounts[m]++;
+                }
+
+                // นับแยกตามหน่วยงาน
+                const dName = r.departments?.department_name || 'อื่นๆ';
+                if (!deptStats[dName]) {
+                    deptStats[dName] = { pending: 0, in_progress: 0, completed: 0, cancelled: 0, total: 0 };
+                }
+                deptStats[dName][s]++;
+                deptStats[dName].total++;
+
+                // นับจำนวนผู้รับบริการ
+                if (r.request_recipients && Array.isArray(r.request_recipients)) {
+                    totalRecipients += r.request_recipients.length;
+                }
             });
 
-            document.getElementById('statTotal').textContent = allRequests.length;
+            // อัปเดตการ์ด KPI สรุปตัวเลขตามการกรอง
+            document.getElementById('statTotal').textContent = requestsToProcess.length;
             document.getElementById('statPending').textContent = pending;
             document.getElementById('statInProgress').textContent = inProg;
             document.getElementById('statCompleted').textContent = comp;
             document.getElementById('statCancelled').textContent = canc;
 
+            // 1. Update Line Chart Demand
+            if (lineDemandInstance) {
+                lineDemandInstance.data.datasets[0].data = monthCounts;
+                lineDemandInstance.update();
+            }
+
+            // 2. Update Doughnut Chart
             if (statusChartInstance) {
                 statusChartInstance.data.datasets[0].data = [pending, inProg, comp, canc];
                 statusChartInstance.update();
             }
 
-            if (deptChartInstance) {
-                deptChartInstance.data.labels = Object.keys(deptCounts);
-                deptChartInstance.data.datasets[0].data = Object.values(deptCounts);
-                deptChartInstance.update();
+            // 3. Update Stacked Bar Chart
+            const deptLabels = Object.keys(deptStats);
+            if (stackedDeptInstance) {
+                stackedDeptInstance.data.labels = deptLabels;
+                stackedDeptInstance.data.datasets[0].data = deptLabels.map(d => deptStats[d].pending);
+                stackedDeptInstance.data.datasets[1].data = deptLabels.map(d => deptStats[d].in_progress);
+                stackedDeptInstance.data.datasets[2].data = deptLabels.map(d => deptStats[d].completed);
+                stackedDeptInstance.data.datasets[3].data = deptLabels.map(d => deptStats[d].cancelled);
+                stackedDeptInstance.update();
+            }
+
+            // 4. Update Horizontal Top 5 Bar Chart
+            const sortedDepts = Object.entries(deptStats)
+                .sort((a, b) => b[1].total - a[1].total)
+                .slice(0, 5);
+
+            if (topDeptBarInstance) {
+                topDeptBarInstance.data.labels = sortedDepts.map(d => d[0]);
+                topDeptBarInstance.data.datasets[0].data = sortedDepts.map(d => d[1].total);
+                topDeptBarInstance.update();
+            }
+
+            // 5. Update Radar Chart (6 แกนมิติศักยภาพ)
+            if (radarCapInstance) {
+                const totalReqs = requestsToProcess.length;
+                const activeDeptsCount = deptLabels.length;
+                const onTimeProgress = pending + inProg;
+
+                radarCapInstance.data.datasets[0].data = [
+                    totalReqs,
+                    comp,
+                    inProg,
+                    totalRecipients,
+                    activeDeptsCount,
+                    onTimeProgress
+                ];
+                radarCapInstance.update();
             }
         }
     </script>
