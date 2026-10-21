@@ -177,7 +177,7 @@
                 </button>
             </div>
 
-            <!-- Unified Data Table Container (แสดงข้อมูลในตารางหน้าหลักตลอดเวลา) -->
+            <!-- Unified Data Table Container -->
             <div id="adminTableView" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -307,7 +307,7 @@
 
                 <div id="authAlert" class="hidden text-xs p-3 rounded-lg"></div>
 
-                <!-- ปุ่มตกลง สีเหลืองทอง ปรับขนาดสมส่วน -->
+                <!-- ปุ่มตกลง -->
                 <div class="flex justify-center pt-1">
                     <button type="submit" id="authSubmitBtn" class="px-8 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold rounded-xl text-sm transition shadow">
                         ตกลง
@@ -509,7 +509,7 @@
             if (hash && (hash.includes('type=recovery') || hash.includes('access_token='))) {
                 isPasswordRecoveryMode = true;
                 openAuthModal('update_password');
-                showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลในระบบ และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
+                showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลสถาบัน และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
             }
 
             await checkAuthSession();
@@ -518,7 +518,7 @@
                 if (event === 'PASSWORD_RECOVERY') {
                     isPasswordRecoveryMode = true;
                     openAuthModal('update_password');
-                    showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลในระบบ และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
+                    showGlobalAlert('ยืนยันตัวตนสำเร็จ', 'กรุณากรอกอีเมลสถาบัน และกำหนดรหัสผ่านใหม่เพื่อเปลี่ยนรหัสผ่าน', 'info');
                 } else if (session) {
                     currentUser = session.user;
                     isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
@@ -602,7 +602,6 @@
                     if (roleTabIcon) roleTabIcon.className = 'fa-solid fa-user-graduate mr-1';
                     if (navHomeBtn) navHomeBtn.classList.add('hidden');
                     
-                    // หากไม่ได้อยู่ในโหมด Recovery ให้สลับ tab เป็น role
                     if (!isPasswordRecoveryMode) {
                         activeTab = 'role';
                     }
@@ -1079,6 +1078,7 @@
                         return;
                     }
 
+                    // 1. ตรวจสอบว่าอีเมลตรงกับในฐานข้อมูล request_recipients
                     const { data: matchedRecipients, error: checkErr } = await supabaseClient
                         .from('request_recipients')
                         .select('id')
@@ -1089,17 +1089,18 @@
                         return;
                     }
 
+                    // 2. ตรวจสอบว่าอีเมลตรงกับ User Session ที่ได้รับอนุญาตเปลี่ยนรหัสผ่าน
                     const { data: { user: recoveryUser } } = await supabaseClient.auth.getUser();
                     if (!recoveryUser || recoveryUser.email.toLowerCase() !== email.toLowerCase()) {
                         showGlobalAlert('ข้อผิดพลาด', 'อีเมลที่ระบุไม่ตรงกับอีเมลที่ได้รับการยืนยันรีเซ็ตรหัสผ่าน', 'error');
                         return;
                     }
 
+                    // 3. อัปเดตรหัสผ่านใหม่
                     const { error } = await supabaseClient.auth.updateUser({ password: newPwd });
                     if (error) throw error;
 
                     closeAuthModal();
-                    // ล้าง URL hash หลังเปลี่ยนรหัสผ่านสำเร็จ
                     window.history.replaceState(null, null, window.location.pathname);
                     showGlobalAlert('สำเร็จ', 'เปลี่ยนรหัสผ่านเรียบร้อยแล้ว เข้าสู่ระบบสมบูรณ์', 'success');
                 }
