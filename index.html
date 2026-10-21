@@ -232,9 +232,9 @@
                         </select>
                     </div>
 
-                    <button onclick="resetChartFilters()" title="ล้างค่าตัวกรอง" class="hidden sm:inline-flex px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition items-center justify-center whitespace-nowrap">
+                    <button onclick="resetChartFilters()" title="รีเซ็ตตัวกรอง" class="hidden sm:inline-flex px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition items-center justify-center whitespace-nowrap">
                         <i class="fa-solid fa-rotate-left sm:mr-1.5 text-slate-500"></i>
-                        <span>ล้างค่าตัวกรอง</span>
+                        <span>รีเซ็ตตัวกรอง</span>
                     </button>
 
                     <button onclick="showSection('landing')" title="กลับหน้าหลัก" class="px-3 sm:px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap">
@@ -250,7 +250,7 @@
                     <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                 </span>
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
-                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)
+                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน
                 </h3>
                 <div class="h-64 sm:h-72 pointer-events-none"><canvas id="lineChartDemand"></canvas></div>
             </div>
@@ -271,7 +271,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)
+                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
@@ -283,7 +283,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)
+                        <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="topDeptBarChart"></canvas></div>
                 </div>
@@ -293,7 +293,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)
+                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 5. มิติศักยภาพและการกระจายการให้บริการ
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
@@ -322,7 +322,7 @@
             <!-- Dynamic Modal Filter Controls -->
             <div id="modalFilterBar" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2.5 text-xs font-medium">
                 <span class="text-slate-500 font-bold flex items-center gap-1.5 shrink-0">
-                    <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรองกราฟนี้:
+                    <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรอง:
                 </span>
 
                 <!-- 1. ตัวกรองปี -->
@@ -1853,7 +1853,7 @@
             statusEl.value = '';
 
             if (type === 'line') {
-                title.innerHTML = '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน (Monthly Service Demand)';
+                title.innerHTML = '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.remove('hidden');
                 statusEl.classList.add('hidden');
@@ -1863,17 +1863,17 @@
                 deptEl.classList.remove('hidden');
                 statusEl.classList.add('hidden');
             } else if (type === 'stacked') {
-                title.innerHTML = '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน (Stacked Bar)';
+                title.innerHTML = '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.add('hidden');
                 statusEl.classList.remove('hidden');
             } else if (type === 'topDept') {
-                title.innerHTML = '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด (Top Requesters)';
+                title.innerHTML = '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.add('hidden');
                 statusEl.classList.remove('hidden');
             } else if (type === 'radar') {
-                title.innerHTML = '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 5. มิติศักยภาพและการกระจายการให้บริการ (Radar Chart)';
+                title.innerHTML = '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 5. มิติศักยภาพและการกระจายการให้บริการ';
                 yearEl.classList.remove('hidden');
                 deptEl.classList.remove('hidden');
                 statusEl.classList.add('hidden');
