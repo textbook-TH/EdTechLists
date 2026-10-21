@@ -604,6 +604,16 @@
                 .replace(/'/g, '&#39;');
         }
 
+        // เพิ่มฟังก์ชันกรอง URL ป้องกัน DOM XSS ผ่าน href
+        function sanitizeURL(url) {
+            if (!url) return '#';
+            const trimmed = String(url).trim();
+            if (/^(https?:\/\/)/i.test(trimmed)) {
+                return escapeHTML(trimmed);
+            }
+            return '#';
+        }
+
         const SUPABASE_URL = "https://usoyugzgwrxipvptexzy.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_myZ5ASl47F8P4xigTF4Wrg_CpCz_BPh";
         
@@ -616,7 +626,6 @@
         let filteredRequests = [];
         let departments = [];
         let currentPage = 1;
-        // ปรับเป็น 15 รายการต่อหน้า
         const itemsPerPage = 15;
         let currentAuthMode = 'signin';
         let isPasswordRecoveryMode = false;
@@ -828,7 +837,6 @@
                     </tr>`;
             }
 
-            // ดึงข้อมูลและกำหนดให้จัดเรียงตาม work_code จากมากไปน้อย (descending)
             const { data, error } = await supabaseClient
                 .from('service_requests')
                 .select(`
@@ -841,7 +849,6 @@
                 .order('work_code', { ascending: false });
 
             if (!error && data) {
-                // เพิ่มการจัดเรียงระดับตัวอักษรและตัวเลขเพิ่มเติม เพื่อการันตีความถูกต้องของรหัสใบแจ้งจากมากไปน้อย
                 allRequests = data.sort((a, b) => {
                     const codeA = a.work_code || '';
                     const codeB = b.work_code || '';
@@ -1279,8 +1286,9 @@
 
                 const driveContainer = document.getElementById('modalDriveLinks');
                 if (req.request_drive_links && req.request_drive_links.length > 0) {
+                    // ใช้ sanitizeURL() ในการสร้างลิงก์แทนการครอบ escapeHTML เพียวๆ
                     driveContainer.innerHTML = req.request_drive_links.map(d => `
-                        <a href="${escapeHTML(d.drive_url)}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition text-xs font-semibold border border-blue-200/60 shadow-sm">
+                        <a href="${sanitizeURL(d.drive_url)}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition text-xs font-semibold border border-blue-200/60 shadow-sm">
                             <i class="fa-brands fa-google-drive text-base"></i>
                             <span class="truncate">ดาวน์โหลดงานจาก Google Drive</span>
                             <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
@@ -1292,8 +1300,9 @@
 
                 const ytContainer = document.getElementById('modalYoutubeLinks');
                 if (req.request_youtube_links && req.request_youtube_links.length > 0) {
+                    // ใช้ sanitizeURL() ในการสร้างลิงก์
                     ytContainer.innerHTML = req.request_youtube_links.map(y => `
-                        <a href="${escapeHTML(y.youtube_url)}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-rose-50 text-rose-700 rounded-xl hover:bg-rose-100 transition text-xs font-semibold border border-rose-200/60 shadow-sm">
+                        <a href="${sanitizeURL(y.youtube_url)}" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 p-3 bg-rose-50 text-rose-700 rounded-xl hover:bg-rose-100 transition text-xs font-semibold border border-rose-200/60 shadow-sm">
                             <i class="fa-brands fa-youtube text-base"></i>
                             <span class="truncate">รับชมผลงานบน YouTube</span>
                             <i class="fa-solid fa-arrow-up-right-from-square ml-auto"></i>
