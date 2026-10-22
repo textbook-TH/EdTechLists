@@ -258,67 +258,49 @@
 
             <!-- กราฟเส้นเปรียบเทียบการให้บริการรายเดือน -->
             <div onclick="openChartModal('serviceComparison')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                </span>
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
                     <i class="fa-solid fa-chart-line text-brand-accent mr-1.5"></i> 1. เปรียบเทียบจำนวนงานในแต่ละเดือนตามการให้บริการ
                 </h3>
-                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="serviceComparisonLineChart"></canvas></div>
+                <div class="h-64 sm:h-72"><canvas id="serviceComparisonLineChart"></canvas></div>
             </div>
 
             <!-- Grid Charts Cards -->
             <div onclick="openChartModal('line')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                </span>
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
                     <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน
                 </h3>
-                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="lineChartDemand"></canvas></div>
+                <div class="h-64 sm:h-72"><canvas id="lineChartDemand"></canvas></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div onclick="openChartModal('status')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="statusChart"></canvas></div>
+                    <div class="h-64 sm:h-72"><canvas id="statusChart"></canvas></div>
                 </div>
 
                 <div onclick="openChartModal('stacked')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="stackedDeptChart"></canvas></div>
+                    <div class="h-64 sm:h-72"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div onclick="openChartModal('topDept')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 5. อันดับหน่วยงานที่มีคำขอสูงสุด
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="topDeptBarChart"></canvas></div>
+                    <div class="h-64 sm:h-72"><canvas id="topDeptBarChart"></canvas></div>
                 </div>
 
                 <div onclick="openChartModal('radar')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
                         <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 6. มิติศักยภาพและการกระจายการให้บริการ
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="radarCapabilityChart"></canvas></div>
+                    <div class="h-64 sm:h-72"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -342,13 +324,13 @@
             <!-- Modal Header Title -->
             <h3 id="chartModalTitle" class="text-base sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
 
-            <!-- Dynamic Modal Filter Controls (ปรับโครงสร้างเป็นแถวเดียวเรียงแนวนอนบนมือถือ) -->
+            <!-- Dynamic Modal Filter Controls -->
             <div id="modalFilterBar" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 flex items-center gap-2 text-xs font-medium overflow-x-auto whitespace-nowrap no-scrollbar">
                 <span class="hidden sm:inline-flex text-slate-500 font-bold items-center gap-1.5 shrink-0">
                     <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรอง:
                 </span>
 
-                <!-- 1. ตัวกรองการให้บริการ (ซ่อนคำว่า เลือกบริการ: บนมือถือ) -->
+                <!-- 1. ตัวกรองการให้บริการ -->
                 <div class="flex items-center gap-1.5 shrink-0">
                     <label for="popupServiceFilter" class="hidden sm:inline text-slate-600 font-semibold whitespace-nowrap">เลือกบริการ:</label>
                     <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
@@ -1717,27 +1699,6 @@
             };
         }
 
-        // Helper ฟังก์ชันสำหรับซ่อนป้ายชื่อแกน (Y หรือ X) บนมือถืออัตโนมัติ
-        function getResponsiveScaleOptions(isHorizontalBar = false) {
-            const isMobile = window.innerWidth < 640;
-            if (isHorizontalBar) {
-                return {
-                    y: {
-                        ticks: {
-                            display: !isMobile
-                        }
-                    }
-                };
-            }
-            return {
-                x: {
-                    ticks: {
-                        display: !isMobile
-                    }
-                }
-            };
-        }
-
         function openChartModal(type) {
             currentModalChartType = type;
             const modal = document.getElementById('chartModal');
@@ -1774,6 +1735,7 @@
         function renderModalChartData() {
             if (!currentModalChartType) return;
 
+            const isMobile = window.innerWidth < 640;
             const selectedService = document.getElementById('popupServiceFilter').value;
             const selectedYear = document.getElementById('popupYearFilter').value;
             const selectedDept = document.getElementById('popupDeptFilter').value;
@@ -1921,7 +1883,6 @@
                 });
 
                 const labels = Object.keys(deptStats);
-                const scaleOpts = getResponsiveScaleOptions(false);
 
                 modalChartInstance = new Chart(ctx, {
                     type: 'bar',
@@ -1939,7 +1900,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: { 
-                            x: { stacked: true, ticks: scaleOpts.x.ticks }, 
+                            x: { stacked: true, ticks: { display: !isMobile } }, 
                             y: { stacked: true } 
                         },
                         plugins: { legend: legendOpts }
@@ -1954,7 +1915,6 @@
                 });
 
                 const sorted = Object.entries(deptTotal).sort((a, b) => b[1] - a[1]).slice(0, 8);
-                const scaleOpts = getResponsiveScaleOptions(true);
 
                 modalChartInstance = new Chart(ctx, {
                     type: 'bar',
@@ -1967,7 +1927,7 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
-                            y: { ticks: scaleOpts.y.ticks }
+                            y: { ticks: { display: !isMobile } }
                         },
                         plugins: { legend: legendOpts }
                     }
@@ -2004,7 +1964,12 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { r: { beginAtZero: true } },
+                        scales: { 
+                            r: { 
+                                beginAtZero: true,
+                                pointLabels: { display: !isMobile }
+                            } 
+                        },
                         plugins: { legend: legendOpts }
                     }
                 });
@@ -2013,8 +1978,9 @@
 
         function initCharts() {
             const legendOpts = getSquareLegendOptions();
+            const isMobile = window.innerWidth < 640;
 
-            // กราฟเส้นเปรียบเทียบการให้บริการ 3 ประเภท
+            // 1. กราฟเส้นเปรียบเทียบการให้บริการ
             const ctxComp = document.getElementById('serviceComparisonLineChart').getContext('2d');
             serviceCompLineInstance = new Chart(ctxComp, {
                 type: 'line',
@@ -2054,6 +2020,7 @@
                 }
             });
 
+            // 2. กราฟแนวโน้มปริมาณคำขอ
             const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
             lineDemandInstance = new Chart(ctxLine, {
                 type: 'line',
@@ -2076,6 +2043,7 @@
                 }
             });
 
+            // 3. กราฟวงกลมสถานะ
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
@@ -2093,6 +2061,7 @@
                 }
             });
 
+            // 4. กราฟแท่งซ้อนสถานะแยกตามหน่วยงาน (Stacked)
             const ctxStacked = document.getElementById('stackedDeptChart').getContext('2d');
             stackedDeptInstance = new Chart(ctxStacked, {
                 type: 'bar',
@@ -2109,11 +2078,15 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { x: { stacked: true }, y: { stacked: true } },
+                    scales: { 
+                        x: { stacked: true, ticks: { display: !isMobile } }, 
+                        y: { stacked: true } 
+                    },
                     plugins: { legend: legendOpts }
                 }
             });
 
+            // 5. กราฟอันดับหน่วยงานที่มีคำขอสูงสุด (Bar Y)
             const ctxTop = document.getElementById('topDeptBarChart').getContext('2d');
             topDeptBarInstance = new Chart(ctxTop, {
                 type: 'bar',
@@ -2125,10 +2098,14 @@
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
+                    scales: {
+                        y: { ticks: { display: !isMobile } }
+                    },
                     plugins: { legend: legendOpts }
                 }
             });
 
+            // 6. กราฟมิติศักยภาพ (Radar)
             const ctxRadar = document.getElementById('radarCapabilityChart').getContext('2d');
             radarCapInstance = new Chart(ctxRadar, {
                 type: 'radar',
@@ -2145,13 +2122,19 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { r: { beginAtZero: true } },
+                    scales: { 
+                        r: { 
+                            beginAtZero: true,
+                            pointLabels: { display: !isMobile }
+                        } 
+                    },
                     plugins: { legend: legendOpts }
                 }
             });
         }
 
         function updateDashboardStats() {
+            const isMobile = window.innerWidth < 640;
             const selectedService = document.getElementById('chartServiceFilter')?.value;
             const selectedYear = document.getElementById('chartYearFilter')?.value;
             const selectedDept = document.getElementById('chartDeptFilter')?.value;
@@ -2246,6 +2229,7 @@
 
             const deptLabels = Object.keys(deptStats);
             if (stackedDeptInstance) {
+                stackedDeptInstance.options.scales.x.ticks.display = !isMobile;
                 stackedDeptInstance.data.labels = deptLabels;
                 stackedDeptInstance.data.datasets[0].data = deptLabels.map(d => deptStats[d].pending);
                 stackedDeptInstance.data.datasets[1].data = deptLabels.map(d => deptStats[d].in_progress);
@@ -2260,12 +2244,14 @@
                 .slice(0, 5);
 
             if (topDeptBarInstance) {
+                topDeptBarInstance.options.scales.y.ticks.display = !isMobile;
                 topDeptBarInstance.data.labels = sortedDepts.map(d => d[0]);
                 topDeptBarInstance.data.datasets[0].data = sortedDepts.map(d => d[1].total);
                 topDeptBarInstance.update();
             }
 
             if (radarCapInstance) {
+                radarCapInstance.options.scales.r.pointLabels.display = !isMobile;
                 const totalReqs = requestsToProcess.length;
                 const activeDeptsCount = deptLabels.length;
                 const onTimeProgress = pending + inProg + reviewing;
@@ -2281,6 +2267,14 @@
                 radarCapInstance.update();
             }
         }
+
+        // ปรับขนาดกราฟและอัปเดตการแสดงผลลาเบลอัตโนมัติเมื่อมีการหมุนหรือเปลี่ยนขนาดหน้าจอ
+        window.addEventListener('resize', () => {
+            updateDashboardStats();
+            if (modalChartInstance) {
+                renderModalChartData();
+            }
+        });
     </script>
 </body>
 </html>
