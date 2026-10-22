@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https:; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:;">
     <title>EdTechLists — ระบบจัดเก็บรายการสื่อดิจิทัลทางการศึกษา</title>
     
     <!-- Tailwind CSS CDN -->
@@ -110,8 +109,8 @@
                         </div>
                     </div>
                     
-                    <!-- สถิติ 5 ช่อง ซ่อนบนมือถือ -->
-                    <div class="hidden sm:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
+                    <!-- สถิติ ซ่อนบนมือถือ -->
+                    <div class="hidden sm:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
                         <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
                             <p id="statTotal" class="text-2xl font-bold text-white">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">คำขอทั้งหมด</span>
@@ -123,6 +122,10 @@
                         <div class="bg-slate-800/80 border border-blue-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-blue-500/50 transition">
                             <p id="statInProgress" class="text-2xl font-bold text-blue-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">กำลังดำเนินการ</span>
+                        </div>
+                        <div class="bg-slate-800/80 border border-purple-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-purple-500/50 transition">
+                            <p id="statReviewing" class="text-2xl font-bold text-purple-400">0</p>
+                            <span class="text-[11px] text-slate-400 block font-light">ส่งตรวจ</span>
                         </div>
                         <div class="bg-slate-800/80 border border-emerald-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-emerald-500/50 transition">
                             <p id="statCompleted" class="text-2xl font-bold text-emerald-400">0</p>
@@ -144,6 +147,13 @@
                 </div>
                 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
+                    <select id="serviceTypeFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <option value="">🛠️ ทุกการให้บริการ</option>
+                        <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
+                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                        <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
+                    </select>
+
                     <select id="departmentFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <option value="">🏢 เลือกหน่วยงาน</option>
                     </select>
@@ -168,7 +178,7 @@
                 </button>
             </div>
 
-            <!-- ตารางแสดงรายการคำขอ (นำคอลัมน์หน่วยงานและวิดีโอ/ไฟล์ออกแล้ว) -->
+            <!-- ตารางแสดงรายการคำขอ -->
             <div id="adminTableView" class="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden p-2">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -187,7 +197,7 @@
                 </div>
             </div>
 
-            <!-- การแสดงรายการ และระบบ Pagination แบบใหม่ < 1 2 3 ... > -->
+            <!-- การแสดงรายการ และระบบ Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 text-xs gap-3">
                 <span id="pageInfo" class="text-slate-500">แสดงรายการ 0 - 0</span>
                 <div id="paginationControls" class="flex items-center space-x-1"></div>
@@ -203,14 +213,23 @@
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto justify-start xl:justify-end">
                     <div class="relative flex-1 sm:flex-none">
-                        <select id="chartYearFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">📅 เลือกปี</option>
+                        <select id="chartDeptFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">🏢 เลือกหน่วยงาน</option>
                         </select>
                     </div>
 
                     <div class="relative flex-1 sm:flex-none">
-                        <select id="chartDeptFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">🏢 เลือกหน่วยงาน</option>
+                        <select id="chartServiceFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">🛠️ ทุกการให้บริการ</option>
+                            <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
+                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                            <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
+                        </select>
+                    </div>
+
+                    <div class="relative flex-1 sm:flex-none">
+                        <select id="chartYearFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
+                            <option value="">📅 เลือกปี</option>
                         </select>
                     </div>
 
@@ -219,6 +238,7 @@
                             <option value="">📌 เลือกสถานะ</option>
                             <option value="pending">รอดำเนินการ</option>
                             <option value="in_progress">กำลังดำเนินการ</option>
+                            <option value="reviewing">ส่งตรวจ</option>
                             <option value="completed">เสร็จสิ้นแล้ว</option>
                             <option value="cancelled">ยกเลิก</option>
                         </select>
@@ -236,13 +256,24 @@
                 </div>
             </div>
 
+            <!-- กราฟเส้นเปรียบเทียบการให้บริการรายเดือน -->
+            <div onclick="openChartModal('serviceComparison')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
+                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
+                </span>
+                <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+                    <i class="fa-solid fa-chart-line text-brand-accent mr-1.5"></i> 1. การเปรียบเทียบจำนวนงานในแต่ละเดือนแบ่งตามการให้บริการ (สื่อดิจิตอล / สื่อวิดิทัศน์ / สื่อสิ่งพิมพ์)
+                </h3>
+                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="serviceComparisonLineChart"></canvas></div>
+            </div>
+
             <!-- Grid Charts Cards -->
             <div onclick="openChartModal('line')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                 <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
                     <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                 </span>
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
-                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน
+                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน
                 </h3>
                 <div class="h-64 sm:h-72 pointer-events-none"><canvas id="lineChartDemand"></canvas></div>
             </div>
@@ -253,7 +284,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
+                        <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="statusChart"></canvas></div>
                 </div>
@@ -263,7 +294,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
+                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
@@ -275,7 +306,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด
+                        <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 5. อันดับหน่วยงานที่มีคำขอสูงสุด
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="topDeptBarChart"></canvas></div>
                 </div>
@@ -285,7 +316,7 @@
                         <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
                     </span>
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 5. มิติศักยภาพและการกระจายการให้บริการ
+                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 6. มิติศักยภาพและการกระจายการให้บริการ
                     </h3>
                     <div class="h-64 sm:h-72 pointer-events-none"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
@@ -301,7 +332,7 @@
         </div>
     </footer>
 
-    <!-- MODAL 4: EXPANDED CHART MODAL (ป๊อปอัปขยายกราฟสถิติ + ตัวกรองเฉพาะกราฟ) -->
+    <!-- MODAL 4: EXPANDED CHART MODAL -->
     <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
         <div class="bg-white rounded-3xl max-w-4xl sm:max-w-5xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl space-y-4 relative border border-slate-100">
             <button onclick="closeChartModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center">
@@ -317,23 +348,25 @@
                     <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรอง:
                 </span>
 
-                <!-- 1. ตัวกรองปี -->
-                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <!-- 1. ตัวกรองการให้บริการ (เลือกบริการ) -->
+                <div class="flex items-center gap-1.5">
+                    <label for="popupServiceFilter" class="text-slate-600 font-semibold whitespace-nowrap">เลือกบริการ:</label>
+                    <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        <option value="">🛠️ ทุกการให้บริการ</option>
+                        <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
+                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                        <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
+                    </select>
+                </div>
+
+                <!-- 2. ตัวกรองปี -->
+                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
                     <option value="">📅 เลือกปี</option>
                 </select>
 
-                <!-- 2. ตัวกรองหน่วยงาน -->
-                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <!-- 3. ตัวกรองหน่วยงาน -->
+                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
                     <option value="">🏢 เลือกหน่วยงาน</option>
-                </select>
-
-                <!-- 3. ตัวกรองสถานะ -->
-                <select id="popupStatusFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-200 focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">📌 เลือกสถานะ</option>
-                    <option value="pending">รอดำเนินการ</option>
-                    <option value="in_progress">กำลังดำเนินการ</option>
-                    <option value="completed">เสร็จสิ้นแล้ว</option>
-                    <option value="cancelled">ยกเลิก</option>
                 </select>
 
                 <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center">
@@ -438,6 +471,7 @@
 
             <div class="flex items-center space-x-2.5">
                 <span id="modalWorkCode" class="bg-amber-500 text-black font-mono text-xs px-3 py-1.5 rounded-xl font-bold shadow-sm"></span>
+                <span id="modalServiceType" class="bg-slate-100 text-slate-700 text-xs px-3 py-1.5 rounded-xl font-semibold border border-slate-200"></span>
             </div>
 
             <div>
@@ -455,7 +489,7 @@
                     </div>
                 </div>
 
-                <div id="modalStepperContainer" class="grid grid-cols-4 gap-2 pt-2 text-center"></div>
+                <div id="modalStepperContainer" class="grid grid-cols-5 gap-1.5 pt-2 text-center"></div>
             </div>
 
             <div class="bg-slate-50/80 border border-slate-200/60 p-4 sm:p-5 rounded-2xl space-y-3 text-xs sm:text-sm">
@@ -501,11 +535,20 @@
             <form id="adminForm" onsubmit="handleAdminSave(event)" class="space-y-4">
                 <input type="hidden" id="formRequestId">
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">ใบแจ้งขอรับบริการ</label>
                         <input type="text" id="formWorkCode" required placeholder="#0001" 
                                class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">การให้บริการ</label>
+                        <select id="formServiceType" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700">
+                            <option value="">เลือกให้บริการ</option>
+                            <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
+                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                            <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">เลือกวันเดือนปี</label>
@@ -544,12 +587,15 @@
 
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
                     <label class="block text-xs font-bold text-slate-800">สถานะการดำเนินงาน</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" id="chkPending" class="rounded text-brand-accent"> <span>รอดำเนินการ</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" id="chkInProgress" class="rounded text-brand-accent"> <span>กำลังดำเนินการ</span>
+                        </label>
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" id="chkReviewing" class="rounded text-brand-accent"> <span>ส่งตรวจ</span>
                         </label>
                         <label class="flex items-center space-x-2">
                             <input type="checkbox" id="chkCompleted" class="rounded text-brand-accent"> <span>เสร็จสิ้น</span>
@@ -875,12 +921,14 @@
 
         function filterRequests() {
             const search = document.getElementById('searchInput').value.toLowerCase();
+            const serviceType = document.getElementById('serviceTypeFilter').value;
             const deptId = document.getElementById('departmentFilter').value;
             const selectedYear = document.getElementById('yearFilter').value;
 
             filteredRequests = allRequests.filter(req => {
                 const matchSearch = (req.title && req.title.toLowerCase().includes(search)) || 
                                     (req.work_code && req.work_code.toLowerCase().includes(search));
+                const matchService = !serviceType || (req.service_type || 'สื่อดิจิตอล') === serviceType;
                 const matchDept = !deptId || req.department_id == deptId;
                 
                 let matchYear = true;
@@ -889,7 +937,7 @@
                     matchYear = reqYear === selectedYear;
                 }
 
-                return matchSearch && matchDept && matchYear;
+                return matchSearch && matchService && matchDept && matchYear;
             });
 
             currentPage = 1;
@@ -952,14 +1000,12 @@
                 tableBody.innerHTML += rowHtml;
             });
 
-            // ข้อความตามข้อสั่งการ: แสดงรายการ X - Y
             document.getElementById('pageInfo').textContent = `แสดงรายการ ${start + 1} - ${Math.min(end, filteredRequests.length)}`;
             
             const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
             renderPaginationControls(totalPages);
         }
 
-        // ระบบเปลี่ยนหน้าในรูปแบบ < 1 2 3 4 5 6 >
         function renderPaginationControls(totalPages) {
             const container = document.getElementById('paginationControls');
             if (!container) return;
@@ -967,7 +1013,6 @@
 
             if (totalPages <= 1) return;
 
-            // ปุ่มย้อนกลับ <
             const prevBtn = document.createElement('button');
             prevBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center font-bold border border-slate-200 transition ${currentPage === 1 ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-amber-400 hover:border-amber-400 hover:text-slate-950 text-slate-600'}`;
             prevBtn.innerHTML = '<i class="fa-solid fa-chevron-left text-xs"></i>';
@@ -975,7 +1020,6 @@
             prevBtn.onclick = () => changePage(-1);
             container.appendChild(prevBtn);
 
-            // ปุ่มตัวเลข 1, 2, 3...
             for (let i = 1; i <= totalPages; i++) {
                 const numBtn = document.createElement('button');
                 if (i === currentPage) {
@@ -988,7 +1032,6 @@
                 container.appendChild(numBtn);
             }
 
-            // ปุ่มถัดไป >
             const nextBtn = document.createElement('button');
             nextBtn.className = `w-8 h-8 rounded-lg flex items-center justify-center font-bold border border-slate-200 transition ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed text-slate-400' : 'hover:bg-amber-400 hover:border-amber-400 hover:text-slate-950 text-slate-600'}`;
             nextBtn.innerHTML = '<i class="fa-solid fa-chevron-right text-xs"></i>';
@@ -1020,6 +1063,12 @@
                     badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-emerald-100 border border-emerald-200 text-emerald-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-circle-check"></i> ดำเนินการเสร็จสิ้น</span>' 
                 };
             }
+            if (req.reviewing_at) {
+                return { 
+                    status: 'reviewing', 
+                    badgeHtml: '<span class="inline-flex items-center gap-1.5 bg-purple-100 border border-purple-200 text-purple-700 text-xs px-3 py-1 rounded-xl font-bold"><i class="fa-solid fa-magnifying-glass font-bold"></i> ส่งตรวจ</span>' 
+                };
+            }
             if (req.in_progress_at) {
                 return { 
                     status: 'in_progress', 
@@ -1039,6 +1088,7 @@
             const steps = [
                 { id: 'pending', label: 'รอดำเนินการ', icon: 'fa-solid fa-hourglass-start' },
                 { id: 'in_progress', label: 'กำลังดำเนินการ', icon: 'fa-solid fa-gears' },
+                { id: 'reviewing', label: 'ส่งตรวจ', icon: 'fa-solid fa-file-signature' },
                 { id: 'completed', label: 'ดำเนินการเสร็จสิ้น', icon: 'fa-solid fa-circle-check' },
                 { id: 'cancelled', label: 'ยกเลิก', icon: 'fa-solid fa-ban' }
             ];
@@ -1049,26 +1099,29 @@
 
                 if (step.id === currentStatus) {
                     if (step.id === 'pending') {
-                        circleClass = "bg-purple-600 text-white shadow-md shadow-purple-200 ring-4 ring-purple-100";
-                        textClass = "text-purple-700 font-bold";
-                    } else if (step.id === 'in_progress') {
-                        circleClass = "bg-amber-400 text-slate-950 shadow-md shadow-amber-200 ring-4 ring-amber-100";
+                        circleClass = "bg-amber-400 text-slate-950 shadow-md ring-4 ring-amber-100";
                         textClass = "text-amber-600 font-bold";
+                    } else if (step.id === 'in_progress') {
+                        circleClass = "bg-blue-500 text-white shadow-md ring-4 ring-blue-100";
+                        textClass = "text-blue-600 font-bold";
+                    } else if (step.id === 'reviewing') {
+                        circleClass = "bg-purple-600 text-white shadow-md ring-4 ring-purple-100";
+                        textClass = "text-purple-700 font-bold";
                     } else if (step.id === 'completed') {
-                        circleClass = "bg-emerald-500 text-white shadow-md shadow-emerald-200 ring-4 ring-emerald-100";
+                        circleClass = "bg-emerald-500 text-white shadow-md ring-4 ring-emerald-100";
                         textClass = "text-emerald-600 font-bold";
                     } else if (step.id === 'cancelled') {
-                        circleClass = "bg-rose-500 text-white shadow-md shadow-rose-200 ring-4 ring-rose-100";
+                        circleClass = "bg-rose-500 text-white shadow-md ring-4 ring-rose-100";
                         textClass = "text-rose-600 font-bold";
                     }
                 }
 
                 return `
                     <div class="flex flex-col items-center space-y-2">
-                        <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-base sm:text-lg transition-all ${circleClass}">
+                        <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-full flex items-center justify-center text-sm sm:text-base transition-all ${circleClass}">
                             <i class="${escapeHTML(step.icon)}"></i>
                         </div>
-                        <span class="text-[10px] sm:text-xs leading-tight ${textClass}">${escapeHTML(step.label)}</span>
+                        <span class="text-[10px] leading-tight ${textClass}">${escapeHTML(step.label)}</span>
                     </div>
                 `;
             }).join('');
@@ -1278,6 +1331,7 @@
             if (!req) return;
 
             document.getElementById('modalWorkCode').textContent = req.work_code || '';
+            document.getElementById('modalServiceType').textContent = req.service_type || 'สื่อดิจิตอล';
             document.getElementById('modalTitle').textContent = req.title || '';
             document.getElementById('modalDepartment').querySelector('span').textContent = req.departments?.department_name || '-';
             document.getElementById('modalLocation').textContent = req.location || '-';
@@ -1341,6 +1395,7 @@
         function openCreateModal() {
             document.getElementById('adminForm').reset();
             document.getElementById('formRequestId').value = '';
+            document.getElementById('formServiceType').value = '';
             document.getElementById('recipientsList').innerHTML = '';
             document.getElementById('driveLinksList').innerHTML = '';
             document.getElementById('youtubeLinksList').innerHTML = '';
@@ -1361,6 +1416,7 @@
 
             document.getElementById('formRequestId').value = req.id;
             document.getElementById('formWorkCode').value = req.work_code || '';
+            document.getElementById('formServiceType').value = req.service_type || '';
             document.getElementById('formDepartmentId').value = req.departments?.department_name || '';
             document.getElementById('formTitle').value = req.title || '';
             document.getElementById('formLocation').value = req.location || '';
@@ -1378,6 +1434,7 @@
 
             document.getElementById('chkPending').checked = !!req.pending_at;
             document.getElementById('chkInProgress').checked = !!req.in_progress_at;
+            document.getElementById('chkReviewing').checked = !!req.reviewing_at;
             document.getElementById('chkCompleted').checked = !!req.completed_at;
             document.getElementById('chkCancelled').checked = !!req.cancelled_at;
 
@@ -1461,12 +1518,18 @@
             e.preventDefault();
             const reqId = document.getElementById('formRequestId').value;
             const workCode = document.getElementById('formWorkCode').value.trim();
+            const serviceType = document.getElementById('formServiceType').value;
             const title = document.getElementById('formTitle').value.trim();
             const deptInputName = document.getElementById('formDepartmentId').value.trim();
             const requestDate = document.getElementById('formRequestDate').value;
 
+            if (!serviceType) {
+                showGlobalAlert('แจ้งเตือน', 'กรุณาเลือกประเภทการให้บริการ', 'error');
+                return;
+            }
+
             if (!workCode || !title || !deptInputName || !requestDate) {
-                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูล', 'error');
+                showGlobalAlert('แจ้งเตือน', 'กรุณากรอกข้อมูลให้ครบถ้วน', 'error');
                 return;
             }
 
@@ -1498,6 +1561,7 @@
 
             const payload = {
                 work_code: workCode,
+                service_type: serviceType,
                 department_id: resolvedDeptId,
                 title: title,
                 location: document.getElementById('formLocation').value,
@@ -1505,6 +1569,7 @@
                 created_at: formattedDate,
                 pending_at: document.getElementById('chkPending').checked ? now : null,
                 in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
+                reviewing_at: document.getElementById('chkReviewing').checked ? now : null,
                 completed_at: document.getElementById('chkCompleted').checked ? now : null,
                 cancelled_at: document.getElementById('chkCancelled').checked ? now : null,
             };
@@ -1574,6 +1639,7 @@
         }
 
         // --- DASHBOARD CHARTS INSTANCES & FILTER LOGIC ---
+        let serviceCompLineInstance = null;
         let lineDemandInstance = null;
         let statusChartInstance = null;
         let stackedDeptInstance = null;
@@ -1620,19 +1686,21 @@
         }
 
         function resetChartFilters() {
+            const s = document.getElementById('chartServiceFilter');
             const y = document.getElementById('chartYearFilter');
             const d = document.getElementById('chartDeptFilter');
-            const s = document.getElementById('chartStatusFilter');
+            const st = document.getElementById('chartStatusFilter');
+            if (s) s.value = '';
             if (y) y.value = '';
             if (d) d.value = '';
-            if (s) s.value = '';
+            if (st) st.value = '';
             updateDashboardStats();
         }
 
         function resetModalFilters() {
+            document.getElementById('popupServiceFilter').value = '';
             document.getElementById('popupYearFilter').value = '';
             document.getElementById('popupDeptFilter').value = '';
-            document.getElementById('popupStatusFilter').value = '';
             renderModalChartData();
         }
 
@@ -1649,8 +1717,312 @@
             };
         }
 
+        function openChartModal(type) {
+            currentModalChartType = type;
+            const modal = document.getElementById('chartModal');
+            const modalTitle = document.getElementById('chartModalTitle');
+
+            // Sync filters from main dashboard page to modal
+            document.getElementById('popupServiceFilter').value = document.getElementById('chartServiceFilter')?.value || '';
+            document.getElementById('popupYearFilter').value = document.getElementById('chartYearFilter')?.value || '';
+            document.getElementById('popupDeptFilter').value = document.getElementById('chartDeptFilter')?.value || '';
+
+            const titles = {
+                'serviceComparison': '<i class="fa-solid fa-chart-line text-brand-accent mr-2"></i> 1. การเปรียบเทียบจำนวนงานในแต่ละเดือนแบ่งตามการให้บริการ',
+                'line': '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน',
+                'status': '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)',
+                'stacked': '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน',
+                'topDept': '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 5. อันดับหน่วยงานที่มีคำขอสูงสุด',
+                'radar': '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 6. มิติศักยภาพและการกระจายการให้บริการ'
+            };
+
+            modalTitle.innerHTML = titles[type] || 'กราฟสถิติขยาย';
+            modal.classList.remove('hidden');
+
+            renderModalChartData();
+        }
+
+        function closeChartModal() {
+            document.getElementById('chartModal').classList.add('hidden');
+            if (modalChartInstance) {
+                modalChartInstance.destroy();
+                modalChartInstance = null;
+            }
+        }
+
+        function renderModalChartData() {
+            if (!currentModalChartType) return;
+
+            const selectedService = document.getElementById('popupServiceFilter').value;
+            const selectedYear = document.getElementById('popupYearFilter').value;
+            const selectedDept = document.getElementById('popupDeptFilter').value;
+
+            const filteredData = allRequests.filter(r => {
+                let matchService = true;
+                if (selectedService) matchService = (r.service_type || 'สื่อดิจิตอล') === selectedService;
+
+                let matchYear = true;
+                if (selectedYear && r.created_at) matchYear = new Date(r.created_at).getFullYear().toString() === selectedYear;
+
+                let matchDept = true;
+                if (selectedDept) matchDept = r.department_id == selectedDept;
+
+                return matchService && matchYear && matchDept;
+            });
+
+            if (modalChartInstance) {
+                modalChartInstance.destroy();
+            }
+
+            const ctx = document.getElementById('modalCanvas').getContext('2d');
+            const legendOpts = getSquareLegendOptions();
+
+            if (currentModalChartType === 'serviceComparison') {
+                const digitalCounts = Array(12).fill(0);
+                const videoCounts = Array(12).fill(0);
+                const printCounts = Array(12).fill(0);
+
+                filteredData.forEach(r => {
+                    if (r.created_at) {
+                        const m = new Date(r.created_at).getMonth();
+                        if (m >= 0 && m < 12) {
+                            const st = r.service_type || 'สื่อดิจิตอล';
+                            if (st === 'สื่อดิจิตอล') digitalCounts[m]++;
+                            else if (st === 'สื่อวิดิทัศน์') videoCounts[m]++;
+                            else if (st === 'สื่อสิ่งพิมพ์') printCounts[m]++;
+                        }
+                    }
+                });
+
+                let datasets = [];
+                if (!selectedService || selectedService === 'สื่อดิจิตอล') {
+                    datasets.push({
+                        label: 'สื่อดิจิตอล',
+                        data: digitalCounts,
+                        borderColor: '#EA580C',
+                        backgroundColor: 'rgba(234, 88, 12, 0.15)',
+                        tension: 0.35,
+                        fill: true,
+                        pointBackgroundColor: '#EA580C',
+                        pointRadius: 4
+                    });
+                }
+                if (!selectedService || selectedService === 'สื่อวิดิทัศน์') {
+                    datasets.push({
+                        label: 'สื่อวิดิทัศน์',
+                        data: videoCounts,
+                        borderColor: '#3B82F6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.15)',
+                        tension: 0.35,
+                        fill: true,
+                        pointBackgroundColor: '#3B82F6',
+                        pointRadius: 4
+                    });
+                }
+                if (!selectedService || selectedService === 'สื่อสิ่งพิมพ์') {
+                    datasets.push({
+                        label: 'สื่อสิ่งพิมพ์',
+                        data: printCounts,
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                        tension: 0.35,
+                        fill: true,
+                        pointBackgroundColor: '#10B981',
+                        pointRadius: 4
+                    });
+                }
+
+                modalChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                        datasets: datasets
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: legendOpts } }
+                });
+
+            } else if (currentModalChartType === 'line') {
+                const monthCounts = Array(12).fill(0);
+                filteredData.forEach(r => {
+                    if (r.created_at) {
+                        const m = new Date(r.created_at).getMonth();
+                        if (m >= 0 && m < 12) monthCounts[m]++;
+                    }
+                });
+
+                modalChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                        datasets: [{
+                            label: 'จำนวนคำขอใหม่รวม',
+                            data: monthCounts,
+                            borderColor: '#F59E0B',
+                            backgroundColor: 'rgba(245, 158, 11, 0.2)',
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: '#F59E0B'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: legendOpts } }
+                });
+
+            } else if (currentModalChartType === 'status') {
+                let pending = 0, inProg = 0, reviewing = 0, comp = 0, canc = 0;
+                filteredData.forEach(r => {
+                    const s = getStatusBadge(r).status;
+                    if (s === 'pending') pending++;
+                    if (s === 'in_progress') inProg++;
+                    if (s === 'reviewing') reviewing++;
+                    if (s === 'completed') comp++;
+                    if (s === 'cancelled') canc++;
+                });
+
+                modalChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                        datasets: [{
+                            data: [pending, inProg, reviewing, comp, canc],
+                            backgroundColor: ['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981', '#F43F5E']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: legendOpts } }
+                });
+
+            } else if (currentModalChartType === 'stacked') {
+                const deptStats = {};
+                filteredData.forEach(r => {
+                    const dName = r.departments?.department_name || 'อื่นๆ';
+                    const s = getStatusBadge(r).status;
+                    if (!deptStats[dName]) deptStats[dName] = { pending: 0, in_progress: 0, reviewing: 0, completed: 0, cancelled: 0 };
+                    deptStats[dName][s]++;
+                });
+
+                const labels = Object.keys(deptStats);
+                modalChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'รอดำเนินการ', data: labels.map(d => deptStats[d].pending), backgroundColor: '#F59E0B' },
+                            { label: 'กำลังดำเนินการ', data: labels.map(d => deptStats[d].in_progress), backgroundColor: '#3B82F6' },
+                            { label: 'ส่งตรวจ', data: labels.map(d => deptStats[d].reviewing), backgroundColor: '#8B5CF6' },
+                            { label: 'เสร็จสิ้นแล้ว', data: labels.map(d => deptStats[d].completed), backgroundColor: '#10B981' },
+                            { label: 'ยกเลิก', data: labels.map(d => deptStats[d].cancelled), backgroundColor: '#F43F5E' }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { x: { stacked: true }, y: { stacked: true } },
+                        plugins: { legend: legendOpts }
+                    }
+                });
+
+            } else if (currentModalChartType === 'topDept') {
+                const deptTotal = {};
+                filteredData.forEach(r => {
+                    const dName = r.departments?.department_name || 'อื่นๆ';
+                    deptTotal[dName] = (deptTotal[dName] || 0) + 1;
+                });
+
+                const sorted = Object.entries(deptTotal).sort((a, b) => b[1] - a[1]).slice(0, 8);
+
+                modalChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: sorted.map(d => d[0]),
+                        datasets: [{ label: 'จำนวนคำขอ', data: sorted.map(d => d[1]), backgroundColor: '#38BDF8' }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: legendOpts }
+                    }
+                });
+
+            } else if (currentModalChartType === 'radar') {
+                let comp = 0, inProg = 0, reviewing = 0, pending = 0;
+                let recipients = 0;
+                const depts = new Set();
+
+                filteredData.forEach(r => {
+                    const s = getStatusBadge(r).status;
+                    if (s === 'completed') comp++;
+                    if (s === 'in_progress') inProg++;
+                    if (s === 'reviewing') reviewing++;
+                    if (s === 'pending') pending++;
+
+                    if (r.departments?.department_name) depts.add(r.departments.department_name);
+                    if (r.request_recipients) recipients += r.request_recipients.length;
+                });
+
+                modalChartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['ปริมาณคำขอรวม', 'งานเสร็จสิ้น', 'งานกำลังทำ/ส่งตรวจ', 'ผู้รับบริการ', 'การครอบคลุมหน่วยงาน', 'งานตอบรับตามแผน'],
+                        datasets: [{
+                            label: 'ภาพรวมศักยภาพการผลิต',
+                            data: [filteredData.length, comp, inProg + reviewing, recipients, depts.size, pending + inProg + reviewing],
+                            borderColor: '#8B5CF6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.25)',
+                            pointBackgroundColor: '#8B5CF6'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: { r: { beginAtZero: true } },
+                        plugins: { legend: legendOpts }
+                    }
+                });
+            }
+        }
+
         function initCharts() {
             const legendOpts = getSquareLegendOptions();
+
+            // กราฟเส้นเปรียบเทียบการให้บริการ 3 ประเภท
+            const ctxComp = document.getElementById('serviceComparisonLineChart').getContext('2d');
+            serviceCompLineInstance = new Chart(ctxComp, {
+                type: 'line',
+                data: {
+                    labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                    datasets: [
+                        {
+                            label: 'สื่อดิจิตอล',
+                            data: Array(12).fill(0),
+                            borderColor: '#EA580C',
+                            backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                            tension: 0.3,
+                            pointBackgroundColor: '#EA580C'
+                        },
+                        {
+                            label: 'สื่อวิดิทัศน์',
+                            data: Array(12).fill(0),
+                            borderColor: '#3B82F6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.3,
+                            pointBackgroundColor: '#3B82F6'
+                        },
+                        {
+                            label: 'สื่อสิ่งพิมพ์',
+                            data: Array(12).fill(0),
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.3,
+                            pointBackgroundColor: '#10B981'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: legendOpts }
+                }
+            });
 
             const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
             lineDemandInstance = new Chart(ctxLine, {
@@ -1658,13 +2030,13 @@
                 data: {
                     labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
                     datasets: [{
-                        label: 'จำนวนคำขอใหม่ (Demand)',
+                        label: 'จำนวนคำขอใหม่รวม (Demand)',
                         data: Array(12).fill(0),
-                        borderColor: '#EA580C',
-                        backgroundColor: 'rgba(234, 88, 12, 0.1)',
+                        borderColor: '#F59E0B',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
                         fill: true,
                         tension: 0.3,
-                        pointBackgroundColor: '#EA580C'
+                        pointBackgroundColor: '#F59E0B'
                     }]
                 },
                 options: { 
@@ -1678,10 +2050,10 @@
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
                 data: {
-                    labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                    labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
                     datasets: [{
-                        data: [0, 0, 0, 0],
-                        backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981', '#F43F5E']
                     }]
                 },
                 options: { 
@@ -1699,6 +2071,7 @@
                     datasets: [
                         { label: 'รอดำเนินการ', data: [], backgroundColor: '#F59E0B' },
                         { label: 'กำลังดำเนินการ', data: [], backgroundColor: '#3B82F6' },
+                        { label: 'ส่งตรวจ', data: [], backgroundColor: '#8B5CF6' },
                         { label: 'เสร็จสิ้นแล้ว', data: [], backgroundColor: '#10B981' },
                         { label: 'ยกเลิก', data: [], backgroundColor: '#F43F5E' }
                     ]
@@ -1749,11 +2122,17 @@
         }
 
         function updateDashboardStats() {
+            const selectedService = document.getElementById('chartServiceFilter')?.value;
             const selectedYear = document.getElementById('chartYearFilter')?.value;
             const selectedDept = document.getElementById('chartDeptFilter')?.value;
             const selectedStatus = document.getElementById('chartStatusFilter')?.value;
 
             const requestsToProcess = allRequests.filter(r => {
+                let matchService = true;
+                if (selectedService) {
+                    matchService = (r.service_type || 'สื่อดิจิตอล') === selectedService;
+                }
+
                 let matchYear = true;
                 if (selectedYear && r.created_at) {
                     matchYear = new Date(r.created_at).getFullYear().toString() === selectedYear;
@@ -1769,11 +2148,14 @@
                     matchStatus = getStatusBadge(r).status === selectedStatus;
                 }
 
-                return matchYear && matchDept && matchStatus;
+                return matchService && matchYear && matchDept && matchStatus;
             });
 
-            let pending = 0, inProg = 0, comp = 0, canc = 0;
+            let pending = 0, inProg = 0, reviewing = 0, comp = 0, canc = 0;
             const monthCounts = Array(12).fill(0);
+            const digitalMonthCounts = Array(12).fill(0);
+            const videoMonthCounts = Array(12).fill(0);
+            const printMonthCounts = Array(12).fill(0);
             const deptStats = {};
             let totalRecipients = 0;
 
@@ -1781,17 +2163,24 @@
                 const s = getStatusBadge(r).status;
                 if (s === 'pending') pending++;
                 if (s === 'in_progress') inProg++;
+                if (s === 'reviewing') reviewing++;
                 if (s === 'completed') comp++;
                 if (s === 'cancelled') canc++;
 
                 if (r.created_at) {
                     const m = new Date(r.created_at).getMonth();
-                    if (m >= 0 && m < 12) monthCounts[m]++;
+                    if (m >= 0 && m < 12) {
+                        monthCounts[m]++;
+                        const st = r.service_type || 'สื่อดิจิตอล';
+                        if (st === 'สื่อดิจิตอล') digitalMonthCounts[m]++;
+                        else if (st === 'สื่อวิดิทัศน์') videoMonthCounts[m]++;
+                        else if (st === 'สื่อสิ่งพิมพ์') printMonthCounts[m]++;
+                    }
                 }
 
                 const dName = r.departments?.department_name || 'อื่นๆ';
                 if (!deptStats[dName]) {
-                    deptStats[dName] = { pending: 0, in_progress: 0, completed: 0, cancelled: 0, total: 0 };
+                    deptStats[dName] = { pending: 0, in_progress: 0, reviewing: 0, completed: 0, cancelled: 0, total: 0 };
                 }
                 deptStats[dName][s]++;
                 deptStats[dName].total++;
@@ -1804,8 +2193,16 @@
             document.getElementById('statTotal').textContent = requestsToProcess.length;
             document.getElementById('statPending').textContent = pending;
             document.getElementById('statInProgress').textContent = inProg;
+            document.getElementById('statReviewing').textContent = reviewing;
             document.getElementById('statCompleted').textContent = comp;
             document.getElementById('statCancelled').textContent = canc;
+
+            if (serviceCompLineInstance) {
+                serviceCompLineInstance.data.datasets[0].data = digitalMonthCounts;
+                serviceCompLineInstance.data.datasets[1].data = videoMonthCounts;
+                serviceCompLineInstance.data.datasets[2].data = printMonthCounts;
+                serviceCompLineInstance.update();
+            }
 
             if (lineDemandInstance) {
                 lineDemandInstance.data.datasets[0].data = monthCounts;
@@ -1813,7 +2210,7 @@
             }
 
             if (statusChartInstance) {
-                statusChartInstance.data.datasets[0].data = [pending, inProg, comp, canc];
+                statusChartInstance.data.datasets[0].data = [pending, inProg, reviewing, comp, canc];
                 statusChartInstance.update();
             }
 
@@ -1822,8 +2219,9 @@
                 stackedDeptInstance.data.labels = deptLabels;
                 stackedDeptInstance.data.datasets[0].data = deptLabels.map(d => deptStats[d].pending);
                 stackedDeptInstance.data.datasets[1].data = deptLabels.map(d => deptStats[d].in_progress);
-                stackedDeptInstance.data.datasets[2].data = deptLabels.map(d => deptStats[d].completed);
-                stackedDeptInstance.data.datasets[3].data = deptLabels.map(d => deptStats[d].cancelled);
+                stackedDeptInstance.data.datasets[2].data = deptLabels.map(d => deptStats[d].reviewing);
+                stackedDeptInstance.data.datasets[3].data = deptLabels.map(d => deptStats[d].completed);
+                stackedDeptInstance.data.datasets[4].data = deptLabels.map(d => deptStats[d].cancelled);
                 stackedDeptInstance.update();
             }
 
@@ -1840,234 +2238,18 @@
             if (radarCapInstance) {
                 const totalReqs = requestsToProcess.length;
                 const activeDeptsCount = deptLabels.length;
-                const onTimeProgress = pending + inProg;
+                const onTimeProgress = pending + inProg + reviewing;
 
                 radarCapInstance.data.datasets[0].data = [
                     totalReqs,
                     comp,
-                    inProg,
+                    inProg + reviewing,
                     totalRecipients,
                     activeDeptsCount,
                     onTimeProgress
                 ];
                 radarCapInstance.update();
             }
-        }
-
-        // --- EXPANDED CHART MODAL & DYNAMIC FILTERING LOGIC ---
-        function openChartModal(type) {
-            currentModalChartType = type;
-            const modal = document.getElementById('chartModal');
-            const title = document.getElementById('chartModalTitle');
-
-            const yearEl = document.getElementById('popupYearFilter');
-            const deptEl = document.getElementById('popupDeptFilter');
-            const statusEl = document.getElementById('popupStatusFilter');
-
-            yearEl.value = '';
-            deptEl.value = '';
-            statusEl.value = '';
-
-            if (type === 'line') {
-                title.innerHTML = '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 1. แนวโน้มปริมาณคำขอรับบริการรายเดือน';
-                yearEl.classList.remove('hidden');
-                deptEl.classList.remove('hidden');
-                statusEl.classList.add('hidden');
-            } else if (type === 'status') {
-                title.innerHTML = '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 2. สถิติจำนวนคำขอแบ่งตามสถานะ (%)';
-                yearEl.classList.remove('hidden');
-                deptEl.classList.remove('hidden');
-                statusEl.classList.add('hidden');
-            } else if (type === 'stacked') {
-                title.innerHTML = '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 3. ปริมาณและสถานะงานจำแนกรายหน่วยงาน';
-                yearEl.classList.remove('hidden');
-                deptEl.classList.add('hidden');
-                statusEl.classList.remove('hidden');
-            } else if (type === 'topDept') {
-                title.innerHTML = '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 4. อันดับหน่วยงานที่มีคำขอสูงสุด';
-                yearEl.classList.remove('hidden');
-                deptEl.classList.add('hidden');
-                statusEl.classList.remove('hidden');
-            } else if (type === 'radar') {
-                title.innerHTML = '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 5. มิติศักยภาพและการกระจายการให้บริการ';
-                yearEl.classList.remove('hidden');
-                deptEl.classList.remove('hidden');
-                statusEl.classList.add('hidden');
-            }
-
-            modal.classList.remove('hidden');
-            renderModalChartData();
-        }
-
-        function renderModalChartData() {
-            if (!currentModalChartType) return;
-
-            const ctxModal = document.getElementById('modalCanvas').getContext('2d');
-            const selectedYear = document.getElementById('popupYearFilter').value;
-            const selectedDept = document.getElementById('popupDeptFilter').value;
-            const selectedStatus = document.getElementById('popupStatusFilter').value;
-
-            const filteredData = allRequests.filter(r => {
-                let matchYear = true;
-                if (selectedYear && r.created_at) {
-                    matchYear = new Date(r.created_at).getFullYear().toString() === selectedYear;
-                }
-
-                let matchDept = true;
-                if (selectedDept) {
-                    matchDept = r.department_id == selectedDept;
-                }
-
-                let matchStatus = true;
-                if (selectedStatus) {
-                    matchStatus = getStatusBadge(r).status === selectedStatus;
-                }
-
-                return matchYear && matchDept && matchStatus;
-            });
-
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-                modalChartInstance = null;
-            }
-
-            let pending = 0, inProg = 0, comp = 0, canc = 0;
-            const monthCounts = Array(12).fill(0);
-            const deptStats = {};
-            let totalRecipients = 0;
-
-            filteredData.forEach(r => {
-                const s = getStatusBadge(r).status;
-                if (s === 'pending') pending++;
-                if (s === 'in_progress') inProg++;
-                if (s === 'completed') comp++;
-                if (s === 'cancelled') canc++;
-
-                if (r.created_at) {
-                    const m = new Date(r.created_at).getMonth();
-                    if (m >= 0 && m < 12) monthCounts[m]++;
-                }
-
-                const dName = r.departments?.department_name || 'อื่นๆ';
-                if (!deptStats[dName]) {
-                    deptStats[dName] = { pending: 0, in_progress: 0, completed: 0, cancelled: 0, total: 0 };
-                }
-                deptStats[dName][s]++;
-                deptStats[dName].total++;
-
-                if (r.request_recipients && Array.isArray(r.request_recipients)) {
-                    totalRecipients += r.request_recipients.length;
-                }
-            });
-
-            const legendOpts = getSquareLegendOptions();
-
-            if (currentModalChartType === 'line') {
-                modalChartInstance = new Chart(ctxModal, {
-                    type: 'line',
-                    data: {
-                        labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
-                        datasets: [{
-                            label: 'จำนวนคำขอใหม่ (Demand)',
-                            data: monthCounts,
-                            borderColor: '#EA580C',
-                            backgroundColor: 'rgba(234, 88, 12, 0.1)',
-                            fill: true,
-                            tension: 0.3,
-                            pointBackgroundColor: '#EA580C'
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        plugins: { legend: legendOpts }
-                    }
-                });
-            } else if (currentModalChartType === 'status') {
-                modalChartInstance = new Chart(ctxModal, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
-                        datasets: [{
-                            data: [pending, inProg, comp, canc],
-                            backgroundColor: ['#F59E0B', '#3B82F6', '#10B981', '#F43F5E']
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        plugins: { legend: legendOpts }
-                    }
-                });
-            } else if (currentModalChartType === 'stacked') {
-                const deptLabels = Object.keys(deptStats);
-                modalChartInstance = new Chart(ctxModal, {
-                    type: 'bar',
-                    data: {
-                        labels: deptLabels,
-                        datasets: [
-                            { label: 'รอดำเนินการ', data: deptLabels.map(d => deptStats[d].pending), backgroundColor: '#F59E0B' },
-                            { label: 'กำลังดำเนินการ', data: deptLabels.map(d => deptStats[d].in_progress), backgroundColor: '#3B82F6' },
-                            { label: 'เสร็จสิ้นแล้ว', data: deptLabels.map(d => deptStats[d].completed), backgroundColor: '#10B981' },
-                            { label: 'ยกเลิก', data: deptLabels.map(d => deptStats[d].cancelled), backgroundColor: '#F43F5E' }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { x: { stacked: true }, y: { stacked: true } },
-                        plugins: { legend: legendOpts }
-                    }
-                });
-            } else if (currentModalChartType === 'topDept') {
-                const sortedDepts = Object.entries(deptStats)
-                    .sort((a, b) => b[1].total - a[1].total)
-                    .slice(0, 5);
-
-                modalChartInstance = new Chart(ctxModal, {
-                    type: 'bar',
-                    data: {
-                        labels: sortedDepts.map(d => d[0]),
-                        datasets: [{ label: 'จำนวนคำขอ', data: sortedDepts.map(d => d[1].total), backgroundColor: '#38BDF8' }]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: legendOpts }
-                    }
-                });
-            } else if (currentModalChartType === 'radar') {
-                const deptLabels = Object.keys(deptStats);
-                modalChartInstance = new Chart(ctxModal, {
-                    type: 'radar',
-                    data: {
-                        labels: ['ปริมาณคำขอรวม', 'งานเสร็จสิ้น', 'งานกำลังทำ/ส่งตรวจ', 'ผู้รับบริการ', 'การครอบคลุมหน่วยงาน', 'งานตอบรับตามแผน'],
-                        datasets: [{
-                            label: 'ภาพรวมศักยภาพการผลิต',
-                            data: [filteredData.length, comp, inProg, totalRecipients, deptLabels.length, pending + inProg],
-                            borderColor: '#8B5CF6',
-                            backgroundColor: 'rgba(139, 92, 246, 0.25)',
-                            pointBackgroundColor: '#8B5CF6'
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: { r: { beginAtZero: true } },
-                        plugins: { legend: legendOpts }
-                    }
-                });
-            }
-        }
-
-        function closeChartModal() {
-            document.getElementById('chartModal').classList.add('hidden');
-            if (modalChartInstance) {
-                modalChartInstance.destroy();
-                modalChartInstance = null;
-            }
-            currentModalChartType = null;
         }
     </script>
 </body>
