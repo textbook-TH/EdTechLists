@@ -104,8 +104,8 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div>
-                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการให้บริการผลิตสื่อดิจิตอล</h1>
-                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการและดาวน์โหลดสื่อดิจิตอลที่ผลิตเสร็จสิ้น</p>
+                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการให้บริการผลิตสื่อ</h1>
+                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการและดาวน์โหลดไฟล์</p>
                         </div>
                     </div>
                     
@@ -199,7 +199,6 @@
 
             <!-- การแสดงรายการ และระบบ Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 text-xs gap-3">
-                <span id="pageInfo" class="text-slate-500">แสดงรายการ 0 - 0</span>
                 <div id="paginationControls" class="flex items-center space-x-1"></div>
             </div>
         </section>
@@ -1465,10 +1464,15 @@
                 recipientsContainer.textContent = '-';
             }
 
-            const isUserLoggedInView = currentUser !== null;
+            // ตรวจสอบว่าเป็น Admin หรือ เป็นเจ้าของงานนี้จริงๆ หรือไม่
+            const userEmail = currentUser && currentUser.email ? currentUser.email.toLowerCase() : '';
+            const isOwner = req.request_recipients && Array.isArray(req.request_recipients) &&
+                req.request_recipients.some(r => r.email && r.email.toLowerCase() === userEmail);
+            
+            const canAccessFiles = currentUser !== null && (isAdmin || isOwner);
             const filesSec = document.getElementById('authorizedFilesSection');
 
-            if (isUserLoggedInView) {
+            if (canAccessFiles) {
                 filesSec.classList.remove('hidden');
 
                 const driveContainer = document.getElementById('modalDriveLinks');
