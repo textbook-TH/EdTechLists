@@ -342,16 +342,16 @@
             <!-- Modal Header Title -->
             <h3 id="chartModalTitle" class="text-base sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
 
-            <!-- Dynamic Modal Filter Controls -->
-            <div id="modalFilterBar" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2.5 text-xs font-medium">
-                <span class="text-slate-500 font-bold flex items-center gap-1.5 shrink-0">
+            <!-- Dynamic Modal Filter Controls (ปรับโครงสร้างเป็นแถวเดียวเรียงแนวนอนบนมือถือ) -->
+            <div id="modalFilterBar" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 flex items-center gap-2 text-xs font-medium overflow-x-auto whitespace-nowrap no-scrollbar">
+                <span class="hidden sm:inline-flex text-slate-500 font-bold items-center gap-1.5 shrink-0">
                     <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรอง:
                 </span>
 
-                <!-- 1. ตัวกรองการให้บริการ (เลือกบริการ) -->
-                <div class="flex items-center gap-1.5">
-                    <label for="popupServiceFilter" class="text-slate-600 font-semibold whitespace-nowrap">เลือกบริการ:</label>
-                    <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <!-- 1. ตัวกรองการให้บริการ (ซ่อนคำว่า เลือกบริการ: บนมือถือ) -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <label for="popupServiceFilter" class="hidden sm:inline text-slate-600 font-semibold whitespace-nowrap">เลือกบริการ:</label>
+                    <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
                         <option value="">🛠️ เลือกการให้บริการ</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
                         <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
@@ -360,22 +360,22 @@
                 </div>
 
                 <!-- 2. ตัวกรองปี -->
-                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs shrink-0">
                     <option value="">📅 เลือกปี</option>
                 </select>
 
                 <!-- 3. ตัวกรองหน่วยงาน -->
-                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs shrink-0">
                     <option value="">🏢 เลือกหน่วยงาน</option>
                 </select>
 
-                <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center">
+                <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center shrink-0">
                     <i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตตัวกรอง
                 </button>
             </div>
 
             <!-- Canvas Container -->
-            <div class="h-[420px] sm:h-[500px] bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+            <div class="h-[420px] sm:h-[500px] bg-slate-50/50 p-2 sm:p-4 rounded-2xl border border-slate-100 relative">
                 <canvas id="modalCanvas"></canvas>
             </div>
         </div>
@@ -1717,6 +1717,27 @@
             };
         }
 
+        // Helper ฟังก์ชันสำหรับซ่อนป้ายชื่อแกน (Y หรือ X) บนมือถืออัตโนมัติ
+        function getResponsiveScaleOptions(isHorizontalBar = false) {
+            const isMobile = window.innerWidth < 640;
+            if (isHorizontalBar) {
+                return {
+                    y: {
+                        ticks: {
+                            display: !isMobile
+                        }
+                    }
+                };
+            }
+            return {
+                x: {
+                    ticks: {
+                        display: !isMobile
+                    }
+                }
+            };
+        }
+
         function openChartModal(type) {
             currentModalChartType = type;
             const modal = document.getElementById('chartModal');
@@ -1900,6 +1921,8 @@
                 });
 
                 const labels = Object.keys(deptStats);
+                const scaleOpts = getResponsiveScaleOptions(false);
+
                 modalChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
@@ -1915,7 +1938,10 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { x: { stacked: true }, y: { stacked: true } },
+                        scales: { 
+                            x: { stacked: true, ticks: scaleOpts.x.ticks }, 
+                            y: { stacked: true } 
+                        },
                         plugins: { legend: legendOpts }
                     }
                 });
@@ -1928,6 +1954,7 @@
                 });
 
                 const sorted = Object.entries(deptTotal).sort((a, b) => b[1] - a[1]).slice(0, 8);
+                const scaleOpts = getResponsiveScaleOptions(true);
 
                 modalChartInstance = new Chart(ctx, {
                     type: 'bar',
@@ -1939,6 +1966,9 @@
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        scales: {
+                            y: { ticks: scaleOpts.y.ticks }
+                        },
                         plugins: { legend: legendOpts }
                     }
                 });
