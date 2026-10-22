@@ -1864,7 +1864,7 @@
                 modalChartInstance = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                        labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'เสร็จสิ้นแล้ว', 'ยกเลิก'],
                         datasets: [{
                             data: [pending, inProg, reviewing, comp, canc],
                             backgroundColor: ['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981', '#F43F5E']
@@ -2048,7 +2048,7 @@
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
                 data: {
-                    labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'ดำเนินการเสร็จสิ้น', 'ยกเลิก'],
+                    labels: ['รอดำเนินการ', 'กำลังดำเนินการ', 'ส่งตรวจ', 'เสร็จสิ้นแล้ว', 'ยกเลิก'],
                     datasets: [{
                         data: [0, 0, 0, 0, 0],
                         backgroundColor: ['#F59E0B', '#3B82F6', '#8B5CF6', '#10B981', '#F43F5E']
