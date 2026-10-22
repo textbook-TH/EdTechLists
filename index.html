@@ -1285,6 +1285,7 @@
                         await supabaseClient.from('profiles').upsert({
                             id: data.user.id,
                             email: email,
+                            full_name: fullName,
                             role: 'user'
                         });
                     }
