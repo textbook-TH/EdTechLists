@@ -150,7 +150,7 @@
                     <select id="serviceTypeFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <option value="">🛠️ เลือกการให้บริการ</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                        <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                     </select>
 
@@ -221,7 +221,7 @@
                         <select id="chartServiceFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
                             <option value="">🛠️ เลือกการให้บริการ</option>
                             <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                            <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
                             <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                         </select>
                     </div>
@@ -335,7 +335,7 @@
                     <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
                         <option value="">🛠️ เลือกการให้บริการ</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                        <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                     </select>
                 </div>
@@ -535,7 +535,7 @@
                         <select id="formServiceType" required class="appearance-none w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700">
                             <option value="">เลือกการให้บริการ</option>
                             <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
+                            <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
                             <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                         </select>
                     </div>
@@ -1907,7 +1907,7 @@
                         if (m >= 0 && m < 12) {
                             const st = r.service_type || 'สื่อดิจิตอล';
                             if (st === 'สื่อดิจิตอล') digitalCounts[m]++;
-                            else if (st === 'สื่อวิดิทัศน์') videoCounts[m]++;
+                            else if (st === 'สื่อวีดิทัศน์') videoCounts[m]++;
                             else if (st === 'สื่อสิ่งพิมพ์') printCounts[m]++;
                         }
                     }
@@ -1926,9 +1926,9 @@
                         pointRadius: 4
                     });
                 }
-                if (!selectedService || selectedService === 'สื่อวิดิทัศน์') {
+                if (!selectedService || selectedService === 'สื่อวีดิทัศน์') {
                     datasets.push({
-                        label: 'สื่อวิดิทัศน์',
+                        label: 'สื่อวีดิทัศน์',
                         data: videoCounts,
                         borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.15)',
@@ -2131,7 +2131,7 @@
                             pointBackgroundColor: '#EA580C'
                         },
                         {
-                            label: 'สื่อวิดิทัศน์',
+                            label: 'สื่อวีดิทัศน์',
                             data: Array(12).fill(0),
                             borderColor: '#3B82F6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -2316,7 +2316,7 @@
                         monthCounts[m]++;
                         const st = r.service_type || 'สื่อดิจิตอล';
                         if (st === 'สื่อดิจิตอล') digitalMonthCounts[m]++;
-                        else if (st === 'สื่อวิดิทัศน์') videoMonthCounts[m]++;
+                        else if (st === 'สื่อวีดิทัศน์') videoMonthCounts[m]++;
                         else if (st === 'สื่อสิ่งพิมพ์') printMonthCounts[m]++;
                     }
                 }
