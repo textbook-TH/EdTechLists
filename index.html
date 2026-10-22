@@ -46,7 +46,7 @@
 
     <!-- Global Thai Alert Modal (ป๊อปอัปแจ้งเตือนตรงกลางจอ) -->
     <div id="globalAlertModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100] hidden">
-        <div class="bg-white rounded-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl text-center space-y-4 relative border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-sm w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl text-center space-y-4 relative border border-slate-100 my-auto">
             <div id="globalAlertIcon" class="text-3xl sm:text-4xl"></div>
             <h3 id="globalAlertTitle" class="text-base sm:text-lg font-bold text-slate-900"></h3>
             <p id="globalAlertMessage" class="text-xs sm:text-sm text-slate-600 leading-relaxed"></p>
@@ -147,19 +147,25 @@
                 </div>
                 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full md:w-auto shrink-0">
-                    <select id="serviceTypeFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <option value="">🛠️ เลือกการให้บริการ</option>
+                    <!-- ตัวกรองการให้บริการ บนมือถือแสดงเฉพาะ icon -->
+                    <select id="serviceTypeFilter" onchange="filterRequests()" class="appearance-none w-auto flex-1 sm:flex-none px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <option value="" class="hidden sm:inline">🛠️ เลือกการให้บริการ</option>
+                        <option value="" class="sm:hidden">🛠️</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
                         <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                     </select>
 
-                    <select id="departmentFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <option value="">🏢 เลือกหน่วยงาน</option>
+                    <!-- ตัวกรองหน่วยงาน บนมือถือแสดงเฉพาะ icon -->
+                    <select id="departmentFilter" onchange="filterRequests()" class="appearance-none w-auto flex-1 sm:flex-none px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option>
+                        <option value="" class="sm:hidden">🏢</option>
                     </select>
 
-                    <select id="yearFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
-                        <option value="">📅 เลือกปี</option>
+                    <!-- ตัวกรองปี บนมือถือแสดงเฉพาะ icon -->
+                    <select id="yearFilter" onchange="filterRequests()" class="appearance-none w-auto flex-1 sm:flex-none px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
+                        <option value="" class="hidden sm:inline">📅 เลือกปี</option>
+                        <option value="" class="sm:hidden">📅</option>
                     </select>
 
                     <button onclick="toggleStatsChartModal()" class="w-full sm:w-auto px-4 py-2 bg-slate-900 hover:bg-slate-800 text-amber-400 font-medium rounded-xl text-xs transition flex items-center justify-center whitespace-nowrap shadow-sm border border-slate-800">
@@ -212,30 +218,38 @@
                 </h2>
 
                 <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full xl:w-auto justify-start xl:justify-end">
+                    <!-- ตัวกรองหน่วยงาน -->
                     <div class="relative flex-1 sm:flex-none">
                         <select id="chartDeptFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">🏢 เลือกหน่วยงาน</option>
+                            <option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option>
+                            <option value="" class="sm:hidden">🏢</option>
                         </select>
                     </div>
 
+                    <!-- ตัวกรองการให้บริการ -->
                     <div class="relative flex-1 sm:flex-none">
                         <select id="chartServiceFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">🛠️ เลือกการให้บริการ</option>
+                            <option value="" class="hidden sm:inline">🛠️ เลือกการให้บริการ</option>
+                            <option value="" class="sm:hidden">🛠️</option>
                             <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
                             <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                             <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                         </select>
                     </div>
 
+                    <!-- ตัวกรองปี -->
                     <div class="relative flex-1 sm:flex-none">
                         <select id="chartYearFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">📅 เลือกปี</option>
+                            <option value="" class="hidden sm:inline">📅 เลือกปี</option>
+                            <option value="" class="sm:hidden">📅</option>
                         </select>
                     </div>
 
+                    <!-- ตัวกรองสถานะ -->
                     <div class="relative flex-1 sm:flex-none">
                         <select id="chartStatusFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
-                            <option value="">📌 เลือกสถานะ</option>
+                            <option value="" class="hidden sm:inline">📌 เลือกสถานะ</option>
+                            <option value="" class="sm:hidden">📌</option>
                             <option value="pending">รอดำเนินการ</option>
                             <option value="in_progress">กำลังดำเนินการ</option>
                             <option value="reviewing">ส่งตรวจ</option>
@@ -257,68 +271,50 @@
             </div>
 
             <!-- กราฟเส้นเปรียบเทียบการให้บริการรายเดือน -->
-            <div onclick="openChartModal('serviceComparison')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                </span>
-                <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+            <div onclick="openChartModal('serviceComparison')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                     <i class="fa-solid fa-chart-line text-brand-accent mr-1.5"></i> 1. เปรียบเทียบจำนวนงานในแต่ละเดือนตามการให้บริการ
                 </h3>
-                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="serviceComparisonLineChart"></canvas></div>
+                <div class="relative w-full h-60 sm:h-72"><canvas id="serviceComparisonLineChart"></canvas></div>
             </div>
 
             <!-- Grid Charts Cards -->
-            <div onclick="openChartModal('line')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                    <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                </span>
-                <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
+            <div onclick="openChartModal('line')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                     <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน
                 </h3>
-                <div class="h-64 sm:h-72 pointer-events-none"><canvas id="lineChartDemand"></canvas></div>
+                <div class="relative w-full h-60 sm:h-72"><canvas id="lineChartDemand"></canvas></div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div onclick="openChartModal('status')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
+                <div onclick="openChartModal('status')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                         <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="statusChart"></canvas></div>
+                    <div class="relative w-full h-60 sm:h-72"><canvas id="statusChart"></canvas></div>
                 </div>
 
-                <div onclick="openChartModal('stacked')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
+                <div onclick="openChartModal('stacked')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                         <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="stackedDeptChart"></canvas></div>
+                    <div class="relative w-full h-60 sm:h-72"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div onclick="openChartModal('topDept')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
+                <div onclick="openChartModal('topDept')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                         <i class="fa-solid fa-ranking-star text-amber-500 mr-1.5"></i> 5. อันดับหน่วยงานที่มีคำขอสูงสุด
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="topDeptBarChart"></canvas></div>
+                    <div class="relative w-full h-60 sm:h-72"><canvas id="topDeptBarChart"></canvas></div>
                 </div>
 
-                <div onclick="openChartModal('radar')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
-                    <span class="pointer-events-none absolute top-4 right-4 bg-slate-100 group-hover:bg-amber-100 text-slate-500 group-hover:text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-lg transition flex items-center gap-1 z-10">
-                        <i class="fa-solid fa-expand"></i> คลิกเพื่อขยาย
-                    </span>
-                    <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
+                <div onclick="openChartModal('radar')" class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
+                    <h3 class="font-bold text-slate-800 mb-3 text-xs flex items-center">
                         <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 6. มิติศักยภาพและการกระจายการให้บริการ
                     </h3>
-                    <div class="h-64 sm:h-72 pointer-events-none"><canvas id="radarCapabilityChart"></canvas></div>
+                    <div class="relative w-full h-60 sm:h-72"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
             </div>
         </section>
@@ -333,26 +329,26 @@
     </footer>
 
     <!-- MODAL 4: EXPANDED CHART MODAL -->
-    <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-3xl max-w-4xl sm:max-w-5xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl space-y-4 relative border border-slate-100">
-            <button onclick="closeChartModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center">
+    <div id="chartModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 z-50 hidden">
+        <div class="bg-white rounded-3xl max-w-4xl sm:max-w-5xl w-full max-h-[85vh] sm:max-h-[90vh] overflow-y-auto p-4 sm:p-7 shadow-2xl space-y-3 sm:space-y-4 relative border border-slate-100 my-auto">
+            <button onclick="closeChartModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center z-10">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
 
             <!-- Modal Header Title -->
-            <h3 id="chartModalTitle" class="text-base sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
+            <h3 id="chartModalTitle" class="text-sm sm:text-lg font-bold text-slate-900 pr-10 flex items-center"></h3>
 
             <!-- Dynamic Modal Filter Controls -->
-            <div id="modalFilterBar" class="bg-slate-50 p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2.5 text-xs font-medium">
-                <span class="text-slate-500 font-bold flex items-center gap-1.5 shrink-0">
+            <div id="modalFilterBar" class="bg-slate-50 p-2.5 sm:p-3 rounded-2xl border border-slate-200/80 flex flex-wrap items-center gap-2 text-xs font-medium">
+                <span class="text-slate-500 font-bold flex items-center gap-1 shrink-0">
                     <i class="fa-solid fa-filter text-amber-500"></i> ตัวกรอง:
                 </span>
 
-                <!-- 1. ตัวกรองการให้บริการ (เลือกบริการ) -->
-                <div class="flex items-center gap-1.5">
-                    <label for="popupServiceFilter" class="text-slate-600 font-semibold whitespace-nowrap">เลือกบริการ:</label>
-                    <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
-                        <option value="">🛠️ เลือกการให้บริการ</option>
+                <!-- 1. ตัวกรองการให้บริการ (เลือกบริการ) บนมือถือซ่อน text -->
+                <div class="flex items-center gap-1">
+                    <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-2.5 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
+                        <option value="" class="hidden sm:inline">🛠️ เลือกการให้บริการ</option>
+                        <option value="" class="sm:hidden">🛠️</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
                         <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
@@ -360,22 +356,24 @@
                 </div>
 
                 <!-- 2. ตัวกรองปี -->
-                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">📅 เลือกปี</option>
+                <select id="popupYearFilter" onchange="renderModalChartData()" class="appearance-none px-2.5 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
+                    <option value="" class="hidden sm:inline">📅 เลือกปี</option>
+                    <option value="" class="sm:hidden">📅</option>
                 </select>
 
                 <!-- 3. ตัวกรองหน่วยงาน -->
-                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400">
-                    <option value="">🏢 เลือกหน่วยงาน</option>
+                <select id="popupDeptFilter" onchange="renderModalChartData()" class="appearance-none px-2.5 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
+                    <option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option>
+                    <option value="" class="sm:hidden">🏢</option>
                 </select>
 
-                <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center">
+                <button onclick="resetModalFilters()" class="hidden sm:flex px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition ml-auto items-center text-xs">
                     <i class="fa-solid fa-rotate-left mr-1"></i> รีเซ็ตตัวกรอง
                 </button>
             </div>
 
-            <!-- Canvas Container -->
-            <div class="h-[420px] sm:h-[500px] bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+            <!-- Canvas Container ปรับปรุงขนาดมือถือให้พอดีจอและอยู่ตรงกลาง -->
+            <div class="relative w-full h-72 sm:h-[450px] bg-slate-50/50 p-2 sm:p-4 rounded-2xl border border-slate-100 flex items-center justify-center">
                 <canvas id="modalCanvas"></canvas>
             </div>
         </div>
@@ -383,7 +381,7 @@
 
     <!-- MODAL 1: AUTHENTICATION -->
     <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-sm sm:max-w-md w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100 my-auto">
             <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             
             <div id="authHeader" class="text-center">
@@ -464,7 +462,7 @@
 
     <!-- MODAL 2: REQUEST DETAIL & FILE DOWNLOADS -->
     <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-3xl max-w-xl sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl space-y-4 sm:space-y-5 relative border border-slate-100">
+        <div class="bg-white rounded-3xl max-w-xl sm:max-w-2xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl space-y-4 sm:space-y-5 relative border border-slate-100 my-auto">
             <button onclick="closeDetailModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-base"></i>
             </button>
@@ -527,7 +525,7 @@
 
     <!-- MODAL 3: ADMIN FORM -->
     <div id="adminModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100">
+        <div class="bg-white rounded-2xl max-w-2xl sm:max-w-3xl w-full max-h-[90vh] overflow-y-auto p-5 sm:p-6 shadow-2xl space-y-4 relative border border-slate-100 my-auto">
             <button onclick="closeAdminModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
 
             <h3 id="adminModalTitle" class="text-lg sm:text-xl font-bold text-slate-900">จัดการข้อมูลคำขอรับบริการ</h3>
@@ -852,7 +850,7 @@
             if (!error && data) {
                 departments = data;
                 const filterSelect = document.getElementById('departmentFilter');
-                filterSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>';
+                filterSelect.innerHTML = '<option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option><option value="" class="sm:hidden">🏢</option>';
 
                 data.forEach(d => {
                     filterSelect.innerHTML += `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`;
@@ -912,7 +910,7 @@
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
             
-            yearSelect.innerHTML = '<option value="">📅 เลือกปี</option>';
+            yearSelect.innerHTML = '<option value="" class="hidden sm:inline">📅 เลือกปี</option><option value="" class="sm:hidden">📅</option>';
             sortedYears.forEach(y => {
                 const yearBE = y + 543;
                 yearSelect.innerHTML += `<option value="${escapeHTML(y)}">${escapeHTML(yearBE)}</option>`;
@@ -1662,13 +1660,13 @@
             });
 
             const sortedYears = Array.from(years).sort((a, b) => b - a);
-            let yearOptions = '<option value="">📅 เลือกปี</option>';
+            let yearOptions = '<option value="" class="hidden sm:inline">📅 เลือกปี</option><option value="" class="sm:hidden">📅</option>';
             sortedYears.forEach(y => {
                 yearOptions += `<option value="${escapeHTML(y)}">${escapeHTML(y + 543)}</option>`;
             });
 
             yearSelect.innerHTML = yearOptions;
-            if (popupYearSelect) popupYearSelect.innerHTML = '<option value="">📅 เลือกปี</option>' + sortedYears.map(y => `<option value="${escapeHTML(y)}">${escapeHTML(y + 543)}</option>`).join('');
+            if (popupYearSelect) popupYearSelect.innerHTML = '<option value="" class="hidden sm:inline">📅 เลือกปี</option><option value="" class="sm:hidden">📅</option>' + sortedYears.map(y => `<option value="${escapeHTML(y)}">${escapeHTML(y + 543)}</option>`).join('');
         }
 
         function populateChartDeptFilter() {
@@ -1676,13 +1674,13 @@
             const popupDeptSelect = document.getElementById('popupDeptFilter');
             if (!deptSelect || !departments) return;
 
-            let deptOptions = '<option value="">🏢 เลือกหน่วยงาน</option>';
+            let deptOptions = '<option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option><option value="" class="sm:hidden">🏢</option>';
             departments.forEach(d => {
                 deptOptions += `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`;
             });
 
             deptSelect.innerHTML = deptOptions;
-            if (popupDeptSelect) popupDeptSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>' + departments.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`).join('');
+            if (popupDeptSelect) popupDeptSelect.innerHTML = '<option value="" class="hidden sm:inline">🏢 เลือกหน่วยงาน</option><option value="" class="sm:hidden">🏢</option>' + departments.map(d => `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`).join('');
         }
 
         function resetChartFilters() {
@@ -1705,14 +1703,34 @@
         }
 
         function getSquareLegendOptions() {
+            const isMobile = window.innerWidth < 640;
             return {
                 labels: {
                     usePointStyle: true,
                     pointStyle: 'rect',
-                    boxWidth: 12,
-                    boxHeight: 12,
-                    padding: 12,
-                    font: { size: 11 }
+                    boxWidth: isMobile ? 8 : 12,
+                    boxHeight: isMobile ? 8 : 12,
+                    padding: isMobile ? 8 : 12,
+                    font: { size: isMobile ? 9 : 11 }
+                }
+            };
+        }
+
+        function getResponsiveScales() {
+            const isMobile = window.innerWidth < 640;
+            return {
+                x: {
+                    ticks: {
+                        font: { size: isMobile ? 8 : 10 },
+                        maxRotation: 45,
+                        minRotation: 0,
+                        autoSkip: true
+                    }
+                },
+                y: {
+                    ticks: {
+                        font: { size: isMobile ? 8 : 10 }
+                    }
                 }
             };
         }
@@ -1776,6 +1794,7 @@
 
             const ctx = document.getElementById('modalCanvas').getContext('2d');
             const legendOpts = getSquareLegendOptions();
+            const responsiveScales = getResponsiveScales();
 
             if (currentModalChartType === 'serviceComparison') {
                 const digitalCounts = Array(12).fill(0);
@@ -1804,7 +1823,7 @@
                         tension: 0.35,
                         fill: true,
                         pointBackgroundColor: '#EA580C',
-                        pointRadius: 4
+                        pointRadius: 3
                     });
                 }
                 if (!selectedService || selectedService === 'สื่อวิดิทัศน์') {
@@ -1816,7 +1835,7 @@
                         tension: 0.35,
                         fill: true,
                         pointBackgroundColor: '#3B82F6',
-                        pointRadius: 4
+                        pointRadius: 3
                     });
                 }
                 if (!selectedService || selectedService === 'สื่อสิ่งพิมพ์') {
@@ -1828,7 +1847,7 @@
                         tension: 0.35,
                         fill: true,
                         pointBackgroundColor: '#10B981',
-                        pointRadius: 4
+                        pointRadius: 3
                     });
                 }
 
@@ -1838,7 +1857,7 @@
                         labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
                         datasets: datasets
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: legendOpts } }
+                    options: { responsive: true, maintainAspectRatio: false, scales: responsiveScales, plugins: { legend: legendOpts } }
                 });
 
             } else if (currentModalChartType === 'line') {
@@ -1864,7 +1883,7 @@
                             pointBackgroundColor: '#F59E0B'
                         }]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: legendOpts } }
+                    options: { responsive: true, maintainAspectRatio: false, scales: responsiveScales, plugins: { legend: legendOpts } }
                 });
 
             } else if (currentModalChartType === 'status') {
@@ -1915,7 +1934,10 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { x: { stacked: true }, y: { stacked: true } },
+                        scales: { 
+                            x: { stacked: true, ticks: { font: { size: window.innerWidth < 640 ? 8 : 10 }, maxRotation: 45, autoSkip: true } }, 
+                            y: { stacked: true, ticks: { font: { size: window.innerWidth < 640 ? 8 : 10 } } } 
+                        },
                         plugins: { legend: legendOpts }
                     }
                 });
@@ -1939,6 +1961,7 @@
                         indexAxis: 'y',
                         responsive: true,
                         maintainAspectRatio: false,
+                        scales: responsiveScales,
                         plugins: { legend: legendOpts }
                     }
                 });
@@ -1974,7 +1997,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        scales: { r: { beginAtZero: true } },
+                        scales: { r: { beginAtZero: true, ticks: { font: { size: window.innerWidth < 640 ? 7 : 9 } }, pointLabels: { font: { size: window.innerWidth < 640 ? 8 : 10 } } } },
                         plugins: { legend: legendOpts }
                     }
                 });
@@ -1983,6 +2006,7 @@
 
         function initCharts() {
             const legendOpts = getSquareLegendOptions();
+            const responsiveScales = getResponsiveScales();
 
             // กราฟเส้นเปรียบเทียบการให้บริการ 3 ประเภท
             const ctxComp = document.getElementById('serviceComparisonLineChart').getContext('2d');
@@ -2020,6 +2044,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    scales: responsiveScales,
                     plugins: { legend: legendOpts }
                 }
             });
@@ -2042,6 +2067,7 @@
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false,
+                    scales: responsiveScales,
                     plugins: { legend: legendOpts }
                 }
             });
@@ -2079,7 +2105,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { x: { stacked: true }, y: { stacked: true } },
+                    scales: { 
+                        x: { stacked: true, ticks: { font: { size: window.innerWidth < 640 ? 8 : 10 }, maxRotation: 45, autoSkip: true } }, 
+                        y: { stacked: true, ticks: { font: { size: window.innerWidth < 640 ? 8 : 10 } } } 
+                    },
                     plugins: { legend: legendOpts }
                 }
             });
@@ -2095,6 +2124,7 @@
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: false,
+                    scales: responsiveScales,
                     plugins: { legend: legendOpts }
                 }
             });
@@ -2115,7 +2145,7 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { r: { beginAtZero: true } },
+                    scales: { r: { beginAtZero: true, ticks: { font: { size: window.innerWidth < 640 ? 7 : 9 } }, pointLabels: { font: { size: window.innerWidth < 640 ? 8 : 10 } } } },
                     plugins: { legend: legendOpts }
                 }
             });
