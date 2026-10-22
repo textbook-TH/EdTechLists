@@ -801,7 +801,7 @@
             }
 
             updateCapsuleStyle();
-            renderGrid();
+            filterRequests();
         }
 
         function switchNavTab(tab) {
@@ -853,7 +853,7 @@
                     }
                 }
             }
-            renderGrid();
+            filterRequests();
         }
 
         function toggleStatsChartModal() {
@@ -963,6 +963,18 @@
             const selectedYear = document.getElementById('yearFilter').value;
 
             filteredRequests = allRequests.filter(req => {
+                // 1. ตรวจสอบสิทธิ์การมองเห็นข้อมูล:
+                // หากล็อกอินเป็น User ทั่วไป (ไม่ใช่ Admin) จะต้องเห็นเฉพาะงานที่มีอีเมลของตัวเองใน request_recipients
+                if (currentUser && !isAdmin) {
+                    const userEmail = currentUser.email ? currentUser.email.toLowerCase() : '';
+                    const hasUserRecipient = req.request_recipients && Array.isArray(req.request_recipients) &&
+                        req.request_recipients.some(r => r.email && r.email.toLowerCase() === userEmail);
+                    if (!hasUserRecipient) {
+                        return false;
+                    }
+                }
+
+                // 2. กรองตามเงื่อนไขค้นหา
                 const matchSearch = (req.title && req.title.toLowerCase().includes(search)) || 
                                     (req.work_code && req.work_code.toLowerCase().includes(search));
                 const matchService = !serviceType || (req.service_type || 'สื่อดิจิตอล') === serviceType;
@@ -979,6 +991,45 @@
 
             currentPage = 1;
             renderGrid();
+            updateTopStats();
+        }
+
+        // อัปเดตตัวเลขสถิติด้านบนให้สอดคล้องกับสิทธิ์การมองเห็นรายการของผู้ใช้งาน
+        function updateTopStats() {
+            let pending = 0, inProg = 0, reviewing = 0, comp = 0, canc = 0;
+            
+            // ใช้รายการที่ผ่านการกรองตามสิทธิ์การมองเห็น
+            const visibleRequests = allRequests.filter(req => {
+                if (currentUser && !isAdmin) {
+                    const userEmail = currentUser.email ? currentUser.email.toLowerCase() : '';
+                    return req.request_recipients && Array.isArray(req.request_recipients) &&
+                        req.request_recipients.some(r => r.email && r.email.toLowerCase() === userEmail);
+                }
+                return true;
+            });
+
+            visibleRequests.forEach(r => {
+                const s = getStatusBadge(r).status;
+                if (s === 'pending') pending++;
+                if (s === 'in_progress') inProg++;
+                if (s === 'reviewing') reviewing++;
+                if (s === 'completed') comp++;
+                if (s === 'cancelled') canc++;
+            });
+
+            const elTotal = document.getElementById('statTotal');
+            const elPending = document.getElementById('statPending');
+            const elInProgress = document.getElementById('statInProgress');
+            const elReviewing = document.getElementById('statReviewing');
+            const elCompleted = document.getElementById('statCompleted');
+            const elCancelled = document.getElementById('statCancelled');
+
+            if (elTotal) elTotal.textContent = visibleRequests.length;
+            if (elPending) elPending.textContent = pending;
+            if (elInProgress) elInProgress.textContent = inProg;
+            if (elReviewing) elReviewing.textContent = reviewing;
+            if (elCompleted) elCompleted.textContent = comp;
+            if (elCancelled) elCancelled.textContent = canc;
         }
 
         function renderGrid() {
@@ -2277,13 +2328,6 @@
                     totalRecipients += r.request_recipients.length;
                 }
             });
-
-            document.getElementById('statTotal').textContent = requestsToProcess.length;
-            document.getElementById('statPending').textContent = pending;
-            document.getElementById('statInProgress').textContent = inProg;
-            document.getElementById('statReviewing').textContent = reviewing;
-            document.getElementById('statCompleted').textContent = comp;
-            document.getElementById('statCancelled').textContent = canc;
 
             if (serviceCompLineInstance) {
                 serviceCompLineInstance.data.datasets[0].data = digitalMonthCounts;
