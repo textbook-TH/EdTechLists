@@ -637,6 +637,7 @@
         const SUPABASE_ANON_KEY = "sb_publishable_myZ5ASl47F8P4xigTF4Wrg_CpCz_BPh";
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supabaseClient = supabaseClient; // ประกาศ Global alias ป้องกัน ReferenceError
 
         let currentUser = null;
         let isAdmin = false;
@@ -668,7 +669,7 @@
                     openAuthModal('update_password');
                 } else if (session) {
                     currentUser = session.user;
-                    isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
+                    isAdmin = await checkUserIsAdmin(currentUser);
                 } else {
                     currentUser = null;
                     isAdmin = false;
@@ -676,6 +677,33 @@
                 updateUserUI();
             });
         });
+
+        // ฟังก์ชันตรวจสอบสิทธิ์ Admin จากตาราง profiles ใน Supabase
+        async function checkUserIsAdmin(user) {
+            if (!user) return false;
+            
+            // 1. เช็กสิทธิ์จาก Metadata
+            if (user.app_metadata?.role === 'admin' || user.user_metadata?.role === 'admin') {
+                return true;
+            }
+
+            // 2. เช็กสิทธิ์จากตาราง profiles
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (!error && data) {
+                    return data.role === 'admin';
+                }
+            } catch (err) {
+                console.error("Error checking profile role:", err);
+            }
+
+            return false;
+        }
 
         function showGlobalAlert(title, message, type = 'info') {
             const modal = document.getElementById('globalAlertModal');
@@ -719,7 +747,7 @@
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
-                isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
+                isAdmin = await checkUserIsAdmin(currentUser);
             } else {
                 currentUser = null;
                 isAdmin = false;
@@ -830,17 +858,21 @@
         }
 
         async function fetchDepartments() {
-            const { data, error } = await supabaseClient.from('departments').select('*').order('department_name');
-            if (!error && data) {
-                departments = data;
-                const filterSelect = document.getElementById('departmentFilter');
-                filterSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>';
+            try {
+                const { data, error } = await supabaseClient.from('departments').select('*').order('department_name');
+                if (!error && data) {
+                    departments = data;
+                    const filterSelect = document.getElementById('departmentFilter');
+                    filterSelect.innerHTML = '<option value="">🏢 เลือกหน่วยงาน</option>';
 
-                data.forEach(d => {
-                    filterSelect.innerHTML += `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`;
-                });
+                    data.forEach(d => {
+                        filterSelect.innerHTML += `<option value="${escapeHTML(d.id)}">${escapeHTML(d.department_name)}</option>`;
+                    });
 
-                populateChartDeptFilter();
+                    populateChartDeptFilter();
+                }
+            } catch (err) {
+                console.error("Error fetching departments:", err);
             }
         }
 
@@ -856,28 +888,43 @@
                     </tr>`;
             }
 
-            const { data, error } = await supabaseClient
-                .from('service_requests')
-                .select(`
-                    *,
-                    departments(department_name),
-                    request_recipients(*),
-                    request_drive_links(*),
-                    request_youtube_links(*)
-                `)
-                .order('work_code', { ascending: false });
+            try {
+                const { data, error } = await supabaseClient
+                    .from('service_requests')
+                    .select(`
+                        *,
+                        departments(department_name),
+                        request_recipients(*),
+                        request_drive_links(*),
+                        request_youtube_links(*)
+                    `)
+                    .order('work_code', { ascending: false });
 
-            if (!error && data) {
-                allRequests = data.sort((a, b) => {
-                    const codeA = a.work_code || '';
-                    const codeB = b.work_code || '';
-                    return codeB.localeCompare(codeA, undefined, { numeric: true, sensitivity: 'base' });
-                });
+                if (error) {
+                    console.error("Supabase Request Error:", error);
+                    if (tableBody) {
+                        tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-rose-500 font-bold">ไม่สามารถดึงข้อมูลได้: ${escapeHTML(error.message)}<br><span class="text-xs font-normal text-slate-500">โปรดตรวจสอบการตั้งค่า RLS ใน Supabase</span></td></tr>`;
+                    }
+                    return;
+                }
 
-                populateYearFilter();
-                populateChartYearFilter();
-                filterRequests();
-                updateDashboardStats();
+                if (data) {
+                    allRequests = data.sort((a, b) => {
+                        const codeA = a.work_code || '';
+                        const codeB = b.work_code || '';
+                        return codeB.localeCompare(codeA, undefined, { numeric: true, sensitivity: 'base' });
+                    });
+
+                    populateYearFilter();
+                    populateChartYearFilter();
+                    filterRequests();
+                    updateDashboardStats();
+                }
+            } catch (err) {
+                console.error("Fetch Request Exception:", err);
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr><td colspan="3" class="text-center py-8 text-rose-500 font-bold">เกิดข้อผิดพลาดในระบบ: ${escapeHTML(err.message)}</td></tr>`;
+                }
             }
         }
 
@@ -1207,6 +1254,15 @@
                     });
                     
                     if (error) throw error;
+
+                    // สร้าง/อัปเดตบทบาทในตาราง profiles เมื่อสมัครสมาชิก
+                    if (data.user) {
+                        await supabaseClient.from('profiles').upsert({
+                            id: data.user.id,
+                            email: email,
+                            role: 'user'
+                        });
+                    }
                     
                     showGlobalAlert('สำเร็จ', 'สมัครสมาชิกเรียบร้อยแล้ว ท่านสามารถเข้าสู่ระบบได้ทันที', 'success');
                     switchAuthMode('signin');
@@ -1226,7 +1282,7 @@
                     }
 
                     currentUser = data.user;
-                    isAdmin = currentUser.app_metadata?.role === 'admin' || currentUser.user_metadata?.role === 'admin';
+                    isAdmin = await checkUserIsAdmin(currentUser);
                     
                     updateUserUI();
                     closeAuthModal();
@@ -1704,7 +1760,6 @@
             const modal = document.getElementById('chartModal');
             const modalTitle = document.getElementById('chartModalTitle');
 
-            // Sync filters from main dashboard page to modal
             document.getElementById('popupServiceFilter').value = document.getElementById('chartServiceFilter')?.value || '';
             document.getElementById('popupYearFilter').value = document.getElementById('chartYearFilter')?.value || '';
             document.getElementById('popupDeptFilter').value = document.getElementById('chartDeptFilter')?.value || '';
@@ -1980,7 +2035,6 @@
             const legendOpts = getSquareLegendOptions();
             const isMobile = window.innerWidth < 640;
 
-            // 1. กราฟเส้นเปรียบเทียบการให้บริการ
             const ctxComp = document.getElementById('serviceComparisonLineChart').getContext('2d');
             serviceCompLineInstance = new Chart(ctxComp, {
                 type: 'line',
@@ -2020,7 +2074,6 @@
                 }
             });
 
-            // 2. กราฟแนวโน้มปริมาณคำขอ
             const ctxLine = document.getElementById('lineChartDemand').getContext('2d');
             lineDemandInstance = new Chart(ctxLine, {
                 type: 'line',
@@ -2043,7 +2096,6 @@
                 }
             });
 
-            // 3. กราฟวงกลมสถานะ
             const ctxStatus = document.getElementById('statusChart').getContext('2d');
             statusChartInstance = new Chart(ctxStatus, {
                 type: 'doughnut',
@@ -2061,7 +2113,6 @@
                 }
             });
 
-            // 4. กราฟแท่งซ้อนสถานะแยกตามหน่วยงาน (Stacked)
             const ctxStacked = document.getElementById('stackedDeptChart').getContext('2d');
             stackedDeptInstance = new Chart(ctxStacked, {
                 type: 'bar',
@@ -2086,7 +2137,6 @@
                 }
             });
 
-            // 5. กราฟอันดับหน่วยงานที่มีคำขอสูงสุด (Bar Y)
             const ctxTop = document.getElementById('topDeptBarChart').getContext('2d');
             topDeptBarInstance = new Chart(ctxTop, {
                 type: 'bar',
@@ -2105,7 +2155,6 @@
                 }
             });
 
-            // 6. กราฟมิติศักยภาพ (Radar)
             const ctxRadar = document.getElementById('radarCapabilityChart').getContext('2d');
             radarCapInstance = new Chart(ctxRadar, {
                 type: 'radar',
@@ -2268,7 +2317,6 @@
             }
         }
 
-        // ปรับขนาดกราฟและอัปเดตการแสดงผลลาเบลอัตโนมัติเมื่อมีการหมุนหรือเปลี่ยนขนาดหน้าจอ
         window.addEventListener('resize', () => {
             updateDashboardStats();
             if (modalChartInstance) {
