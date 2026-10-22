@@ -259,7 +259,7 @@
             <!-- กราฟเส้นเปรียบเทียบการให้บริการรายเดือน -->
             <div onclick="openChartModal('serviceComparison')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
-                    <i class="fa-solid fa-chart-line text-brand-accent mr-1.5"></i> 1. เปรียบเทียบจำนวนงานในแต่ละเดือนตามการให้บริการ
+                    <i class="fa-solid fa-chart-line text-brand-accent mr-1.5"></i> 1. เปรียบเทียบจำนวนงานในแต่ละเดือน
                 </h3>
                 <div class="h-64 sm:h-72"><canvas id="serviceComparisonLineChart"></canvas></div>
             </div>
@@ -267,7 +267,7 @@
             <!-- Grid Charts Cards -->
             <div onclick="openChartModal('line')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                 <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center">
-                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน
+                    <i class="fa-solid fa-chart-line text-amber-500 mr-1.5"></i> 2. แนวโน้มปริมาณคำขอรับบริการรายเดือน
                 </h3>
                 <div class="h-64 sm:h-72"><canvas id="lineChartDemand"></canvas></div>
             </div>
@@ -275,14 +275,14 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div onclick="openChartModal('status')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)
+                        <i class="fa-solid fa-chart-pie text-amber-500 mr-1.5"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ
                     </h3>
                     <div class="h-64 sm:h-72"><canvas id="statusChart"></canvas></div>
                 </div>
 
                 <div onclick="openChartModal('stacked')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน
+                        <i class="fa-solid fa-chart-column text-amber-500 mr-1.5"></i> 4. ปริมาณงานจำแนกรายหน่วยงาน
                     </h3>
                     <div class="h-64 sm:h-72"><canvas id="stackedDeptChart"></canvas></div>
                 </div>
@@ -298,7 +298,7 @@
 
                 <div onclick="openChartModal('radar')" class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm cursor-pointer hover:border-amber-400 transition relative group">
                     <h3 class="font-bold text-slate-800 mb-4 text-xs flex items-center pr-20">
-                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 6. มิติศักยภาพและการกระจายการให้บริการ
+                        <i class="fa-solid fa-spider text-amber-500 mr-1.5"></i> 6. มิติศักยภาพในการให้บริการ
                     </h3>
                     <div class="h-64 sm:h-72"><canvas id="radarCapabilityChart"></canvas></div>
                 </div>
@@ -1710,12 +1710,12 @@
             document.getElementById('popupDeptFilter').value = document.getElementById('chartDeptFilter')?.value || '';
 
             const titles = {
-                'serviceComparison': '<i class="fa-solid fa-chart-line text-brand-accent mr-2"></i> 1. การเปรียบเทียบจำนวนงานในแต่ละเดือนแบ่งตามการให้บริการ',
-                'line': '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 2. แนวโน้มปริมาณคำขอรับบริการรวมรายเดือน',
-                'status': '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ (%)',
-                'stacked': '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 4. ปริมาณและสถานะงานจำแนกรายหน่วยงาน',
+                'serviceComparison': '<i class="fa-solid fa-chart-line text-brand-accent mr-2"></i> 1. เปรียบเทียบจำนวนงานในแต่ละเดือน',
+                'line': '<i class="fa-solid fa-chart-line text-amber-500 mr-2"></i> 2. แนวโน้มปริมาณคำขอรับบริการรายเดือน',
+                'status': '<i class="fa-solid fa-chart-pie text-amber-500 mr-2"></i> 3. สถิติจำนวนคำขอแบ่งตามสถานะ',
+                'stacked': '<i class="fa-solid fa-chart-column text-amber-500 mr-2"></i> 4. ปริมาณงานจำแนกรายหน่วยงาน',
                 'topDept': '<i class="fa-solid fa-ranking-star text-amber-500 mr-2"></i> 5. อันดับหน่วยงานที่มีคำขอสูงสุด',
-                'radar': '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 6. มิติศักยภาพและการกระจายการให้บริการ'
+                'radar': '<i class="fa-solid fa-spider text-amber-500 mr-2"></i> 6. มิติศักยภาพในการให้บริการ'
             };
 
             modalTitle.innerHTML = titles[type] || 'กราฟสถิติขยาย';
@@ -2027,7 +2027,7 @@
                 data: {
                     labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
                     datasets: [{
-                        label: 'จำนวนคำขอใหม่รวม (Demand)',
+                        label: 'จำนวนคำขอใหม่รวม',
                         data: Array(12).fill(0),
                         borderColor: '#F59E0B',
                         backgroundColor: 'rgba(245, 158, 11, 0.1)',
