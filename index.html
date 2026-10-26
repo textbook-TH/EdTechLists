@@ -104,8 +104,8 @@
                 <div class="relative z-10 space-y-4">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                         <div>
-                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการให้บริการผลิตสื่อ</h1>
-                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการและดาวน์โหลดไฟล์</p>
+                            <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white">สถานะการให้บริการผลิตสื่อดิจิตอล</h1>
+                            <p class="text-slate-400 text-xs md:text-sm font-light">ตรวจสอบสถานะการให้บริการและดาวน์โหลดสื่อดิจิตอลที่ผลิตเสร็จสิ้น</p>
                         </div>
                     </div>
                     
@@ -150,7 +150,7 @@
                     <select id="serviceTypeFilter" onchange="filterRequests()" class="appearance-none w-full sm:w-auto px-3 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400">
                         <option value="">🛠️ เลือกการให้บริการ</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                        <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
+                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                     </select>
 
@@ -199,6 +199,7 @@
 
             <!-- การแสดงรายการ และระบบ Pagination -->
             <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-3.5 rounded-xl shadow-sm border border-slate-200 text-xs gap-3">
+                <span id="pageInfo" class="text-slate-500">แสดงรายการ 0 - 0</span>
                 <div id="paginationControls" class="flex items-center space-x-1"></div>
             </div>
         </section>
@@ -221,7 +222,7 @@
                         <select id="chartServiceFilter" onchange="updateDashboardStats()" class="w-full appearance-none px-3 sm:px-3.5 py-2 rounded-xl text-slate-700 bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-slate-400 font-medium">
                             <option value="">🛠️ เลือกการให้บริการ</option>
                             <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                            <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
+                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                             <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                         </select>
                     </div>
@@ -335,7 +336,7 @@
                     <select id="popupServiceFilter" onchange="renderModalChartData()" class="appearance-none px-3 py-1.5 rounded-xl text-slate-700 bg-white border border-slate-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs">
                         <option value="">🛠️ เลือกการให้บริการ</option>
                         <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                        <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
+                        <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                         <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                     </select>
                 </div>
@@ -535,7 +536,7 @@
                         <select id="formServiceType" required class="appearance-none w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 text-slate-700">
                             <option value="">เลือกการให้บริการ</option>
                             <option value="สื่อดิจิตอล">สื่อดิจิตอล</option>
-                            <option value="สื่อวีดิทัศน์">สื่อวีดิทัศน์</option>
+                            <option value="สื่อวิดิทัศน์">สื่อวิดิทัศน์</option>
                             <option value="สื่อสิ่งพิมพ์">สื่อสิ่งพิมพ์</option>
                         </select>
                     </div>
@@ -1907,7 +1908,7 @@
                         if (m >= 0 && m < 12) {
                             const st = r.service_type || 'สื่อดิจิตอล';
                             if (st === 'สื่อดิจิตอล') digitalCounts[m]++;
-                            else if (st === 'สื่อวีดิทัศน์') videoCounts[m]++;
+                            else if (st === 'สื่อวิดิทัศน์') videoCounts[m]++;
                             else if (st === 'สื่อสิ่งพิมพ์') printCounts[m]++;
                         }
                     }
@@ -1926,9 +1927,9 @@
                         pointRadius: 4
                     });
                 }
-                if (!selectedService || selectedService === 'สื่อวีดิทัศน์') {
+                if (!selectedService || selectedService === 'สื่อวิดิทัศน์') {
                     datasets.push({
-                        label: 'สื่อวีดิทัศน์',
+                        label: 'สื่อวิดิทัศน์',
                         data: videoCounts,
                         borderColor: '#3B82F6',
                         backgroundColor: 'rgba(59, 130, 246, 0.15)',
@@ -2131,7 +2132,7 @@
                             pointBackgroundColor: '#EA580C'
                         },
                         {
-                            label: 'สื่อวีดิทัศน์',
+                            label: 'สื่อวิดิทัศน์',
                             data: Array(12).fill(0),
                             borderColor: '#3B82F6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -2316,7 +2317,7 @@
                         monthCounts[m]++;
                         const st = r.service_type || 'สื่อดิจิตอล';
                         if (st === 'สื่อดิจิตอล') digitalMonthCounts[m]++;
-                        else if (st === 'สื่อวีดิทัศน์') videoMonthCounts[m]++;
+                        else if (st === 'สื่อวิดิทัศน์') videoMonthCounts[m]++;
                         else if (st === 'สื่อสิ่งพิมพ์') printMonthCounts[m]++;
                     }
                 }
