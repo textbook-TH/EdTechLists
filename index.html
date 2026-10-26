@@ -109,29 +109,29 @@
                         </div>
                     </div>
                     
-                    <!-- สถิติ ซ่อนบนมือถือ -->
+                    <!-- สถิติ ซ่อนบนมือถือ (เพิ่มการคลิกกรองตามสถานะ) -->
                     <div class="hidden sm:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-2">
-                        <div class="bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
+                        <div onclick="filterByCardStatus('')" class="cursor-pointer bg-slate-800/80 border border-slate-700/60 p-3.5 rounded-xl text-center space-y-1 hover:border-slate-600 transition">
                             <p id="statTotal" class="text-2xl font-bold text-white">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">คำขอทั้งหมด</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-amber-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-amber-500/50 transition">
+                        <div onclick="filterByCardStatus('pending')" class="cursor-pointer bg-slate-800/80 border border-amber-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-amber-500/50 transition">
                             <p id="statPending" class="text-2xl font-bold text-amber-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">รอดำเนินการ</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-blue-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-blue-500/50 transition">
+                        <div onclick="filterByCardStatus('in_progress')" class="cursor-pointer bg-slate-800/80 border border-blue-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-blue-500/50 transition">
                             <p id="statInProgress" class="text-2xl font-bold text-blue-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">กำลังดำเนินการ</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-purple-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-purple-500/50 transition">
+                        <div onclick="filterByCardStatus('reviewing')" class="cursor-pointer bg-slate-800/80 border border-purple-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-purple-500/50 transition">
                             <p id="statReviewing" class="text-2xl font-bold text-purple-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">ส่งตรวจ</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-emerald-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-emerald-500/50 transition">
+                        <div onclick="filterByCardStatus('completed')" class="cursor-pointer bg-slate-800/80 border border-emerald-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-emerald-500/50 transition">
                             <p id="statCompleted" class="text-2xl font-bold text-emerald-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">เสร็จสิ้นแล้ว</span>
                         </div>
-                        <div class="bg-slate-800/80 border border-rose-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-rose-500/50 transition">
+                        <div onclick="filterByCardStatus('cancelled')" class="cursor-pointer bg-slate-800/80 border border-rose-500/30 p-3.5 rounded-xl text-center space-y-1 hover:border-rose-500/50 transition">
                             <p id="statCancelled" class="text-2xl font-bold text-rose-400">0</p>
                             <span class="text-[11px] text-slate-400 block font-light">ยกเลิกดำเนินการ</span>
                         </div>
@@ -657,6 +657,7 @@
         const itemsPerPage = 15;
         let currentAuthMode = 'signin';
         let isPasswordRecoveryMode = false;
+        let selectedStatusFilter = ''; // สถานะที่ถูกเลือกจาก Card สถิติด้านบน
 
         document.addEventListener('DOMContentLoaded', async () => {
             initCharts();
@@ -956,6 +957,16 @@
             });
         }
 
+        // ฟังก์ชันสำหรับรับคลิกการ์ดสถิติเพื่อเปลี่ยนสถานะในการกรอง
+        function filterByCardStatus(status) {
+            if (selectedStatusFilter === status) {
+                selectedStatusFilter = ''; // สลับล้างสถานะหากกดซ้ำ
+            } else {
+                selectedStatusFilter = status;
+            }
+            filterRequests();
+        }
+
         function filterRequests() {
             const search = document.getElementById('searchInput').value.toLowerCase();
             const serviceType = document.getElementById('serviceTypeFilter').value;
@@ -964,7 +975,6 @@
 
             filteredRequests = allRequests.filter(req => {
                 // 1. ตรวจสอบสิทธิ์การมองเห็นข้อมูล:
-                // หากล็อกอินเป็น User ทั่วไป (ไม่ใช่ Admin) จะต้องเห็นเฉพาะงานที่มีอีเมลของตัวเองใน request_recipients
                 if (currentUser && !isAdmin) {
                     const userEmail = currentUser.email ? currentUser.email.toLowerCase() : '';
                     const hasUserRecipient = req.request_recipients && Array.isArray(req.request_recipients) &&
@@ -974,7 +984,15 @@
                     }
                 }
 
-                // 2. กรองตามเงื่อนไขค้นหา
+                // 2. กรองตามสถานะจากการ์ดสถิติด้านบน
+                if (selectedStatusFilter) {
+                    const reqStatus = getStatusBadge(req).status;
+                    if (reqStatus !== selectedStatusFilter) {
+                        return false;
+                    }
+                }
+
+                // 3. กรองตามเงื่อนไขค้นหา
                 const matchSearch = (req.title && req.title.toLowerCase().includes(search)) || 
                                     (req.work_code && req.work_code.toLowerCase().includes(search));
                 const matchService = !serviceType || (req.service_type || 'สื่อดิจิตอล') === serviceType;
@@ -1138,7 +1156,6 @@
             renderGrid();
         }
 
-        // ข้อ 3: จัดลำดับเงื่อนไขใน getStatusBadge ให้ชัดเจน (ปลายทาง -> ต้นทาง)
         function getStatusBadge(req) {
             if (req.cancelled_at) {
                 return { 
@@ -1332,7 +1349,6 @@
                     
                     if (error) throw error;
 
-                    // สร้าง/อัปเดตบทบาทในตาราง profiles เมื่อสมัครสมาชิก
                     if (data.user) {
                         await supabaseClient.from('profiles').upsert({
                             id: data.user.id,
@@ -1466,7 +1482,6 @@
                 recipientsContainer.textContent = '-';
             }
 
-            // ตรวจสอบว่าเป็น Admin หรือ เป็นเจ้าของงานนี้จริงๆ หรือไม่
             const userEmail = currentUser && currentUser.email ? currentUser.email.toLowerCase() : '';
             const isOwner = req.request_recipients && Array.isArray(req.request_recipients) &&
                 req.request_recipients.some(r => r.email && r.email.toLowerCase() === userEmail);
@@ -1522,7 +1537,6 @@
             document.getElementById('driveLinksList').innerHTML = '';
             document.getElementById('youtubeLinksList').innerHTML = '';
             
-            // ล้างค่า dataset เวลาเดิมในการสร้างรายการใหม่
             delete form.dataset.pendingAt;
             delete form.dataset.inProgressAt;
             delete form.dataset.reviewingAt;
@@ -1539,7 +1553,6 @@
             document.getElementById('adminModal').classList.remove('hidden');
         }
 
-        // ข้อ 2: เก็บค่าเวลาเดิมไว้เมื่อเปิดแก้ไข
         function openEditModal(id) {
             const req = allRequests.find(r => r.id === id);
             if (!req) return;
@@ -1553,7 +1566,6 @@
             document.getElementById('formLocation').value = req.location || '';
             document.getElementById('formDescription').value = req.description || '';
 
-            // บันทึกเวลาเดิมไว้ใน dataset ของ form
             form.dataset.pendingAt = req.pending_at || '';
             form.dataset.inProgressAt = req.in_progress_at || '';
             form.dataset.reviewingAt = req.reviewing_at || '';
@@ -1696,10 +1708,8 @@
                 }
             }
 
-            // ข้อ 1: แก้เรื่อง Timezone โดยใส่ Offset +07:00 ของไทยเพื่อไม่ให้เวลาโดนลบถอยหลัง 7 ชั่วโมง
             const formattedDate = new Date(`${requestDate}T12:00:00+07:00`).toISOString();
 
-            // ข้อ 2: ใช้เวลาเดิมจาก dataset ถ้ามี และไม่โดนปลดติ๊กออก เพื่อป้องกันการเขียนทับด้วย now เสมอ
             const payload = {
                 work_code: workCode,
                 service_type: serviceType,
