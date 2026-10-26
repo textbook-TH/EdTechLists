@@ -1138,6 +1138,7 @@
             renderGrid();
         }
 
+        // ข้อ 3: จัดลำดับเงื่อนไขใน getStatusBadge ให้ชัดเจน (ปลายทาง -> ต้นทาง)
         function getStatusBadge(req) {
             if (req.cancelled_at) {
                 return { 
@@ -1513,13 +1514,21 @@
         }
 
         function openCreateModal() {
-            document.getElementById('adminForm').reset();
+            const form = document.getElementById('adminForm');
+            form.reset();
             document.getElementById('formRequestId').value = '';
             document.getElementById('formServiceType').value = '';
             document.getElementById('recipientsList').innerHTML = '';
             document.getElementById('driveLinksList').innerHTML = '';
             document.getElementById('youtubeLinksList').innerHTML = '';
             
+            // ล้างค่า dataset เวลาเดิมในการสร้างรายการใหม่
+            delete form.dataset.pendingAt;
+            delete form.dataset.inProgressAt;
+            delete form.dataset.reviewingAt;
+            delete form.dataset.completedAt;
+            delete form.dataset.cancelledAt;
+
             const today = new Date();
             const yyyy = today.getFullYear();
             const mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -1530,10 +1539,12 @@
             document.getElementById('adminModal').classList.remove('hidden');
         }
 
+        // ข้อ 2: เก็บค่าเวลาเดิมไว้เมื่อเปิดแก้ไข
         function openEditModal(id) {
             const req = allRequests.find(r => r.id === id);
             if (!req) return;
 
+            const form = document.getElementById('adminForm');
             document.getElementById('formRequestId').value = req.id;
             document.getElementById('formWorkCode').value = req.work_code || '';
             document.getElementById('formServiceType').value = req.service_type || '';
@@ -1541,6 +1552,13 @@
             document.getElementById('formTitle').value = req.title || '';
             document.getElementById('formLocation').value = req.location || '';
             document.getElementById('formDescription').value = req.description || '';
+
+            // บันทึกเวลาเดิมไว้ใน dataset ของ form
+            form.dataset.pendingAt = req.pending_at || '';
+            form.dataset.inProgressAt = req.in_progress_at || '';
+            form.dataset.reviewingAt = req.reviewing_at || '';
+            form.dataset.completedAt = req.completed_at || '';
+            form.dataset.cancelledAt = req.cancelled_at || '';
 
             if (req.created_at) {
                 const d = new Date(req.created_at);
@@ -1636,6 +1654,7 @@
 
         async function handleAdminSave(e) {
             e.preventDefault();
+            const form = document.getElementById('adminForm');
             const reqId = document.getElementById('formRequestId').value;
             const workCode = document.getElementById('formWorkCode').value.trim();
             const serviceType = document.getElementById('formServiceType').value;
@@ -1677,8 +1696,10 @@
                 }
             }
 
-            const formattedDate = new Date(`${requestDate}T12:00:00`).toISOString();
+            // ข้อ 1: แก้เรื่อง Timezone โดยใส่ Offset +07:00 ของไทยเพื่อไม่ให้เวลาโดนลบถอยหลัง 7 ชั่วโมง
+            const formattedDate = new Date(`${requestDate}T12:00:00+07:00`).toISOString();
 
+            // ข้อ 2: ใช้เวลาเดิมจาก dataset ถ้ามี และไม่โดนปลดติ๊กออก เพื่อป้องกันการเขียนทับด้วย now เสมอ
             const payload = {
                 work_code: workCode,
                 service_type: serviceType,
@@ -1687,11 +1708,11 @@
                 location: document.getElementById('formLocation').value,
                 description: document.getElementById('formDescription').value,
                 created_at: formattedDate,
-                pending_at: document.getElementById('chkPending').checked ? now : null,
-                in_progress_at: document.getElementById('chkInProgress').checked ? now : null,
-                reviewing_at: document.getElementById('chkReviewing').checked ? now : null,
-                completed_at: document.getElementById('chkCompleted').checked ? now : null,
-                cancelled_at: document.getElementById('chkCancelled').checked ? now : null,
+                pending_at: document.getElementById('chkPending').checked ? (form.dataset.pendingAt || now) : null,
+                in_progress_at: document.getElementById('chkInProgress').checked ? (form.dataset.inProgressAt || now) : null,
+                reviewing_at: document.getElementById('chkReviewing').checked ? (form.dataset.reviewingAt || now) : null,
+                completed_at: document.getElementById('chkCompleted').checked ? (form.dataset.completedAt || now) : null,
+                cancelled_at: document.getElementById('chkCancelled').checked ? (form.dataset.cancelledAt || now) : null,
             };
 
             let targetId = reqId;
