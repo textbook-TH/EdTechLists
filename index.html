@@ -40,6 +40,13 @@
     
     <style>
         body { font-family: 'Prompt', sans-serif; }
+        
+        /* ซ่อนคอลัมน์ผู้รับบริการ เฉพาะ iPad (768px - 1024px) ในแนวตั้ง (Portrait) เท่านั้น */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
+            .ipad-portrait-hide-recipient {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
@@ -189,7 +196,7 @@
                                     <span class="hidden sm:inline">รหัสใบแจ้ง</span>
                                 </th>
                                 <th class="py-4 px-4 sm:px-6 whitespace-nowrap">งานที่ฉันได้รับมอบหมาย</th>
-                                <th class="hidden sm:table-cell py-4 px-4 sm:px-6">ผู้รับบริการ</th>
+                                <th class="hidden sm:table-cell ipad-portrait-hide-recipient py-4 px-4 sm:px-6">ผู้รับบริการ</th>
                                 <th class="py-4 px-4 sm:px-6 text-right w-36 sm:w-44">สถานะ</th>
                                 <th id="thActionHeader" class="hidden py-4 px-6 text-center rounded-r-xl w-40">จัดการ</th>
                             </tr>
@@ -1119,7 +1126,7 @@
                         <td class="py-4 px-4 sm:px-6 font-semibold text-slate-900 text-xs sm:text-sm whitespace-nowrap">
                             ${escapeHTML(req.title || '')}
                         </td>
-                        <td class="hidden sm:table-cell py-4 px-4 sm:px-6 font-medium text-slate-600 text-xs sm:text-sm">
+                        <td class="hidden sm:table-cell ipad-portrait-hide-recipient py-4 px-4 sm:px-6 font-medium text-slate-600 text-xs sm:text-sm">
                             ${recipientNamesStr}
                         </td>
                         <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
