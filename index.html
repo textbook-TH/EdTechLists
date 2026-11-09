@@ -188,7 +188,8 @@
                                     <span class="sm:hidden">รหัส</span>
                                     <span class="hidden sm:inline">รหัสใบแจ้ง</span>
                                 </th>
-                                <th class="py-4 px-4 sm:px-6">งานที่ฉันได้รับมอบหมาย</th>
+                                <th class="py-4 px-4 sm:px-6 whitespace-nowrap">งานที่ฉันได้รับมอบหมาย</th>
+                                <th class="hidden sm:table-cell py-4 px-4 sm:px-6">ผู้รับบริการ</th>
                                 <th class="py-4 px-4 sm:px-6 text-right w-36 sm:w-44">สถานะ</th>
                                 <th id="thActionHeader" class="hidden py-4 px-6 text-center rounded-r-xl w-40">จัดการ</th>
                             </tr>
@@ -891,7 +892,7 @@
             if (tableBody) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="4" class="text-center py-12 text-slate-400">
+                        <td colspan="5" class="text-center py-12 text-slate-400">
                             <i class="fa-solid fa-spinner fa-spin text-3xl mb-2 text-amber-500"></i>
                             <div class="text-xs font-semibold text-slate-500">กำลังดึงข้อมูล...</div>
                         </td>
@@ -913,7 +914,7 @@
                 if (error) {
                     console.error("Supabase Request Error:", error);
                     if (tableBody) {
-                        tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-rose-500 font-bold">ไม่สามารถดึงข้อมูลได้: ${escapeHTML(error.message)}<br><span class="text-xs font-normal text-slate-500">โปรดตรวจสอบการตั้งค่า RLS ใน Supabase</span></td></tr>`;
+                        tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-rose-500 font-bold">ไม่สามารถดึงข้อมูลได้: ${escapeHTML(error.message)}<br><span class="text-xs font-normal text-slate-500">โปรดตรวจสอบการตั้งค่า RLS ใน Supabase</span></td></tr>`;
                     }
                     return;
                 }
@@ -933,7 +934,7 @@
             } catch (err) {
                 console.error("Fetch Request Exception:", err);
                 if (tableBody) {
-                    tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-8 text-rose-500 font-bold">เกิดข้อผิดพลาดในระบบ: ${escapeHTML(err.message)}</td></tr>`;
+                    tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-rose-500 font-bold">เกิดข้อผิดพลาดในระบบ: ${escapeHTML(err.message)}</td></tr>`;
                 }
             }
         }
@@ -994,8 +995,13 @@
                 }
 
                 // 3. กรองตามเงื่อนไขค้นหา
+                const recipientNames = req.request_recipients && Array.isArray(req.request_recipients)
+                    ? req.request_recipients.map(r => r.full_name || '').join(' ').toLowerCase()
+                    : '';
+
                 const matchSearch = (req.title && req.title.toLowerCase().includes(search)) || 
-                                    (req.work_code && req.work_code.toLowerCase().includes(search));
+                                    (req.work_code && req.work_code.toLowerCase().includes(search)) ||
+                                    recipientNames.includes(search);
                 const matchService = !serviceType || (req.service_type || 'สื่อดิจิตอล') === serviceType;
                 const matchDept = !deptId || req.department_id == deptId;
                 
@@ -1069,7 +1075,7 @@
             const end = start + itemsPerPage;
             const pageItems = filteredRequests.slice(start, end);
 
-            const colCount = isRoleAdminView ? 4 : 3;
+            const colCount = isRoleAdminView ? 5 : 4;
 
             if (pageItems.length === 0) {
                 tableBody.innerHTML = `<tr><td colspan="${colCount}" class="text-center py-10 text-slate-400">ไม่พบรายการคำขอรับบริการ</td></tr>`;
@@ -1094,6 +1100,15 @@
                     `;
                 }
 
+                // ดึงข้อมูลรายชื่อผู้รับบริการจาก request_recipients
+                let recipientNamesStr = '-';
+                if (req.request_recipients && req.request_recipients.length > 0) {
+                    recipientNamesStr = req.request_recipients
+                        .map(r => escapeHTML(r.full_name || 'ไม่ระบุชื่อ'))
+                        .filter(name => name.trim() !== '')
+                        .join(', ');
+                }
+
                 const clickHandler = isRoleAdminView ? '' : `onclick="openDetailModal(${req.id})"`;
 
                 const rowHtml = `
@@ -1101,8 +1116,11 @@
                         <td class="py-4 px-4 sm:px-6 font-bold text-[#C2410C] text-xs sm:text-sm font-sans whitespace-nowrap">
                             ${escapeHTML(req.work_code || '')}
                         </td>
-                        <td class="py-4 px-4 sm:px-6 font-semibold text-slate-900 text-xs sm:text-sm">
+                        <td class="py-4 px-4 sm:px-6 font-semibold text-slate-900 text-xs sm:text-sm whitespace-nowrap">
                             ${escapeHTML(req.title || '')}
+                        </td>
+                        <td class="hidden sm:table-cell py-4 px-4 sm:px-6 font-medium text-slate-600 text-xs sm:text-sm">
+                            ${recipientNamesStr}
                         </td>
                         <td class="py-4 px-4 sm:px-6 text-right whitespace-nowrap">
                             ${statusBadgeObj.badgeHtml}
